@@ -1,0 +1,122 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: r18_anime - CloudFront + Basic Auth (separate stack for slow CF deployment)
+
+Parameters:
+  BasicAuthUser:
+    Type: String
+    Default: admin
+    Description: Username for CloudFront Basic Authentication
+
+  BasicAuthPass:
+    Type: String
+    NoEcho: true
+    Description: Password for CloudFront Basic Authentication
+    MinLength: 8
+
+  ALBDnsName:
+    Type: String
+    Description: ALB DNS name from the base stack
+
+  CustomDomainName:
+    Type: String
+    Default: ''
+    Description: Optional custom domain name for CloudFront
+
+Conditions:
+  HasCustomDomain: !Not [!Equals [!Ref CustomDomainName, '']]
+
+Resources:
+  BasicAuthFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: r18-anime-basic-auth
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Basic Authentication for ComfyUI
+        Runtime: cloudfront-js-2.0
+      FunctionCode: !Sub |
+        function handler(event) {
+          var request = event.request;
+          var headers = request.headers;
+
+          var str = "${BasicAuthUser}:${BasicAuthPass}";
+          var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+          var encoded = "";
+          for (var i = 0; i < str.length; i += 3) {
+            var a = str.charCodeAt(i);
+            var b = i + 1 < str.length ? str.charCodeAt(i + 1) : 0;
+            var c = i + 2 < str.length ? str.charCodeAt(i + 2) : 0;
+            encoded += chars[(a >> 2) & 63];
+            encoded += chars[((a << 4) | (b >> 4)) & 63];
+            encoded += i + 1 < str.length ? chars[((b << 2) | (c >> 6)) & 63] : "=";
+            encoded += i + 2 < str.length ? chars[c & 63] : "=";
+          }
+          var expected = "Basic " + encoded;
+
+          if (headers.authorization && headers.authorization.value === expected) {
+            return request;
+          }
+
+          return {
+            statusCode: 401,
+            statusDescription: "Unauthorized",
+            headers: {
+              "www-authenticate": { value: "Basic realm=\"ComfyUI\"" },
+              "content-type": { value: "text/plain" }
+            },
+            body: "Unauthorized"
+          };
+        }
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: r18-anime ComfyUI access with Basic Auth
+        Origins:
+          - Id: ALBOrigin
+            DomainName: !Ref ALBDnsName
+            CustomOriginConfig:
+              HTTPPort: 80
+              OriginProtocolPolicy: http-only
+              OriginKeepaliveTimeout: 60
+              OriginReadTimeout: 60
+        DefaultCacheBehavior:
+          TargetOriginId: ALBOrigin
+          ViewerProtocolPolicy: allow-all
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - PATCH
+            - POST
+            - DELETE
+          CachedMethods:
+            - GET
+            - HEAD
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+          OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+          Compress: false
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt BasicAuthFunction.FunctionARN
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        Aliases: !If
+          - HasCustomDomain
+          - - !Ref CustomDomainName
+          - !Ref 'AWS::NoValue'
+      Tags:
+        - Key: Name
+          Value: r18-anime-cloudfront
+
+Outputs:
+  CloudFrontDomainName:
+    Value: !GetAtt CloudFrontDistribution.DomainName
+    Export:
+      Name: r18-anime-cloudfront-domain
+
+  CloudFrontDistributionId:
+    Value: !Ref CloudFrontDistribution
