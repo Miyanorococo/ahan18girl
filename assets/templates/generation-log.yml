@@ -1,0 +1,27 @@
+# Generation Log Entry Template
+# One entry per generated image for DLSite evidence preservation
+
+work_name: ""
+date: ""                    # YYYY-MM-DD
+image_file: ""              # relative path to final image
+
+generation:
+  model: ""                 # e.g. "WAI-NSFW-illustrious-SDXL"
+  model_version: ""         # e.g. "v16"
+  lora:
+    - file: ""
+      weight: 0.0
+      trigger_word: ""
+  prompt_positive: ""
+  prompt_negative: ""
+  sampler: ""               # e.g. "Euler a", "DPM++ 2M Karras"
+  steps: 0
+  cfg: 0.0
+  seed: 0
+  resolution: ""            # e.g. "832x1216"
+
+post_processing:
+  face_detail: false        # ADetailer or similar
+  upscale_model: ""         # e.g. "4x-UltraSharp", "RealESRGAN_x4plus_anime_6B"
+  upscale_factor: 0         # e.g. 2, 4
+  additional: []            # any other post-processing steps applied

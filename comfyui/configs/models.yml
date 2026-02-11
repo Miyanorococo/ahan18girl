@@ -1,0 +1,62 @@
+checkpoints:
+  - name: WAI-NSFW-illustrious v16
+    filename: wai-nsfw-illustrious-v16.safetensors
+    url: https://huggingface.co/WAI-AI/WAI-NSFW-illustrious/resolve/main/wai-nsfw-illustrious-v16.safetensors
+    size_gb: 6.5
+    license: FAIPL-1.0-SD
+    purpose: Main NSFW anime generation
+    base_model: illustrious-xl
+
+  - name: Animagine XL 4.0 v4 Opt
+    filename: animagine-xl-4.0-v4-opt.safetensors
+    url: https://huggingface.co/cagliostrolab/animagine-xl-4.0/resolve/main/animagine-xl-4.0-v4-opt.safetensors
+    size_gb: 6.5
+    license: CreativeML Open RAIL++-M
+    purpose: Cover/all-ages content
+    base_model: sdxl
+
+controlnet:
+  - name: OpenPose (SDXL)
+    filename: openpose-sdxl.safetensors
+    url: https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/thibaud_xl_openpose.safetensors
+    size_gb: 2.5
+    purpose: Pose-guided generation
+
+  - name: Canny (SDXL)
+    filename: canny-sdxl.safetensors
+    url: https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/sai_xl_canny_256lora.safetensors
+    size_gb: 2.5
+    purpose: Edge-guided generation
+
+  - name: Depth (SDXL)
+    filename: depth-sdxl.safetensors
+    url: https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/sai_xl_depth_256lora.safetensors
+    size_gb: 2.5
+    purpose: Depth-guided generation
+
+upscale_models:
+  - name: 4x Foolhardy Remacri
+    filename: 4x-Foolhardy-Remacri.pth
+    url: https://huggingface.co/FoolhardyRemacri/4x-Foolhardy-Remacri/resolve/main/4x-Foolhardy-Remacri.pth
+    size_gb: 0.064
+    purpose: 4x upscaling with detail preservation
+
+vae:
+  - name: SDXL VAE
+    filename: sdxl_vae.safetensors
+    url: https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors
+    size_gb: 0.33
+    purpose: VAE for SDXL-based models
+
+ipadapter:
+  - name: IP-Adapter Plus (SDXL)
+    filename: ip-adapter-plus_sdxl_vit-h.safetensors
+    url: https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors
+    size_gb: 0.85
+    purpose: Image prompt adapter for character consistency
+
+  - name: CLIP Vision (for IP-Adapter)
+    filename: CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors
+    url: https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors
+    size_gb: 2.4
+    purpose: CLIP vision encoder required by IP-Adapter

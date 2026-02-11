@@ -1,0 +1,154 @@
+# Prompt Templates for Illustrious-based Models (WAI-NSFW-illustrious v16)
+# Danbooru-tag style prompt construction
+
+# Quality tags applied to all prompts
+quality_prefix: "masterpiece, best quality, very aesthetic, absurdres"
+quality_negative: "worst quality, low quality, normal quality, lowres, bad anatomy, bad hands, extra fingers, fewer fingers, extra digits, cropped, jpeg artifacts, signature, watermark, username, blurry, artist name, text, deformed, disfigured, mutation, extra limbs, missing limbs"
+
+# Scene templates by category
+templates:
+  indoor_bedroom:
+    description: "Indoor bedroom scene"
+    base_tags: "indoors, bedroom, bed, pillow, window, curtains, blanket"
+    lighting: "soft lighting, warm lighting"
+
+  outdoor_sunset:
+    description: "Outdoor sunset scene"
+    base_tags: "outdoors, sunset, sky, clouds, orange sky, horizon"
+    lighting: "dramatic lighting, golden hour, rim lighting, lens flare"
+
+  bathroom:
+    description: "Bathroom / bath scene"
+    base_tags: "indoors, bathroom, bathtub, steam, tiles, mirror, towel"
+    lighting: "soft lighting, wet, water droplets, steam"
+
+  school:
+    description: "School classroom setting"
+    base_tags: "indoors, classroom, school, desk, chalkboard, school uniform"
+    lighting: "natural lighting, window light"
+
+  beach:
+    description: "Beach scene"
+    base_tags: "outdoors, beach, ocean, sand, waves, blue sky, horizon"
+    lighting: "bright, sunlight, lens flare, specular highlights"
+
+  night_city:
+    description: "Urban night scene"
+    base_tags: "outdoors, night, city, cityscape, neon lights, street, urban"
+    lighting: "neon lighting, night, dark, city lights, rim lighting"
+
+  onsen:
+    description: "Japanese hot spring"
+    base_tags: "outdoors, onsen, hot spring, steam, rocks, water, bamboo fence, night sky"
+    lighting: "warm lighting, steam, moonlight, lantern"
+
+  living_room:
+    description: "Living room / couch scene"
+    base_tags: "indoors, living room, couch, sofa, table, carpet, window"
+    lighting: "natural lighting, ambient light"
+
+  pool:
+    description: "Swimming pool scene"
+    base_tags: "outdoors, pool, poolside, water, tiles, lounge chair, clear sky"
+    lighting: "bright, sunlight, water reflection, caustics"
+
+  forest:
+    description: "Forest / nature scene"
+    base_tags: "outdoors, forest, trees, grass, nature, sunlight through trees, leaves"
+    lighting: "dappled sunlight, god rays, natural lighting"
+
+# Character attribute tags
+attributes:
+  hair_colors:
+    - blonde hair
+    - black hair
+    - brown hair
+    - red hair
+    - blue hair
+    - pink hair
+    - silver hair
+    - white hair
+    - purple hair
+    - green hair
+    - light brown hair
+    - platinum blonde hair
+
+  hair_styles:
+    - long hair
+    - short hair
+    - medium hair
+    - twintails
+    - ponytail
+    - braid
+    - bob cut
+    - side ponytail
+    - hair bun
+    - messy hair
+    - hime cut
+    - straight hair
+    - wavy hair
+    - drill hair
+
+  eye_colors:
+    - blue eyes
+    - red eyes
+    - green eyes
+    - brown eyes
+    - purple eyes
+    - golden eyes
+    - heterochromia
+    - aqua eyes
+    - amber eyes
+    - pink eyes
+
+  body_types:
+    - slim
+    - curvy
+    - petite
+    - tall
+    - athletic
+    - large breasts
+    - medium breasts
+    - small breasts
+
+  expressions:
+    - smile
+    - blush
+    - shy
+    - embarrassed
+    - confident
+    - seductive
+    - happy
+    - surprised
+    - pout
+    - open mouth
+    - half-closed eyes
+    - looking at viewer
+    - looking away
+    - closed eyes
+
+# Pose tags
+poses:
+  standing: "standing, full body"
+  sitting: "sitting, on bed"
+  lying_back: "lying, on back, on bed"
+  lying_side: "lying on side"
+  kneeling: "kneeling"
+  leaning: "leaning forward"
+  arms_up: "arms up, stretching"
+  hand_on_hip: "hand on hip, standing"
+  hugging_knees: "hugging own legs, sitting"
+  all_fours: "all fours, on bed"
+
+# Camera angle tags
+camera_angles:
+  from_above: "from above, looking up at viewer"
+  from_below: "from below, looking down at viewer"
+  from_side: "from side, profile"
+  from_behind: "from behind, looking back"
+  close_up_face: "close-up, face focus, portrait"
+  upper_body: "upper body"
+  full_body: "full body"
+  cowboy_shot: "cowboy shot"
+  dutch_angle: "dutch angle"
+  pov: "pov, first-person view"

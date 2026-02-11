@@ -1,0 +1,286 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: r18_anime - AI Content Generation Infrastructure (us-east-1)
+
+Parameters:
+  MyIP:
+    Type: String
+    Description: Your home IP address for SSH access (e.g. 203.0.113.1/32)
+    AllowedPattern: '^(\d{1,3}\.){3}\d{1,3}/32$'
+    ConstraintDescription: Must be a valid IP address with /32 suffix
+
+  S3BucketName:
+    Type: String
+    Default: r18-anime-assets
+    Description: S3 bucket name for models, outputs, and logs
+
+  EBSVolumeSize:
+    Type: Number
+    Default: 200
+    Description: EBS volume size in GB
+
+  KeyPairName:
+    Type: String
+    Description: EC2 Key Pair name for SSH access
+
+  AvailabilityZone:
+    Type: String
+    Default: us-east-1c
+    AllowedValues:
+      - us-east-1c
+      - us-east-1d
+    Description: Preferred AZ for stable Spot pricing
+
+Resources:
+  # --- VPC ---
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: r18-anime-vpc
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: r18-anime-igw
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Ref AvailabilityZone
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: r18-anime-public-subnet
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: r18-anime-rt
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref RouteTable
+
+  # --- Security Group ---
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH only from home IP
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref MyIP
+          Description: SSH from home IP
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+          Description: Allow all outbound
+      Tags:
+        - Key: Name
+          Value: r18-anime-sg
+
+  # --- IAM Role + Instance Profile ---
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: r18-anime-ec2-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${S3BucketName}'
+                  - !Sub 'arn:aws:s3:::${S3BucketName}/*'
+        - PolicyName: EC2SpotAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                  - ec2:DescribeSpotInstanceRequests
+                  - ec2:DescribeVolumes
+                  - ec2:AttachVolume
+                  - ec2:DetachVolume
+                Resource: '*'
+      Tags:
+        - Key: Name
+          Value: r18-anime-ec2-role
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: r18-anime-instance-profile
+      Roles:
+        - !Ref EC2Role
+
+  # --- S3 Bucket ---
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      IntelligentTieringConfigurations:
+        - Id: default-tiering
+          Status: Enabled
+          Tierings:
+            - AccessTier: ARCHIVE_ACCESS
+              Days: 90
+            - AccessTier: DEEP_ARCHIVE_ACCESS
+              Days: 180
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Name
+          Value: r18-anime-bucket
+
+  # --- EBS Volume ---
+  EBSVolume:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: !Ref AvailabilityZone
+      Size: !Ref EBSVolumeSize
+      VolumeType: gp3
+      Encrypted: true
+      Iops: 3000
+      Throughput: 125
+      Tags:
+        - Key: Name
+          Value: r18-anime-ebs
+
+  # --- Launch Template ---
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: r18-anime-gpu
+      LaunchTemplateData:
+        # Deep Learning AMI GPU PyTorch 2.5 (Ubuntu 22.04) - us-east-1
+        # Update this AMI ID to the latest version before first deploy
+        ImageId: ami-0a0c8eebcdd6dcbd0
+        KeyName: !Ref KeyPairName
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        BlockDeviceMappings:
+          - DeviceName: /dev/sda1
+            Ebs:
+              VolumeSize: 100
+              VolumeType: gp3
+              Encrypted: true
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: r18-anime-gpu
+              - Key: Project
+                Value: r18_anime
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            # Attach the persistent EBS volume
+            INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+            aws ec2 attach-volume \
+              --volume-id ${EBSVolume} \
+              --instance-id $INSTANCE_ID \
+              --device /dev/xvdf \
+              --region us-east-1
+
+            # Wait for attachment
+            sleep 10
+
+            # Mount EBS (create filesystem if needed)
+            if ! blkid /dev/xvdf; then
+              mkfs.ext4 /dev/xvdf
+            fi
+            mkdir -p /data
+            mount /dev/xvdf /data
+            echo '/dev/xvdf /data ext4 defaults,nofail 0 2' >> /etc/fstab
+
+            # Set ownership
+            chown -R ubuntu:ubuntu /data
+
+Outputs:
+  VPCId:
+    Value: !Ref VPC
+    Export:
+      Name: r18-anime-vpc-id
+
+  SubnetId:
+    Value: !Ref PublicSubnet
+    Export:
+      Name: r18-anime-subnet-id
+
+  SecurityGroupId:
+    Value: !Ref SecurityGroup
+    Export:
+      Name: r18-anime-sg-id
+
+  InstanceProfileArn:
+    Value: !GetAtt InstanceProfile.Arn
+    Export:
+      Name: r18-anime-instance-profile-arn
+
+  LaunchTemplateId:
+    Value: !Ref LaunchTemplate
+    Export:
+      Name: r18-anime-launch-template-id
+
+  EBSVolumeId:
+    Value: !Ref EBSVolume
+    Export:
+      Name: r18-anime-ebs-volume-id
+
+  S3BucketName:
+    Value: !Ref S3Bucket
+    Export:
+      Name: r18-anime-s3-bucket

@@ -1,0 +1,31 @@
+# Character Definition Template
+# Copy this file and fill in for each original character
+
+name: ""
+lora_file: ""           # filename.safetensors
+lora_weight: 0.7        # recommended: 0.6-0.8
+trigger_word: ""        # LoRA trigger word
+
+# Visual attributes (Danbooru tags)
+appearance:
+  hair: ""              # e.g. "long hair, blonde hair, straight hair"
+  eyes: ""              # e.g. "blue eyes"
+  body: ""              # e.g. "slim, medium breasts"
+  height: ""            # e.g. "tall"
+  distinctive_features: []  # e.g. ["hair ribbon", "mole under eye", "fang"]
+
+# Personality (for scene consistency and expression selection)
+personality: ""         # e.g. "cheerful, energetic" or "quiet, mysterious"
+
+# Standard outfit variations
+outfits:
+  default:
+    tags: ""            # e.g. "white shirt, blue skirt, thighhighs"
+  casual:
+    tags: ""            # e.g. "t-shirt, shorts, barefoot"
+  swimsuit:
+    tags: ""            # e.g. "bikini, white bikini, side-tie bikini bottom"
+  sleepwear:
+    tags: ""            # e.g. "negligee, see-through, bare shoulders"
+  uniform:
+    tags: ""            # e.g. "school uniform, sailor collar, pleated skirt"
