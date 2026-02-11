@@ -8,7 +8,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTANCE_TAG="r18-anime-gpu"
 REGION="us-east-1"
-COMFYUI_PORT=8188
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -67,18 +66,6 @@ find_instance() {
             "Name=instance-state-name,Values=${states}" \
         --query 'Reservations[].Instances[].[InstanceId,InstanceType,PublicIpAddress,State.Name,Placement.AvailabilityZone,LaunchTime]' \
         --output text 2>/dev/null || true
-}
-
-# ---------------------------------------------------------------------------
-# Kill local SSH tunnel
-# ---------------------------------------------------------------------------
-kill_tunnel() {
-    local tunnel_pid
-    tunnel_pid=$(lsof -ti "tcp:${COMFYUI_PORT}" 2>/dev/null || true)
-    if [[ -n "${tunnel_pid}" ]]; then
-        log "Killing SSH tunnel on port ${COMFYUI_PORT} (PID: ${tunnel_pid})"
-        kill "${tunnel_pid}" 2>/dev/null || true
-    fi
 }
 
 # ---------------------------------------------------------------------------
@@ -155,8 +142,11 @@ main() {
         esac
     fi
 
-    # Kill local SSH tunnel
-    kill_tunnel
+    # Deregister from ALB target group
+    if [[ -n "${TARGET_GROUP_ARN:-}" ]]; then
+        log "Deregistering from ALB target group..."
+        aws elbv2 deregister-targets --target-group-arn "${TARGET_GROUP_ARN}" --targets "Id=${instance_id}" 2>/dev/null || true
+    fi
 
     # Perform action
     if [[ "${terminate}" == true ]]; then

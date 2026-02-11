@@ -5,25 +5,25 @@ AI画像生成を活用したアダルトアニメコンテンツの制作・販
 ## アーキテクチャ
 
 ```
-┌─────────────┐     SSH Tunnel      ┌──────────────────────────────────┐
-│  Local Mac   │◄──────────────────►│  AWS EC2 (g6e.xlarge Spot)       │
-│              │   localhost:8188    │  ┌────────────────────────────┐  │
-│  ブラウザで   │                     │  │ ComfyUI (127.0.0.1:8188)  │  │
-│  ComfyUI操作 │                     │  │  + ControlNet              │  │
-│              │                     │  │  + Impact Pack (ADetailer) │  │
-└─────────────┘                     │  │  + IP-Adapter / PuLID      │  │
-                                    │  │  + UltimateSDUpscale       │  │
-                                    │  └────────────────────────────┘  │
-                                    │                                  │
-                                    │  EBS 200GB (暗号化)              │
-                                    │  /data/ComfyUI/models/           │
-                                    │  /data/ComfyUI/output/           │
-                                    └──────────┬───────────────────────┘
-                                               │ aws s3 sync
-                                    ┌──────────▼───────────────────────┐
-                                    │  S3 (Intelligent-Tiering)        │
-                                    │  models/ output/ logs/ workflows/│
-                                    └──────────────────────────────────┘
+┌─────────────┐      HTTPS        ┌──────────────┐     HTTP      ┌────────────┐
+│  ブラウザ    │ ──────────────► │  CloudFront   │ ──────────► │    ALB      │
+│              │                  │  + WAF        │              │ (Public     │
+│              │                  │  (IP制限)     │              │  Subnet)    │
+└─────────────┘                  └──────────────┘              └─────┬──────┘
+                                                                     │ :8188
+┌─────────────┐   SSM Session    ┌──────────────────────────────────▼──────┐
+│  ターミナル  │ ──────────────► │  EC2 g6e.xlarge (Private Subnet)        │
+│  管理操作    │                  │  ┌──────────────────────────────────┐  │
+└─────────────┘                  │  │ ComfyUI (0.0.0.0:8188)          │  │
+                                 │  │  + ControlNet + Impact Pack      │  │
+                                 │  │  + IP-Adapter / PuLID            │  │
+                                 │  └──────────────────────────────────┘  │
+                                 │  EBS 200GB (暗号化) + NAT Gateway      │
+                                 └────────────────┬───────────────────────┘
+                                                  │ aws s3 sync
+                                 ┌────────────────▼───────────────────────┐
+                                 │  S3 (Intelligent-Tiering)              │
+                                 └────────────────────────────────────────┘
 ```
 
 ## セットアップ
@@ -32,7 +32,7 @@ AI画像生成を活用したアダルトアニメコンテンツの制作・販
 
 ```bash
 cp .env.example .env
-# .env を編集: AWS_PROFILE, KEY_PAIR_NAME, MY_IP 等を記入
+# .env を編集: AWS_PROFILE, MY_IP 等を記入
 ```
 
 ### 2. AWSインフラ構築
@@ -42,54 +42,49 @@ cp .env.example .env
 ./aws/deploy-stack.sh
 
 # スタック出力が自動で .env に書き込まれる
-# (LAUNCH_TEMPLATE_ID, SUBNET_ID, SG_ID, EBS_VOLUME_ID)
+# (LAUNCH_TEMPLATE_ID, SUBNET_ID, SG_ID, EBS_VOLUME_ID, CLOUDFRONT_URL, TARGET_GROUP_ARN, PRIVATE_SUBNET_ID)
+# CloudFront URLもここで出力される
 ```
 
-### 3. EC2起動 & 初期セットアップ
+### 3. EC2起動
 
 ```bash
-# Spotインスタンス起動
+# Spotインスタンス起動 + ALBターゲット登録
 ./aws/start-spot.sh
-
-# SSH接続 (ComfyUIトンネル付き)
-./aws/connect.sh
-
-# EC2上で初期セットアップ実行
-sudo bash /path/to/setup.sh
-
-# モデルダウンロード (EC2上で)
-bash /path/to/scripts/download-models.sh
 ```
 
-### 4. 制作開始
+### 4. 管理操作
 
-ブラウザで http://localhost:8188 を開く。
+```bash
+# SSMセッション接続
+./aws/connect.sh
+```
+
+### 5. 制作開始
+
+.env の CLOUDFRONT_URL をブラウザで開く。
 
 ## 日常の使い方
 
 ```bash
 # --- 作業開始 ---
-./aws/start-spot.sh              # GPU起動 + SSHトンネル
-# → ブラウザで http://localhost:8188
+./aws/start-spot.sh              # GPU起動 + ALBターゲット登録
+# → .envのCLOUDFRONT_URLをブラウザで開く
+
+# --- 管理操作 ---
+./aws/connect.sh                 # SSMセッション接続
+./aws/connect.sh --url           # CloudFront URLを表示
 
 # --- 作業終了 ---
 ./aws/sync-output.sh             # 生成画像をS3にバックアップ
 ./aws/stop-instance.sh           # インスタンス停止
-
-# --- その他 ---
-./aws/start-spot.sh --fallback g5   # g5.xlargeで起動 (Spot不安定時)
-./aws/start-spot.sh --on-demand     # オンデマンドで起動 (緊急時)
-./aws/connect.sh --tunnel-only      # トンネルだけ張る
-./aws/connect.sh --ip               # インスタンスIPを表示
-./aws/sync-models.sh --upload       # LoRA等をS3にバックアップ
-./aws/sync-output.sh --dry-run      # 同期プレビュー
 ```
 
 ## プロジェクト構成
 
 ```
 ├── aws/
-│   ├── cloudformation.yml     # インフラ定義 (VPC, SG, IAM, EBS, S3)
+│   ├── cloudformation.yml     # インフラ定義 (VPC, SG, IAM, EBS, S3, CloudFront, ALB, WAF)
 │   ├── deploy-stack.sh        # CFnデプロイ/削除
 │   ├── setup.sh               # EC2初期セットアップ (ComfyUI + ノード)
 │   ├── start-spot.sh          # Spotインスタンス起動
@@ -97,7 +92,7 @@ bash /path/to/scripts/download-models.sh
 │   ├── spot-monitor.sh        # Spot中断検知デーモン
 │   ├── sync-models.sh         # モデルファイル S3↔EBS 同期
 │   ├── sync-output.sh         # 生成画像・ログ → S3 同期
-│   └── connect.sh             # SSH接続ヘルパー
+│   └── connect.sh             # SSM接続ヘルパー
 ├── comfyui/
 │   ├── workflows/
 │   │   ├── anime-cg-base.json          # 基本アニメCG生成
@@ -146,9 +141,13 @@ IP-Adapter (weight 0.8) でリファレンス画像からキャラクターの�
 |------|------|
 | EC2 g6e.xlarge Spot (150h) | ~¥18,500 |
 | EBS 200GB gp3 | ~¥2,400 |
+| NAT Gateway | ~¥4,800 |
+| ALB | ~¥2,400 |
+| WAF | ~¥750 |
+| VPC Endpoints | ~¥3,300 |
 | S3 Intelligent-Tiering | ~¥200 |
 | データ転送 | ~¥100 |
-| **合計** | **~¥21,000** |
+| **合計** | **~¥32,000** |
 
 ## ライセンス・制作ルール
 

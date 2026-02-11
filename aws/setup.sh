@@ -236,7 +236,7 @@ Group=ubuntu
 WorkingDirectory=/data/ComfyUI
 EnvironmentFile=-/data/.env
 ExecStart=/data/ComfyUI/venv/bin/python /data/ComfyUI/main.py \
-    --listen 127.0.0.1 \
+    --listen 0.0.0.0 \
     --port 8188 \
     --highvram
 Restart=on-failure
@@ -264,10 +264,23 @@ else
     systemctl start comfyui.service
 fi
 
-log "ComfyUI service configured (127.0.0.1:8188, SSH tunnel only)"
+log "ComfyUI service configured (0.0.0.0:8188, accessible via ALB/CloudFront)"
 
 # =============================================================================
-# 6. Final Summary
+# 6. Verify SSM Agent
+# =============================================================================
+log_section "Step 6: Verify SSM Agent"
+
+if systemctl is-active --quiet amazon-ssm-agent; then
+    log "SSM Agent is running"
+else
+    log "Starting SSM Agent"
+    systemctl enable amazon-ssm-agent
+    systemctl start amazon-ssm-agent
+fi
+
+# =============================================================================
+# 7. Final Summary
 # =============================================================================
 log_section "Setup complete"
 
@@ -277,9 +290,8 @@ log "Models directory:     ${COMFYUI_DIR}/models/"
 log "Custom nodes:         ${CUSTOM_NODES_DIR}/"
 log "S3 bucket:            ${S3_BUCKET}"
 log ""
-log "Access ComfyUI via SSH tunnel:"
-log "  ssh -L 8188:127.0.0.1:8188 ubuntu@<instance-ip>"
-log "  Then open http://localhost:8188 in your browser"
+log "Access ComfyUI via CloudFront URL (configured in .env)"
+log "Management access via SSM: aws ssm start-session --target <instance-id>"
 log ""
 log "Service management:"
 log "  sudo systemctl status comfyui"

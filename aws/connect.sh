@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-# SSH connection helper for r18-anime GPU instance
-# Usage: ./connect.sh [--tunnel-only] [--ip]
+# SSM connection helper for r18-anime GPU instance
+# Usage: ./connect.sh [--port-forward PORT] [--url]
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -13,82 +13,75 @@ elif [[ -f "$SCRIPT_DIR/../.env" ]]; then
     source "$SCRIPT_DIR/../.env"
 fi
 
-SSH_KEY_PATH="${SSH_KEY_PATH:?SSH_KEY_PATH not set in .env}"
-LOCAL_COMFYUI_PORT="${LOCAL_COMFYUI_PORT:-8188}"
-SSH_USER="${SSH_USER:-ubuntu}"
 INSTANCE_TAG="r18-anime-gpu"
 
 # Parse flags
-TUNNEL_ONLY=false
-IP_ONLY=false
-for arg in "$@"; do
-    case "$arg" in
-        --tunnel-only) TUNNEL_ONLY=true ;;
-        --ip)          IP_ONLY=true ;;
+PORT_FORWARD=""
+URL_ONLY=false
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --port-forward)
+            shift
+            PORT_FORWARD="${1:?--port-forward requires a PORT value}"
+            shift
+            ;;
+        --url)
+            URL_ONLY=true
+            shift
+            ;;
         -h|--help)
-            echo "Usage: $(basename "$0") [--tunnel-only] [--ip]"
+            echo "Usage: $(basename "$0") [--port-forward PORT] [--url]"
             echo ""
-            echo "Connect to the r18-anime GPU instance via SSH."
+            echo "Connect to the r18-anime GPU instance via SSM Session Manager."
             echo ""
             echo "Options:"
-            echo "  --tunnel-only  Create SSH tunnel in background (no interactive shell)"
-            echo "  --ip           Print the instance public IP and exit"
-            echo "  -h, --help     Show this help"
+            echo "  --port-forward PORT  Forward a remote port to localhost via SSM"
+            echo "  --url                Print the CloudFront URL and exit"
+            echo "  -h, --help           Show this help"
             echo ""
             echo "Environment variables (via .env):"
-            echo "  SSH_KEY_PATH        Path to SSH private key (required)"
-            echo "  LOCAL_COMFYUI_PORT  Local port for ComfyUI tunnel (default: 8188)"
-            echo "  SSH_USER            SSH user (default: ubuntu)"
+            echo "  CLOUDFRONT_URL  CloudFront distribution URL"
             exit 0
             ;;
         *)
-            echo "Error: Unknown option: $arg" >&2
+            echo "Error: Unknown option: $1" >&2
             exit 1
             ;;
     esac
 done
 
+# --url: print CloudFront URL and exit
+if [[ "$URL_ONLY" == true ]]; then
+    echo "${CLOUDFRONT_URL:?CLOUDFRONT_URL not set in .env}"
+    exit 0
+fi
+
 # Find running instance by tag Name=r18-anime-gpu
 echo "Looking for running instance with tag Name=$INSTANCE_TAG..."
-PUBLIC_IP=$(aws ec2 describe-instances \
+INSTANCE_ID=$(aws ec2 describe-instances \
     --filters \
         "Name=tag:Name,Values=$INSTANCE_TAG" \
         "Name=instance-state-name,Values=running" \
-    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+    --query 'Reservations[0].Instances[0].InstanceId' \
     --output text)
 
-if [[ -z "$PUBLIC_IP" || "$PUBLIC_IP" == "None" ]]; then
+if [[ -z "$INSTANCE_ID" || "$INSTANCE_ID" == "None" ]]; then
     echo "Error: No running instance found with tag Name=$INSTANCE_TAG" >&2
     exit 1
 fi
 
-echo "Found instance at $PUBLIC_IP"
+echo "Found instance: $INSTANCE_ID"
 
-# --ip: just print IP and exit
-if [[ "$IP_ONLY" == true ]]; then
-    echo "$PUBLIC_IP"
+# --port-forward: SSM port forwarding
+if [[ -n "$PORT_FORWARD" ]]; then
+    echo "Starting SSM port forwarding: localhost:${PORT_FORWARD} -> remote:${PORT_FORWARD}"
+    aws ssm start-session \
+        --target "$INSTANCE_ID" \
+        --document-name AWS-StartPortForwardingSession \
+        --parameters "portNumber=${PORT_FORWARD},localPortNumber=${PORT_FORWARD}"
     exit 0
 fi
 
-# --tunnel-only: create tunnel in background
-if [[ "$TUNNEL_ONLY" == true ]]; then
-    echo "Creating SSH tunnel in background..."
-    echo "  Local port $LOCAL_COMFYUI_PORT -> remote 127.0.0.1:8188"
-    ssh -f -N -L "${LOCAL_COMFYUI_PORT}:127.0.0.1:8188" \
-        -i "$SSH_KEY_PATH" \
-        -o StrictHostKeyChecking=accept-new \
-        "${SSH_USER}@${PUBLIC_IP}"
-    echo "Tunnel established."
-    echo "ComfyUI URL: http://localhost:${LOCAL_COMFYUI_PORT}"
-    exit 0
-fi
-
-# Default: interactive SSH with port forwarding
-echo "Connecting with port forwarding..."
-echo "  Local port $LOCAL_COMFYUI_PORT -> remote 127.0.0.1:8188"
-echo "  ComfyUI URL: http://localhost:${LOCAL_COMFYUI_PORT}"
-echo ""
-ssh -L "${LOCAL_COMFYUI_PORT}:127.0.0.1:8188" \
-    -i "$SSH_KEY_PATH" \
-    -o StrictHostKeyChecking=accept-new \
-    "${SSH_USER}@${PUBLIC_IP}"
+# Default: interactive SSM session
+echo "Starting SSM session..."
+aws ssm start-session --target "$INSTANCE_ID"

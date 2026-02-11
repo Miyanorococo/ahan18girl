@@ -15,7 +15,6 @@ fi
 
 CF_STACK_NAME="${CF_STACK_NAME:-r18-anime-stack}"
 S3_BUCKET="${S3_BUCKET:-r18-anime-assets}"
-KEY_PAIR_NAME="${KEY_PAIR_NAME:?KEY_PAIR_NAME not set in .env}"
 MY_IP="${MY_IP:?MY_IP not set in .env (e.g. 203.0.113.1/32)}"
 PREFERRED_AZ="${PREFERRED_AZ:-us-east-1c}"
 TEMPLATE_FILE="$SCRIPT_DIR/cloudformation.yml"
@@ -39,7 +38,6 @@ for arg in "$@"; do
             echo "Environment variables (via .env):"
             echo "  CF_STACK_NAME  Stack name (default: r18-anime-stack)"
             echo "  S3_BUCKET      S3 bucket name (default: r18-anime-assets)"
-            echo "  KEY_PAIR_NAME  EC2 key pair name (required)"
             echo "  MY_IP          Your IP with /32 suffix (required)"
             echo "  PREFERRED_AZ   Availability zone (default: us-east-1c)"
             exit 0
@@ -74,7 +72,6 @@ aws cloudformation deploy \
     --parameter-overrides \
         "MyIP=$MY_IP" \
         "S3BucketName=$S3_BUCKET" \
-        "KeyPairName=$KEY_PAIR_NAME" \
         "AvailabilityZone=$PREFERRED_AZ" \
     --capabilities CAPABILITY_NAMED_IAM \
     --no-fail-on-empty-changeset
@@ -111,6 +108,10 @@ SG_ID=$(echo "$OUTPUTS" | python3 -c "import json,sys; print(next(o['OutputValue
 LAUNCH_TEMPLATE_ID=$(echo "$OUTPUTS" | python3 -c "import json,sys; print(next(o['OutputValue'] for o in json.load(sys.stdin) if o['OutputKey']=='LaunchTemplateId'))")
 EBS_VOLUME_ID=$(echo "$OUTPUTS" | python3 -c "import json,sys; print(next(o['OutputValue'] for o in json.load(sys.stdin) if o['OutputKey']=='EBSVolumeId'))")
 S3_BUCKET_NAME=$(echo "$OUTPUTS" | python3 -c "import json,sys; print(next(o['OutputValue'] for o in json.load(sys.stdin) if o['OutputKey']=='S3BucketName'))")
+CLOUDFRONT_DOMAIN=$(echo "$OUTPUTS" | python3 -c "import json,sys; print(next(o['OutputValue'] for o in json.load(sys.stdin) if o['OutputKey']=='CloudFrontDomainName'))")
+CLOUDFRONT_URL="https://${CLOUDFRONT_DOMAIN}"
+TARGET_GROUP_ARN=$(echo "$OUTPUTS" | python3 -c "import json,sys; print(next(o['OutputValue'] for o in json.load(sys.stdin) if o['OutputKey']=='TargetGroupArn'))")
+PRIVATE_SUBNET_ID=$(echo "$OUTPUTS" | python3 -c "import json,sys; print(next(o['OutputValue'] for o in json.load(sys.stdin) if o['OutputKey']=='PrivateSubnetId'))")
 
 # Update or append each variable in .env
 update_env_var() {
@@ -129,6 +130,11 @@ update_env_var "SG_ID" "$SG_ID" "$ENV_FILE"
 update_env_var "LAUNCH_TEMPLATE_ID" "$LAUNCH_TEMPLATE_ID" "$ENV_FILE"
 update_env_var "EBS_VOLUME_ID" "$EBS_VOLUME_ID" "$ENV_FILE"
 update_env_var "S3_BUCKET_NAME" "$S3_BUCKET_NAME" "$ENV_FILE"
+update_env_var "CLOUDFRONT_URL" "$CLOUDFRONT_URL" "$ENV_FILE"
+update_env_var "TARGET_GROUP_ARN" "$TARGET_GROUP_ARN" "$ENV_FILE"
+update_env_var "PRIVATE_SUBNET_ID" "$PRIVATE_SUBNET_ID" "$ENV_FILE"
 
-echo "Saved: VPC_ID, SUBNET_ID, SG_ID, LAUNCH_TEMPLATE_ID, EBS_VOLUME_ID, S3_BUCKET_NAME"
+echo "Saved: VPC_ID, SUBNET_ID, SG_ID, LAUNCH_TEMPLATE_ID, EBS_VOLUME_ID, S3_BUCKET_NAME, CLOUDFRONT_URL, TARGET_GROUP_ARN, PRIVATE_SUBNET_ID"
+echo ""
+echo "CloudFront URL: $CLOUDFRONT_URL"
 echo "Done."
