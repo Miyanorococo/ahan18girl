@@ -378,10 +378,11 @@ Resources:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateName: r18-anime-gpu
+      VersionDescription: Latest with NVMe EBS auto-detect
       LaunchTemplateData:
-        # Deep Learning AMI GPU PyTorch 2.5 (Ubuntu 22.04) - us-east-1
+        # Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.7 (Ubuntu 22.04) - us-east-1 x86_64
         # Update this AMI ID to the latest version before first deploy
-        ImageId: ami-0a0c8eebcdd6dcbd0
+        ImageId: ami-07696cdd1f2a506ed
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
         NetworkInterfaces:
@@ -406,31 +407,47 @@ Resources:
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash
+            set -e
+
+            # Install python3-venv (needed for ComfyUI setup)
+            apt-get update -qq && apt-get install -y python3-venv -qq
+
             # Attach the persistent EBS volume
-            INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+            TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds:300")
+            INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
             aws ec2 attach-volume \
               --volume-id ${EBSVolume} \
               --instance-id $INSTANCE_ID \
               --device /dev/xvdf \
-              --region us-east-1
+              --region us-east-1 || true
 
-            # Wait for attachment
-            sleep 10
+            # Wait for EBS to appear as NVMe device (g5/g6e use NVMe)
+            sleep 15
+            # Find the 200GB unpartitioned disk (EBS data volume)
+            EBS_DEV=""
+            for dev in /dev/nvme*n1; do
+              if [ -b "$dev" ] && ! lsblk "$dev" | grep -q part; then
+                SIZE=$(lsblk -b -dn -o SIZE "$dev" 2>/dev/null || echo 0)
+                if [ "$SIZE" -gt 100000000000 ]; then
+                  EBS_DEV="$dev"
+                  break
+                fi
+              fi
+            done
+
+            if [ -z "$EBS_DEV" ]; then
+              echo "WARNING: EBS data volume not found"
+              exit 0
+            fi
 
             # Mount EBS (create filesystem if needed)
-            if ! blkid /dev/xvdf; then
-              mkfs.ext4 /dev/xvdf
-            fi
             mkdir -p /data
-            mount /dev/xvdf /data
-            echo '/dev/xvdf /data ext4 defaults,nofail 0 2' >> /etc/fstab
-
-            # Set ownership
+            if ! blkid "$EBS_DEV" >/dev/null 2>&1; then
+              mkfs.ext4 "$EBS_DEV"
+            fi
+            mount "$EBS_DEV" /data
+            grep -q "$EBS_DEV" /etc/fstab || echo "$EBS_DEV /data ext4 defaults,nofail 0 2" >> /etc/fstab
             chown -R ubuntu:ubuntu /data
-
-            # Start ComfyUI listening on all interfaces (required for ALB health checks)
-            # ComfyUI is started by the setup script; this ensures it binds to 0.0.0.0
-            sed -i 's/--listen 127.0.0.1/--listen 0.0.0.0/g; s/--listen localhost/--listen 0.0.0.0/g' /data/comfyui/start.sh 2>/dev/null || true
 
   # ============================================================
   # Application Load Balancer

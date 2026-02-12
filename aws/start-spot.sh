@@ -104,32 +104,15 @@ check_existing_instance() {
 # ---------------------------------------------------------------------------
 launch_spot() {
     local instance_type="$1"
-    local az="$2"
 
-    log "Requesting spot instance: ${instance_type} in ${az}"
+    log "Requesting spot instance: ${instance_type}" >&2
 
-    local sir_id
-    sir_id=$(aws ec2 request-spot-instances \
-        --region "${REGION}" \
-        --instance-count 1 \
-        --type "one-time" \
-        --launch-specification "{
-            \"ImageId\": null,
-            \"InstanceType\": \"${instance_type}\",
-            \"SubnetId\": \"${SUBNET_ID}\",
-            \"Placement\": {\"AvailabilityZone\": \"${az}\"}
-        }" \
-        --query 'SpotInstanceRequests[0].SpotInstanceRequestId' \
-        --output text 2>/dev/null || true)
-
-    # Use run-instances with spot market options instead (more reliable with launch templates)
+    # Launch template already defines subnet (Private Subnet) and SG via NetworkInterfaces
     local instance_id
     instance_id=$(aws ec2 run-instances \
         --region "${REGION}" \
-        --launch-template "LaunchTemplateId=${LAUNCH_TEMPLATE_ID}" \
+        --launch-template "LaunchTemplateId=${LAUNCH_TEMPLATE_ID},Version=\$Latest" \
         --instance-type "${instance_type}" \
-        --subnet-id "${SUBNET_ID}" \
-        --placement "AvailabilityZone=${az}" \
         --instance-market-options '{"MarketType":"spot","SpotOptions":{"SpotInstanceType":"one-time"}}' \
         --query 'Instances[0].InstanceId' \
         --output text)
@@ -145,17 +128,14 @@ launch_spot() {
 # ---------------------------------------------------------------------------
 launch_on_demand() {
     local instance_type="$1"
-    local az="$2"
 
-    log "Launching on-demand instance: ${instance_type} in ${az}"
+    log "Launching on-demand instance: ${instance_type}" >&2
 
     local instance_id
     instance_id=$(aws ec2 run-instances \
         --region "${REGION}" \
-        --launch-template "LaunchTemplateId=${LAUNCH_TEMPLATE_ID}" \
+        --launch-template "LaunchTemplateId=${LAUNCH_TEMPLATE_ID},Version=\$Latest" \
         --instance-type "${instance_type}" \
-        --subnet-id "${SUBNET_ID}" \
-        --placement "AvailabilityZone=${az}" \
         --query 'Instances[0].InstanceId' \
         --output text)
 
@@ -176,17 +156,14 @@ wait_for_instance() {
         --region "${REGION}" \
         --instance-ids "${instance_id}"
 
-    local public_ip
-    public_ip=$(aws ec2 describe-instances \
+    local private_ip
+    private_ip=$(aws ec2 describe-instances \
         --region "${REGION}" \
         --instance-ids "${instance_id}" \
-        --query 'Reservations[0].Instances[0].PublicIpAddress' \
+        --query 'Reservations[0].Instances[0].PrivateIpAddress' \
         --output text)
 
-    [[ -n "${public_ip}" && "${public_ip}" != "None" ]] \
-        || die "Instance ${instance_id} has no public IP"
-
-    echo "${public_ip}"
+    log "Instance running (Private IP: ${private_ip:-N/A})"
 }
 
 # ---------------------------------------------------------------------------
@@ -261,28 +238,22 @@ EOF
 # Main
 # ---------------------------------------------------------------------------
 main() {
-    local instance_type=""
+    local use_fallback=false
     local mode="spot"
-    local az=""
 
-    # Parse arguments
+    # Parse arguments (before env is loaded)
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --fallback)
                 shift
                 case "${1:-}" in
-                    g5) instance_type="${FALLBACK_INSTANCE_TYPE}" ;;
+                    g5) use_fallback=true ;;
                     *)  die "Unknown fallback type: ${1:-}. Supported: g5" ;;
                 esac
                 shift
                 ;;
             --on-demand)
                 mode="on-demand"
-                shift
-                ;;
-            --az)
-                shift
-                az="${1:?--az requires a value}"
                 shift
                 ;;
             -h|--help)
@@ -297,14 +268,17 @@ main() {
     load_env
     validate_config
 
-    # Apply defaults after config is loaded
-    instance_type="${instance_type:-${DEFAULT_INSTANCE_TYPE}}"
-    az="${az:-${PREFERRED_AZ}}"
+    # Resolve instance type after env is loaded
+    local instance_type
+    if [[ "${use_fallback}" == true ]]; then
+        instance_type="${FALLBACK_INSTANCE_TYPE}"
+    else
+        instance_type="${DEFAULT_INSTANCE_TYPE}"
+    fi
 
     log "Configuration:"
     log "  Instance type: ${instance_type}"
     log "  Mode:          ${mode}"
-    log "  AZ:            ${az}"
     log "  Launch Template: ${LAUNCH_TEMPLATE_ID}"
 
     check_existing_instance
@@ -312,17 +286,15 @@ main() {
     # Launch instance
     local instance_id
     if [[ "${mode}" == "spot" ]]; then
-        instance_id=$(launch_spot "${instance_type}" "${az}")
+        instance_id=$(launch_spot "${instance_type}")
     else
-        instance_id=$(launch_on_demand "${instance_type}" "${az}")
+        instance_id=$(launch_on_demand "${instance_type}")
     fi
 
     log "Instance ID: ${instance_id}"
 
     # Wait for running state
-    local public_ip
-    public_ip=$(wait_for_instance "${instance_id}")
-    log "Public IP: ${public_ip}"
+    wait_for_instance "${instance_id}"
 
     # Register with ALB and wait for healthy
     register_with_alb "${instance_id}"

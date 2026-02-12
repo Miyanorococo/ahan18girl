@@ -17,7 +17,6 @@ set -euo pipefail
 DATA_DIR="/data"
 COMFYUI_DIR="${DATA_DIR}/ComfyUI"
 VENV_DIR="${COMFYUI_DIR}/venv"
-EBS_DEVICE="/dev/xvdf"
 ENV_FILE="${DATA_DIR}/.env"
 
 # Source environment config if present
@@ -52,6 +51,11 @@ log_section "Starting EC2 setup for r18_anime"
 # =============================================================================
 # 1. Mount EBS Volume
 # =============================================================================
+log_section "Step 0: Install prerequisites"
+apt-get update -qq
+apt-get install -y python3-venv -qq
+log "Prerequisites installed"
+
 log_section "Step 1: Mount EBS volume at ${DATA_DIR}"
 
 mkdir -p "${DATA_DIR}"
@@ -59,19 +63,28 @@ mkdir -p "${DATA_DIR}"
 if mountpoint -q "${DATA_DIR}"; then
     log "EBS volume already mounted at ${DATA_DIR}, skipping."
 else
-    # Wait for EBS device to appear (UserData may have just attached it)
-    WAIT_COUNT=0
-    while [[ ! -b "${EBS_DEVICE}" ]] && [[ ${WAIT_COUNT} -lt 30 ]]; do
-        log "Waiting for ${EBS_DEVICE} to appear... (${WAIT_COUNT}/30)"
-        sleep 2
-        WAIT_COUNT=$((WAIT_COUNT + 1))
+    # Auto-detect the EBS data volume (NVMe on g5/g6e instances)
+    # Find unpartitioned disk > 100GB (the 200GB data volume)
+    EBS_DEVICE=""
+    for dev in /dev/nvme*n1; do
+        if [[ -b "${dev}" ]] && ! lsblk "${dev}" | grep -q part; then
+            SIZE=$(lsblk -b -dn -o SIZE "${dev}" 2>/dev/null || echo 0)
+            if (( SIZE > 100000000000 )); then
+                EBS_DEVICE="${dev}"
+                break
+            fi
+        fi
     done
+    # Fallback to /dev/xvdf for non-NVMe instances
+    [[ -z "${EBS_DEVICE}" ]] && [[ -b "/dev/xvdf" ]] && EBS_DEVICE="/dev/xvdf"
 
-    if [[ ! -b "${EBS_DEVICE}" ]]; then
-        log "ERROR: ${EBS_DEVICE} not found after 60 seconds."
+    if [[ -z "${EBS_DEVICE}" ]]; then
+        log "ERROR: EBS data volume not found."
         log "Make sure the EBS volume is attached to this instance."
         exit 1
     fi
+
+    log "Detected EBS device: ${EBS_DEVICE}"
 
     # Create filesystem if needed
     if ! blkid "${EBS_DEVICE}" >/dev/null 2>&1; then
