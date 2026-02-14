@@ -52,6 +52,15 @@ log_section "Starting EC2 setup for r18_anime"
 # 1. Mount EBS Volume
 # =============================================================================
 log_section "Step 0: Install prerequisites"
+# Wait for DLAMI background apt-get to finish
+for i in $(seq 1 30); do
+    if fuser /var/lib/apt/lists/lock >/dev/null 2>&1 || fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then
+        log "Waiting for apt lock to release... ($i/30)"
+        sleep 10
+    else
+        break
+    fi
+done
 apt-get update -qq
 apt-get install -y python3-venv -qq
 log "Prerequisites installed"
@@ -63,19 +72,41 @@ mkdir -p "${DATA_DIR}"
 if mountpoint -q "${DATA_DIR}"; then
     log "EBS volume already mounted at ${DATA_DIR}, skipping."
 else
-    # Auto-detect the EBS data volume (NVMe on g5/g6e instances)
-    # Find unpartitioned disk > 100GB (the 200GB data volume)
+    # Identify EBS device by NVMe serial number (= volume ID without dashes)
+    # This avoids confusion with instance store NVMe devices
     EBS_DEVICE=""
-    for dev in /dev/nvme*n1; do
-        if [[ -b "${dev}" ]] && ! lsblk "${dev}" | grep -q part; then
-            SIZE=$(lsblk -b -dn -o SIZE "${dev}" 2>/dev/null || echo 0)
-            if (( SIZE > 100000000000 )); then
+    if [[ -n "${EBS_VOLUME_ID:-}" ]]; then
+        EXPECTED_SERIAL=$(echo "${EBS_VOLUME_ID}" | tr -d '-')
+        log "Looking for EBS volume ${EBS_VOLUME_ID} (serial: ${EXPECTED_SERIAL})"
+        for dev in /dev/nvme*n1; do
+            [[ -b "${dev}" ]] || continue
+            SERIAL=$(lsblk -dn -o SERIAL "${dev}" 2>/dev/null || true)
+            if [[ "${SERIAL}" == "${EXPECTED_SERIAL}" ]]; then
                 EBS_DEVICE="${dev}"
                 break
             fi
-        fi
-    done
-    # Fallback to /dev/xvdf for non-NVMe instances
+        done
+    fi
+
+    # Fallback: find unpartitioned ext4 disk > 100GB (exclude LVM/instance store)
+    if [[ -z "${EBS_DEVICE}" ]]; then
+        log "Serial-based detection failed, trying size+fstype fallback"
+        for dev in /dev/nvme*n1; do
+            [[ -b "${dev}" ]] || continue
+            FSTYPE=$(blkid -o value -s TYPE "${dev}" 2>/dev/null || true)
+            # Skip devices with non-ext4 filesystems (instance stores have LVM2_member)
+            [[ -n "${FSTYPE}" && "${FSTYPE}" != "ext4" ]] && continue
+            if ! lsblk "${dev}" | grep -q part; then
+                SIZE=$(lsblk -b -dn -o SIZE "${dev}" 2>/dev/null || echo 0)
+                if (( SIZE > 100000000000 )); then
+                    EBS_DEVICE="${dev}"
+                    break
+                fi
+            fi
+        done
+    fi
+
+    # Last resort: /dev/xvdf for non-NVMe instances
     [[ -z "${EBS_DEVICE}" ]] && [[ -b "/dev/xvdf" ]] && EBS_DEVICE="/dev/xvdf"
 
     if [[ -z "${EBS_DEVICE}" ]]; then
@@ -86,10 +117,14 @@ else
 
     log "Detected EBS device: ${EBS_DEVICE}"
 
-    # Create filesystem if needed
-    if ! blkid "${EBS_DEVICE}" >/dev/null 2>&1; then
+    # Create ext4 filesystem if blank, reject unexpected filesystem types
+    FSTYPE=$(blkid -o value -s TYPE "${EBS_DEVICE}" 2>/dev/null || true)
+    if [[ -z "${FSTYPE}" ]]; then
         log "Creating ext4 filesystem on ${EBS_DEVICE}"
         mkfs.ext4 "${EBS_DEVICE}"
+    elif [[ "${FSTYPE}" != "ext4" ]]; then
+        log "ERROR: ${EBS_DEVICE} has unexpected filesystem: ${FSTYPE}"
+        exit 1
     fi
 
     log "Mounting ${EBS_DEVICE} at ${DATA_DIR}"

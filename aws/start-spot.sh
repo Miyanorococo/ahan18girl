@@ -100,6 +100,57 @@ check_existing_instance() {
 }
 
 # ---------------------------------------------------------------------------
+# Ensure EBS data volume is available (not attached to another instance)
+# ---------------------------------------------------------------------------
+ensure_ebs_available() {
+    local vol_state
+    vol_state=$(aws ec2 describe-volumes \
+        --region "${REGION}" \
+        --volume-ids "${EBS_VOLUME_ID}" \
+        --query 'Volumes[0].State' \
+        --output text 2>/dev/null || true)
+
+    if [[ "${vol_state}" == "available" ]]; then
+        log "EBS volume ${EBS_VOLUME_ID} is available"
+        return 0
+    fi
+
+    if [[ "${vol_state}" == "in-use" ]]; then
+        local attached_instance
+        attached_instance=$(aws ec2 describe-volumes \
+            --region "${REGION}" \
+            --volume-ids "${EBS_VOLUME_ID}" \
+            --query 'Volumes[0].Attachments[0].InstanceId' \
+            --output text 2>/dev/null || true)
+
+        # Check if the attached instance is terminated/shutting-down
+        local inst_state
+        inst_state=$(aws ec2 describe-instances \
+            --region "${REGION}" \
+            --instance-ids "${attached_instance}" \
+            --query 'Reservations[0].Instances[0].State.Name' \
+            --output text 2>/dev/null || true)
+
+        if [[ "${inst_state}" == "terminated" || "${inst_state}" == "shutting-down" ]]; then
+            log "EBS attached to ${attached_instance} (${inst_state}), force-detaching..."
+            aws ec2 detach-volume \
+                --region "${REGION}" \
+                --volume-id "${EBS_VOLUME_ID}" \
+                --force >/dev/null
+            log "Waiting for EBS to become available..."
+            aws ec2 wait volume-available \
+                --region "${REGION}" \
+                --volume-ids "${EBS_VOLUME_ID}"
+            log "EBS volume ${EBS_VOLUME_ID} is now available"
+        else
+            die "EBS volume ${EBS_VOLUME_ID} is attached to running instance ${attached_instance}. Stop it first."
+        fi
+    else
+        die "EBS volume ${EBS_VOLUME_ID} is in unexpected state: ${vol_state}"
+    fi
+}
+
+# ---------------------------------------------------------------------------
 # Launch via spot request
 # ---------------------------------------------------------------------------
 launch_spot() {
@@ -282,6 +333,7 @@ main() {
     log "  Launch Template: ${LAUNCH_TEMPLATE_ID}"
 
     check_existing_instance
+    ensure_ebs_available
 
     # Launch instance
     local instance_id

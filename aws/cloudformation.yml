@@ -409,7 +409,15 @@ Resources:
             #!/bin/bash
             set -e
 
-            # Install python3-venv (needed for ComfyUI setup)
+            # Wait for DLAMI background apt-get to finish (holds lock on boot)
+            for i in $(seq 1 30); do
+              if fuser /var/lib/apt/lists/lock >/dev/null 2>&1 || fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then
+                echo "Waiting for apt lock to release... ($i/30)"
+                sleep 10
+              else
+                break
+              fi
+            done
             apt-get update -qq && apt-get install -y python3-venv -qq
 
             # Attach the persistent EBS volume
@@ -421,29 +429,37 @@ Resources:
               --device /dev/xvdf \
               --region us-east-1 || true
 
-            # Wait for EBS to appear as NVMe device (g5/g6e use NVMe)
-            sleep 15
-            # Find the 200GB unpartitioned disk (EBS data volume)
+            # Identify EBS device by volume serial number (strips "vol-" prefix and dashes)
+            # EBS NVMe serial = volume ID without dashes, e.g. vol-0abc -> vol0abc
+            EXPECTED_SERIAL=$(echo "${EBSVolume}" | tr -d '-')
             EBS_DEV=""
-            for dev in /dev/nvme*n1; do
-              if [ -b "$dev" ] && ! lsblk "$dev" | grep -q part; then
-                SIZE=$(lsblk -b -dn -o SIZE "$dev" 2>/dev/null || echo 0)
-                if [ "$SIZE" -gt 100000000000 ]; then
+            for attempt in $(seq 1 12); do
+              for dev in /dev/nvme*n1; do
+                [ -b "$dev" ] || continue
+                SERIAL=$(lsblk -dn -o SERIAL "$dev" 2>/dev/null || true)
+                if [ "$SERIAL" = "$EXPECTED_SERIAL" ]; then
                   EBS_DEV="$dev"
-                  break
+                  break 2
                 fi
-              fi
+              done
+              echo "Waiting for EBS to appear... ($attempt/12)"
+              sleep 5
             done
 
             if [ -z "$EBS_DEV" ]; then
-              echo "WARNING: EBS data volume not found"
+              echo "WARNING: EBS volume ${EBSVolume} not found by serial"
               exit 0
             fi
+            echo "Found EBS ${EBSVolume} at $EBS_DEV"
 
-            # Mount EBS (create filesystem if needed)
+            # Mount EBS (create ext4 filesystem if blank)
             mkdir -p /data
-            if ! blkid "$EBS_DEV" >/dev/null 2>&1; then
+            FSTYPE=$(blkid -o value -s TYPE "$EBS_DEV" 2>/dev/null || true)
+            if [ -z "$FSTYPE" ]; then
               mkfs.ext4 "$EBS_DEV"
+            elif [ "$FSTYPE" != "ext4" ]; then
+              echo "ERROR: $EBS_DEV has unexpected filesystem: $FSTYPE"
+              exit 1
             fi
             mount "$EBS_DEV" /data
             grep -q "$EBS_DEV" /etc/fstab || echo "$EBS_DEV /data ext4 defaults,nofail 0 2" >> /etc/fstab
