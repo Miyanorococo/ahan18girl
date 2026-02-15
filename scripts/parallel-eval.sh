@@ -60,21 +60,21 @@ WORKER_NAMES=(
     "femix" "dreamshaper" "aam"
 )
 
-# Alternate AZs for Spot availability
+# Spread across 5 AZs for max Spot availability (round-robin)
 WORKER_AZS=(
-    "us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d"
-    "us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d"
-    "us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d"
-    "us-east-1c"
+    "us-east-1a" "us-east-1b" "us-east-1c" "us-east-1d" "us-east-1f"
+    "us-east-1a" "us-east-1b" "us-east-1c" "us-east-1d" "us-east-1f"
+    "us-east-1a" "us-east-1b" "us-east-1c"
 )
 
-# AZ → Private Subnet mapping (bash 3.2 compatible, no declare -A)
-SUBNET_C="subnet-0f157f0947d8bef8e"
-SUBNET_D="subnet-06614586de12d6e08"
+# AZ → Private Subnet mapping (5 AZs for max Spot availability)
 get_subnet_for_az() {
     case "$1" in
-        us-east-1c) echo "${SUBNET_C}" ;;
-        us-east-1d) echo "${SUBNET_D}" ;;
+        us-east-1a) echo "subnet-056261462869cbfa2" ;;
+        us-east-1b) echo "subnet-019606bc955539fbe" ;;
+        us-east-1c) echo "subnet-0f157f0947d8bef8e" ;;
+        us-east-1d) echo "subnet-06614586de12d6e08" ;;
+        us-east-1f) echo "subnet-034d901aa43c8b856" ;;
         *) echo "${PRIVATE_SUBNET_ID}" ;;
     esac
 }
