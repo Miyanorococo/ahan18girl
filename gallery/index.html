@@ -127,8 +127,15 @@
       <!-- Genre tag editor -->
       <div class="tag-editor">
         <span class="tag-editor-label">Genre:</span>
-        <span class="tag-badge" x-text="getExpGenre(currentExperiment) || 'untagged'"
+        <span class="tag-badge" x-text="getExpGenre(currentExperiment) || 'inferring...'"
               :class="{'tag-unset': !getExpGenre(currentExperiment)}"></span>
+        <template x-if="getExpTags(currentExperiment?.id)?.scene">
+          <span class="tag-scene" x-text="getExpTags(currentExperiment?.id)?.scene"></span>
+        </template>
+        <template x-if="getExpTags(currentExperiment?.id)?.nsfw_level">
+          <span class="tag-nsfw-level" :class="'nsfw-' + getExpTags(currentExperiment?.id)?.nsfw_level"
+                x-text="getExpTags(currentExperiment?.id)?.nsfw_level"></span>
+        </template>
         <select class="tag-select"
                 :value="getExpGenre(currentExperiment)"
                 @change="setExpTag(currentExperiment?.id, 'genre', $event.target.value)">
@@ -140,6 +147,12 @@
         <input type="text" class="tag-custom-input" placeholder="Custom genre..."
                @keydown.enter="setExpTag(currentExperiment?.id, 'genre', $event.target.value); $event.target.value=''"
                @keydown.stop>
+      </div>
+      <!-- LLM-inferred tags -->
+      <div class="tag-chips" x-show="(getExpTags(currentExperiment?.id)?.tags || []).length > 0">
+        <template x-for="tag in (getExpTags(currentExperiment?.id)?.tags || [])" :key="'tc-' + tag">
+          <span class="tag-chip" x-text="tag"></span>
+        </template>
       </div>
 
       <div class="detail-layout">

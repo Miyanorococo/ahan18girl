@@ -126,6 +126,35 @@ def _process_zip(s3, zip_key):
         if not metadata:
             metadata = {}
         metadata.setdefault("image_count", image_count)
+
+        # Auto-infer genre if not present
+        if not metadata.get("genre"):
+            try:
+                from services.genre_inference import infer_genre
+                prompt_text = ""
+                prompt = metadata.get("prompt", {})
+                if isinstance(prompt, dict):
+                    prompt_text = prompt.get("positive", "")
+                elif isinstance(prompt, str):
+                    prompt_text = prompt
+                if prompt_text:
+                    genre_result = infer_genre(prompt_text, metadata.get("prompt_summary", ""))
+                    if genre_result:
+                        metadata["genre"] = genre_result.get("genre_en", "")
+                        metadata["genre_ja"] = genre_result.get("genre", "")
+                        metadata["tags"] = genre_result.get("tags", [])
+                        metadata["nsfw_level"] = genre_result.get("nsfw_level", "")
+                        metadata["scene"] = genre_result.get("scene", "")
+                        # Re-upload metadata with genre info
+                        s3.put_object(
+                            f"{gallery_prefix}/metadata.json",
+                            json.dumps(metadata, ensure_ascii=False, indent=2).encode(),
+                            content_type="application/json",
+                        )
+                        logger.info("Genre inferred: %s (%s)", metadata.get("genre"), metadata.get("genre_ja"))
+            except Exception:
+                logger.exception("Genre inference failed (non-fatal)")
+
         update_index(s3, experiment_id, metadata)
 
         logger.info(

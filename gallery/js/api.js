@@ -52,6 +52,14 @@ const GalleryAPI = {
    * @param {string[]} labels - Labels to apply
    * @param {object} metadata - Extra metadata (scores, comment, etc.)
    */
+  inferGenre(promptText, promptSummary = '') {
+    return this.fetchJSON('/api/infer-genre', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt_text: promptText, prompt_summary: promptSummary }),
+    });
+  },
+
   deleteExperiment(experimentId) {
     return this.fetchJSON('/api/select', {
       method: 'POST',

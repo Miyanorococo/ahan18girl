@@ -78,4 +78,28 @@ def route(method, path, event):
     if method == "POST" and path == "/api/select":
         return select.select_images(event)
 
+    # POST /api/infer-genre
+    if method == "POST" and path == "/api/infer-genre":
+        return _infer_genre(event)
+
     return make_response(404, {"error": f"Not found: {method} {path}"})
+
+
+def _infer_genre(event):
+    """Infer genre from prompt text using Bedrock."""
+    import json as _json
+    from services.genre_inference import infer_genre
+
+    body = event.get("body", "{}")
+    try:
+        data = _json.loads(body) if isinstance(body, str) else body
+    except _json.JSONDecodeError:
+        return make_response(400, {"error": "Invalid JSON"})
+
+    prompt_text = data.get("prompt_text", "")
+    prompt_summary = data.get("prompt_summary", "")
+
+    result = infer_genre(prompt_text, prompt_summary)
+    if result:
+        return make_response(200, result)
+    return make_response(500, {"error": "Genre inference failed"})

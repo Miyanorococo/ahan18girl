@@ -445,6 +445,39 @@ body {
 
 .tag-custom-input:focus, .tag-select:focus { border-color: var(--accent); }
 
+.tag-scene {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.tag-nsfw-level {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: var(--radius-badge);
+  font-weight: 500;
+}
+
+.nsfw-safe { background: rgba(76, 175, 80, 0.15); color: #68d391; }
+.nsfw-sensitive { background: rgba(236, 201, 75, 0.15); color: #ecc94b; }
+.nsfw-explicit { background: rgba(233, 69, 96, 0.15); color: var(--accent); }
+
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.tag-chip {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-badge);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 /* === Detail Layout (sidebar + images) === */
 .detail-layout {
   display: flex;
