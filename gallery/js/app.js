@@ -40,15 +40,6 @@ document.addEventListener('alpine:init', () => {
     // Debounced server rating save
     _ratingSaveTimer: null,
 
-    // Rating axes configuration
-    RATING_AXES: [
-      { key: 'quality',  label: '画質',       short: '画質' },
-      { key: 'fidelity', label: 'プロンプト忠実度', short: '忠実度' },
-      { key: 'anatomy',  label: '人体破綻',    short: '人体' },
-      { key: 'nsfw',     label: 'NSFW品質',   short: 'NSFW' },
-      { key: 'overall',  label: '総合',       short: '総合' },
-    ],
-
     // Save labels (presets)
     SAVE_LABEL_PRESETS: [
       'best-quality', 'face-reference', 'pose-reference',

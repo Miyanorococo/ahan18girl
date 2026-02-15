@@ -397,90 +397,60 @@ function dashboardMixin() {
       }
       this.dashboard.chartReady = true;
 
-      const stats = this.dashboard.modelStats.filter(s => s.overallAvg > 0);
+      const stats = this.dashboard.modelStats.filter(s => s.ratedCount > 0);
       if (stats.length === 0) return;
 
-      const axes = this.RATING_AXES;
-      const labels = axes.map(a => a.short);
-
-      // Color palette matching the app's dark theme
-      const colors = [
-        'rgba(233, 69, 96, 0.7)',
-        'rgba(83, 52, 131, 0.7)',
-        'rgba(0, 188, 212, 0.7)',
-        'rgba(255, 193, 7, 0.7)',
-        'rgba(76, 175, 80, 0.7)',
-        'rgba(255, 87, 34, 0.7)',
-        'rgba(156, 39, 176, 0.7)',
-        'rgba(3, 169, 244, 0.7)',
-        'rgba(255, 152, 0, 0.7)',
-        'rgba(139, 195, 74, 0.7)',
-      ];
-      const bgColors = colors.map(c => c.replace('0.7', '0.15'));
-
-      // --- Radar chart ---
+      // --- Stacked bar chart (★/♥/👎 counts per model) ---
       const radarCanvas = document.getElementById('radar-chart');
       if (radarCanvas) {
         if (_radarChart) _radarChart.destroy();
 
-        const datasets = stats.slice(0, 8).map((s, i) => ({
-          label: s.displayName,
-          data: axes.map(a => s.avgScores[a.key] || 0),
-          borderColor: colors[i % colors.length],
-          backgroundColor: bgColors[i % bgColors.length],
-          pointBackgroundColor: colors[i % colors.length],
-          pointRadius: 3,
-          borderWidth: 2,
-        }));
-
+        const chartData = stats.slice(0, 13);
         _radarChart = new Chart(radarCanvas, {
-          type: 'radar',
-          data: { labels, datasets },
+          type: 'bar',
+          data: {
+            labels: chartData.map(s => s.displayName),
+            datasets: [
+              { label: '★ Best', data: chartData.map(s => s.tiers?.star || 0), backgroundColor: 'rgba(255, 215, 0, 0.7)', borderRadius: 3 },
+              { label: '♥ Like', data: chartData.map(s => s.tiers?.heart || 0), backgroundColor: 'rgba(233, 69, 96, 0.7)', borderRadius: 3 },
+              { label: '👎 Bad', data: chartData.map(s => s.tiers?.bad || 0), backgroundColor: 'rgba(244, 67, 54, 0.5)', borderRadius: 3 },
+            ],
+          },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            indexAxis: 'y',
             scales: {
-              r: {
-                min: 0,
-                max: 5,
-                ticks: {
-                  stepSize: 1,
-                  color: '#666',
-                  backdropColor: 'transparent',
-                },
-                grid: { color: 'rgba(255,255,255,0.06)' },
-                angleLines: { color: 'rgba(255,255,255,0.06)' },
-                pointLabels: {
-                  color: '#aaa',
-                  font: { size: 12 },
-                },
-              },
+              x: { stacked: true, ticks: { color: '#666' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+              y: { stacked: true, ticks: { color: '#aaa', font: { size: 11 } }, grid: { display: false } },
             },
             plugins: {
-              legend: {
-                labels: { color: '#aaa', boxWidth: 12, font: { size: 11 } },
-                position: 'bottom',
-              },
+              legend: { labels: { color: '#aaa', boxWidth: 12, font: { size: 11 } }, position: 'bottom' },
             },
           },
         });
       }
 
-      // --- Bar chart (overall averages) ---
+      // --- Bar chart (weighted average score) ---
       const barCanvas = document.getElementById('bar-chart');
       if (barCanvas) {
         if (_barChart) _barChart.destroy();
 
-        const barData = stats.slice(0, 12);
+        const barData = stats.slice(0, 13);
+        const barColors = barData.map(s =>
+          s.overallAvg >= 3 ? 'rgba(76, 175, 80, 0.7)' :
+          s.overallAvg >= 0 ? 'rgba(255, 193, 7, 0.7)' :
+          'rgba(244, 67, 54, 0.7)'
+        );
 
         _barChart = new Chart(barCanvas, {
           type: 'bar',
           data: {
             labels: barData.map(s => s.displayName),
             datasets: [{
-              label: 'Overall Avg',
+              label: 'Weighted Avg',
               data: barData.map(s => s.overallAvg),
-              backgroundColor: barData.map((_, i) => colors[i % colors.length]),
+              backgroundColor: barColors,
               borderRadius: 4,
               barThickness: 28,
             }],
@@ -490,20 +460,10 @@ function dashboardMixin() {
             maintainAspectRatio: false,
             indexAxis: 'y',
             scales: {
-              x: {
-                min: 0,
-                max: 5,
-                ticks: { color: '#666', stepSize: 1 },
-                grid: { color: 'rgba(255,255,255,0.04)' },
-              },
-              y: {
-                ticks: { color: '#aaa', font: { size: 11 } },
-                grid: { display: false },
-              },
+              x: { min: -1, max: 5, ticks: { color: '#666', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+              y: { ticks: { color: '#aaa', font: { size: 11 } }, grid: { display: false } },
             },
-            plugins: {
-              legend: { display: false },
-            },
+            plugins: { legend: { display: false } },
           },
         });
       }
@@ -566,7 +526,6 @@ function dashboardMixin() {
     _buildExportMarkdown() {
       const stats = this.dashboard.modelStats;
       const summary = this.dashboard.summary;
-      const axes = this.RATING_AXES;
       const lines = [];
 
       lines.push('# Model Evaluation Report');
@@ -589,15 +548,12 @@ function dashboardMixin() {
       // Rankings table
       lines.push('## Model Rankings');
       lines.push('');
-      const axisHeaders = axes.map(a => a.short).join(' | ');
-      lines.push(`| Rank | Model | ${axisHeaders} | Avg | Verdict |`);
-      lines.push(`|------|-------|${axes.map(() => '---').join('|')}|-----|---------|`);
+      lines.push('| Rank | Model | ★ | ♥ | 👎 | Avg | Verdict |');
+      lines.push('|------|-------|---|---|---|-----|---------|');
       stats.forEach((s, i) => {
-        const axisVals = axes.map(a =>
-          s.avgScores[a.key] != null ? s.avgScores[a.key].toFixed(1) : '-'
-        ).join(' | ');
+        const t = s.tiers || { star: 0, heart: 0, bad: 0 };
         const verdict = s.verdict ? s.verdict.toUpperCase() : '-';
-        lines.push(`| ${i + 1} | ${s.model} | ${axisVals} | ${s.overallAvg.toFixed(1)} | ${verdict} |`);
+        lines.push(`| ${i + 1} | ${s.model} | ${t.star} | ${t.heart} | ${t.bad} | ${s.overallAvg.toFixed(1)} | ${verdict} |`);
       });
       lines.push('');
 
@@ -675,8 +631,6 @@ function dashboardMixin() {
     _buildExportJSON() {
       const stats = this.dashboard.modelStats;
       const summary = this.dashboard.summary;
-      const axes = this.RATING_AXES;
-
       const exportData = {
         generated: new Date().toISOString(),
         summary: { ...summary },
@@ -686,12 +640,11 @@ function dashboardMixin() {
           imageCount: s.imageCount,
           ratedCount: s.ratedCount,
           commentedCount: s.commentedCount,
-          scores: { ...s.avgScores },
+          tiers: { ...s.tiers },
           overallAvg: s.overallAvg,
           verdict: s.verdict || null,
           comment: s.comment || null,
         })),
-        axes: axes.map(a => ({ key: a.key, label: a.label })),
       };
 
       return JSON.stringify(exportData, null, 2);

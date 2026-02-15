@@ -400,13 +400,8 @@
                         <img :src="getCardImage(card).thumb_url" :alt="getCardImage(card).name" loading="lazy">
                       </div>
                       <!-- Score display -->
-                      <div class="mg-scores" x-show="getImageRating(getCardImage(card)) > 0">
-                        <template x-for="axis in RATING_AXES" :key="'mgs-' + card.model + '-' + axis.key">
-                          <div class="mg-score-item" x-show="getImageScore(getCardImage(card), axis.key) > 0">
-                            <span class="mg-score-label" x-text="axis.short"></span>
-                            <span class="mg-score-value" x-text="getImageScore(getCardImage(card), axis.key)"></span>
-                          </div>
-                        </template>
+                      <div class="mg-scores" x-show="getImageRating(getCardImage(card))">
+                        <span x-text="getImageRating(getCardImage(card)) >= 5 ? '★' : getImageRating(getCardImage(card)) >= 2 ? '♥' : getImageRating(getCardImage(card)) < 0 ? '👎' : ''"></span>
                       </div>
                       <!-- Comment -->
                       <div class="mg-comment" x-show="getImageComment(getCardImage(card))"
@@ -628,17 +623,28 @@
               <div class="ms-grid">
                 <!-- Axis breakdown -->
                 <div class="ms-section">
-                  <div class="ms-section-title">軸別スコア</div>
-                  <template x-for="axis in RATING_AXES" :key="'ms-ax-' + axis.key">
-                    <div class="ms-axis-row">
-                      <span class="ms-axis-label" x-text="axis.label"></span>
-                      <div class="ms-axis-bar-wrap">
-                        <div class="ms-axis-bar" :style="'width:' + ((s?.avgScores?.[axis.key] || 0) / 5 * 100) + '%'"
-                             :class="{'heat-5': s?.avgScores?.[axis.key] >= 4.5, 'heat-4': s?.avgScores?.[axis.key] >= 3.5}"></div>
-                      </div>
-                      <span class="ms-axis-val" x-text="s?.avgScores?.[axis.key]?.toFixed(1) || '—'"></span>
+                  <div class="ms-section-title">評価内訳</div>
+                  <div class="ms-axis-row">
+                    <span class="ms-axis-label">★ Best</span>
+                    <div class="ms-axis-bar-wrap">
+                      <div class="ms-axis-bar" :style="'width:' + (s.tiers?.total ? (s.tiers.star / s.tiers.total * 100) : 0) + '%'" style="background:#ffd700"></div>
                     </div>
-                  </template>
+                    <span class="ms-axis-val" x-text="s.tiers?.star || 0"></span>
+                  </div>
+                  <div class="ms-axis-row">
+                    <span class="ms-axis-label">♥ Like</span>
+                    <div class="ms-axis-bar-wrap">
+                      <div class="ms-axis-bar" :style="'width:' + (s.tiers?.total ? (s.tiers.heart / s.tiers.total * 100) : 0) + '%'" style="background:#e94560"></div>
+                    </div>
+                    <span class="ms-axis-val" x-text="s.tiers?.heart || 0"></span>
+                  </div>
+                  <div class="ms-axis-row">
+                    <span class="ms-axis-label">👎 Bad</span>
+                    <div class="ms-axis-bar-wrap">
+                      <div class="ms-axis-bar" :style="'width:' + (s.tiers?.total ? (s.tiers.bad / s.tiers.total * 100) : 0) + '%'" style="background:#f44336"></div>
+                    </div>
+                    <span class="ms-axis-val" x-text="s.tiers?.bad || 0"></span>
+                  </div>
                 </div>
                 <!-- Genre performance -->
                 <div class="ms-section" x-show="hm">
