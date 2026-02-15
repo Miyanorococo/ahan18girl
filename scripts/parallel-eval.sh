@@ -48,8 +48,9 @@ WORKER_MODELS=(
 
 WORKER_NAMES=("wai-main" "wai-alt" "sdxl-other" "pony-sd15")
 
-# Spread across AZs to improve Spot availability
-WORKER_AZS=("us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d")
+# All workers in us-east-1c (only AZ with private subnet)
+# Spot availability managed via g6e→g5 fallback
+WORKER_AZS=("us-east-1c" "us-east-1c" "us-east-1c" "us-east-1c")
 
 # =============================================================================
 # Find source instance
