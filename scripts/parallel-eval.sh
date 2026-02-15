@@ -48,9 +48,14 @@ WORKER_MODELS=(
 
 WORKER_NAMES=("wai-main" "wai-alt" "sdxl-other" "pony-sd15")
 
-# All workers in us-east-1c (only AZ with private subnet)
-# Spot availability managed via g6e→g5 fallback
-WORKER_AZS=("us-east-1c" "us-east-1c" "us-east-1c" "us-east-1c")
+# Spread across AZs for Spot availability (both AZs have private subnets)
+WORKER_AZS=("us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d")
+
+# AZ → Private Subnet mapping
+declare -A AZ_SUBNET_MAP=(
+    ["us-east-1c"]="subnet-0f157f0947d8bef8e"
+    ["us-east-1d"]="subnet-06614586de12d6e08"
+)
 
 # =============================================================================
 # Find source instance
@@ -154,7 +159,7 @@ launch_worker() {
     data_vol_id=$(create_volume_from_snapshot "${snap_id}" "${az}" "${name}")
 
     # Get the subnet for this AZ
-    local subnet="${PRIVATE_SUBNET_ID}"
+    local subnet="${AZ_SUBNET_MAP[$az]:-${PRIVATE_SUBNET_ID}}"
 
     # Build UserData
     # NOTE: Single-quoted heredoc prevents expansion, then we do string replacement
@@ -167,6 +172,28 @@ echo "=== Eval Worker Starting ==="
 echo "Worker: __NAME__"
 echo "Models: __MODELS__"
 date -u
+
+# --- Spot interruption handler ---
+# AWS gives 2-min warning before termination
+spot_handler() {
+    echo "SPOT INTERRUPTION detected at $(date -u)"
+    echo "interrupted $(date -u +%Y-%m-%dT%H:%M:%SZ)" | aws s3 cp - "s3://__S3_BUCKET__/eval-status/__NAME__-interrupted.txt" --region __REGION__
+    # generate-eval.py already uploads per-prompt, so partial work is saved
+    # Just kill ComfyUI cleanly
+    kill $COMFYUI_PID 2>/dev/null || true
+    exit 0
+}
+# Check for spot interruption in background (every 5s)
+(while true; do
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+        -H "X-aws-ec2-metadata-token: $(curl -sX PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 30' 2>/dev/null)" \
+        http://169.254.169.254/latest/meta-data/spot/instance-action 2>/dev/null || echo "000")
+    if [ "$HTTP_CODE" = "200" ]; then
+        spot_handler
+    fi
+    sleep 5
+done) &
+SPOT_MONITOR_PID=$!
 
 # --- Mount data volume ---
 # The data volume is attached as /dev/sdf (appears as /dev/nvme1n1 on nitro)
@@ -245,7 +272,8 @@ python3 scripts/generate-eval.py --models "__MODELS__" 2>&1 || {
 echo "=== Generation complete ==="
 date -u
 
-# --- Stop ComfyUI ---
+# --- Stop monitoring and ComfyUI ---
+kill $SPOT_MONITOR_PID 2>/dev/null || true
 kill $COMFYUI_PID 2>/dev/null || true
 
 # --- Signal completion ---
@@ -339,10 +367,13 @@ check_progress() {
     log "=== Progress ==="
 
     for name in "${WORKER_NAMES[@]}"; do
-        local done_marker
+        local done_marker interrupted_marker
         done_marker=$(aws s3 ls "s3://${S3_BUCKET}/eval-status/${name}-done.txt" --region "${REGION}" 2>/dev/null || true)
+        interrupted_marker=$(aws s3 ls "s3://${S3_BUCKET}/eval-status/${name}-interrupted.txt" --region "${REGION}" 2>/dev/null || true)
         if [[ -n "$done_marker" ]]; then
             log "  ${name}: DONE"
+        elif [[ -n "$interrupted_marker" ]]; then
+            log "  ${name}: INTERRUPTED (Spot terminated — re-run to resume)"
         else
             log "  ${name}: running"
         fi

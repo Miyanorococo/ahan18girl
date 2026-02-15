@@ -299,8 +299,39 @@ CHECKPOINT_MAP = {
 }
 
 
-def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False):
-    """Main generation loop."""
+def check_s3_exists(bucket, key):
+    """Check if an S3 object exists."""
+    if not boto3:
+        return False
+    try:
+        s3 = boto3.client("s3")
+        s3.head_object(Bucket=bucket, Key=key)
+        return True
+    except Exception:
+        return False
+
+
+def check_experiment_complete(bucket, experiment_id, expected_seeds):
+    """Check if all images for an experiment already exist in S3."""
+    if not boto3:
+        return False
+    try:
+        s3 = boto3.client("s3")
+        prefix = f"{GALLERY_PREFIX}/{experiment_id}/full/"
+        resp = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, MaxKeys=100)
+        existing = {obj["Key"].split("/")[-1] for obj in resp.get("Contents", [])}
+        # Check if all seed images exist
+        for seed in expected_seeds:
+            # Match any file with this seed
+            if not any(f"seed{seed}.png" in name for name in existing):
+                return False
+        return True
+    except Exception:
+        return False
+
+
+def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False, resume=True):
+    """Main generation loop with resume support."""
     seeds = config["_meta"]["seeds"]
     prompts = config["prompts"]
     now = datetime.now(timezone.utc)
@@ -357,6 +388,12 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False)
                 if dry_run:
                     log.info("  [DRY RUN] %s: %d images", prompt_id, len(seeds))
                     log.info("    Positive: %s", positive[:120])
+                    total_images += len(seeds)
+                    continue
+
+                # Resume: skip if all images already exist in S3
+                if resume and check_experiment_complete(S3_BUCKET, experiment_id, seeds):
+                    log.info("  [SKIP] %s: already complete in S3", prompt_id)
                     total_images += len(seeds)
                     continue
 
@@ -423,6 +460,7 @@ def main():
     parser.add_argument("--models", type=str, help="Comma-separated model names to generate")
     parser.add_argument("--prompts", type=str, help="Comma-separated prompt IDs to generate")
     parser.add_argument("--prompts-file", type=str, default=PROMPTS_FILE)
+    parser.add_argument("--no-resume", action="store_true", help="Regenerate all, ignoring existing S3 images")
     args = parser.parse_args()
 
     if args.status:
@@ -438,7 +476,7 @@ def main():
             log.error("ComfyUI is not reachable. Start it first.")
             sys.exit(1)
 
-    run_generation(config, model_filter, prompt_filter, args.dry_run)
+    run_generation(config, model_filter, prompt_filter, args.dry_run, resume=not args.no_resume)
 
 
 if __name__ == "__main__":
