@@ -12,10 +12,11 @@ document.addEventListener('alpine:init', () => {
     loading: false,
 
     // Filters & sorting
-    filters: { search: '', model: '', pipeline: '', ratingStatus: '' },
+    filters: { search: '', model: '', pipeline: '', ratingStatus: '', genre: '' },
     sortBy: 'date-desc', // date-desc, date-asc, model, rated
     availableModels: [],
     availablePipelines: [],
+    availableGenres: [],
 
     // Pagination
     page: 1,
@@ -238,12 +239,16 @@ document.addEventListener('alpine:init', () => {
     _buildFilterOptions() {
       const models = new Set();
       const pipelines = new Set();
+      const genres = new Set();
       for (const exp of this.experiments) {
         if (exp.model) models.add(exp.model);
         if (exp.pipeline) pipelines.add(exp.pipeline);
+        const g = this.getExpGenre(exp);
+        if (g) genres.add(g);
       }
       this.availableModels = [...models].sort();
       this.availablePipelines = [...pipelines].sort();
+      this.availableGenres = [...genres].sort();
     },
 
     filterExperiments() {
@@ -266,6 +271,10 @@ document.addEventListener('alpine:init', () => {
 
       if (this.filters.pipeline) {
         result = result.filter((exp) => exp.pipeline === this.filters.pipeline);
+      }
+
+      if (this.filters.genre) {
+        result = result.filter((exp) => this.getExpGenre(exp) === this.filters.genre);
       }
 
       // Rating status filter
@@ -441,6 +450,36 @@ document.addEventListener('alpine:init', () => {
       this._persistRatings();
     },
 
+    // --- Experiment tags (stored in ratings for persistence) ---
+    getExpTags(expId) {
+      return this.ratings.models?.['_exp_tags']?.[expId] || {};
+    },
+
+    setExpTag(expId, key, value) {
+      if (!this.ratings.models['_exp_tags']) {
+        this.ratings.models['_exp_tags'] = {};
+      }
+      if (!this.ratings.models['_exp_tags'][expId]) {
+        this.ratings.models['_exp_tags'][expId] = {};
+      }
+      this.ratings.models['_exp_tags'][expId][key] = value;
+      this._persistRatings();
+
+      // Also update the experiment in memory for immediate filter effect
+      const exp = this.experiments.find(e => e.id === expId);
+      if (exp && key === 'genre') {
+        exp._userGenre = value;
+        this._buildFilterOptions();
+      }
+    },
+
+    /** Get effective genre for an experiment (user override > metadata > inferred) */
+    getExpGenre(exp) {
+      if (!exp) return '';
+      const tags = this.getExpTags(exp.id);
+      return tags.genre || exp._userGenre || exp.genre || (exp.prompt_summary || '').split(/[-_]/)[0] || '';
+    },
+
     /** Get model-level data */
     getModelData(modelName) {
       return this.ratings.models?.[modelName] || { comment: '', verdict: '', updated_at: '' };
@@ -568,6 +607,35 @@ document.addEventListener('alpine:init', () => {
         console.error('Failed to select images:', e);
         alert('Failed to copy images. Please try again.');
       }
+    },
+
+    // --- Reload experiments (no full page refresh) ---
+    async reloadExperiments() {
+      this.experiments = [];
+      this._expCountCache = null;
+      await this.loadExperiments();
+    },
+
+    // --- Bulk delete filtered experiments ---
+    async bulkDeleteFiltered() {
+      const targets = this.filteredExperiments;
+      if (!targets.length) return;
+      if (!confirm(`Delete ${targets.length} experiments?\nThis cannot be undone.`)) return;
+
+      let deleted = 0;
+      for (const exp of [...targets]) {
+        try {
+          await GalleryAPI.deleteExperiment(exp.id);
+          this.experiments = this.experiments.filter(e => e.id !== exp.id);
+          deleted++;
+        } catch (e) {
+          console.error(`Failed to delete ${exp.id}:`, e);
+        }
+      }
+      this._buildFilterOptions();
+      this.filterExperiments();
+      this._expCountCache = null;
+      alert(`Deleted ${deleted} / ${targets.length} experiments.`);
     },
 
     // --- Delete experiment ---

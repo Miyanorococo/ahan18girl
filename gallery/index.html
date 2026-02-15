@@ -51,6 +51,12 @@
             <option :value="p" x-text="p"></option>
           </template>
         </select>
+        <select x-model="filters.genre" @change="filterExperiments()">
+          <option value="">All Genres</option>
+          <template x-for="g in availableGenres" :key="'fg-' + g">
+            <option :value="g" x-text="g"></option>
+          </template>
+        </select>
         <select x-model="filters.ratingStatus" @change="filterExperiments()">
           <option value="">All Status</option>
           <option value="unrated">Unrated</option>
@@ -65,6 +71,10 @@
           <option value="rated">Most Rated</option>
         </select>
         <span class="filter-count" x-text="filteredExperiments.length + ' / ' + experiments.length"></span>
+        <button class="reload-btn" @click="reloadExperiments()" title="Reload experiments">&#8635;</button>
+        <button class="delete-btn" x-show="filteredExperiments.length > 0 && filteredExperiments.length < experiments.length"
+                @click="bulkDeleteFiltered()"
+                x-text="'Delete ' + filteredExperiments.length" title="Delete all filtered results"></button>
       </div>
 
       <div x-show="loading" class="loading-spinner">Loading...</div>
@@ -79,7 +89,7 @@
               <div class="card-title" x-text="exp.prompt_summary || exp.id"></div>
               <div class="card-meta">
                 <span class="badge model" x-text="displayModelName(exp.model)" x-show="exp.model"></span>
-                <span class="badge pipeline" x-text="exp.pipeline" x-show="exp.pipeline"></span>
+                <span class="badge genre" x-text="getExpGenre(exp)" x-show="getExpGenre(exp)"></span>
               </div>
               <div class="card-date" x-text="exp.date"></div>
               <div class="card-bottom">
@@ -112,6 +122,32 @@
         <h2 x-text="currentExperiment?.prompt_summary || currentExperiment?.id"></h2>
         <button class="compare-btn" @click="addToCompare(currentExperiment?.id)">Add to Compare</button>
         <button class="delete-btn" @click="deleteExperiment(currentExperiment?.id)">Delete</button>
+      </div>
+
+      <!-- Genre tag editor -->
+      <div class="tag-editor">
+        <span class="tag-editor-label">Genre:</span>
+        <span class="tag-badge" x-text="getExpGenre(currentExperiment) || 'untagged'"
+              :class="{'tag-unset': !getExpGenre(currentExperiment)}"></span>
+        <select class="tag-select"
+                :value="getExpGenre(currentExperiment)"
+                @change="setExpTag(currentExperiment?.id, 'genre', $event.target.value)">
+          <option value="">-- Set genre --</option>
+          <template x-for="g in availableGenres" :key="'tg-' + g">
+            <option :value="g" x-text="g"></option>
+          </template>
+          <option value="school">school</option>
+          <option value="cafe">cafe</option>
+          <option value="nude">nude</option>
+          <option value="lingerie">lingerie</option>
+          <option value="shower">shower</option>
+          <option value="fantasy">fantasy</option>
+          <option value="outdoor">outdoor</option>
+          <option value="bedroom">bedroom</option>
+        </select>
+        <input type="text" class="tag-custom-input" placeholder="Custom genre..."
+               @keydown.enter="setExpTag(currentExperiment?.id, 'genre', $event.target.value); $event.target.value=''"
+               @keydown.stop>
       </div>
 
       <div class="detail-layout">
