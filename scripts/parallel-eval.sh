@@ -24,7 +24,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REGION="us-east-1"
 FALLBACK_INSTANCE_TYPE="g5.xlarge"
 PREFERRED_INSTANCE_TYPE="g6e.xlarge"
-NUM_WORKERS=4
+NUM_WORKERS=13  # 1 model per worker (max parallelism, limit=64 vCPU=16 instances)
 S3_BUCKET="r18-anime-assets"
 STATE_FILE="/tmp/parallel-eval-state.json"
 
@@ -36,20 +36,37 @@ fi
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 err() { log "ERROR: $*" >&2; }
 
-# ワーカー割り当て（時間バランス済み）
-# SDXL ~10s/枚(g5) ~3s/枚(g6e), SD1.5 ~5s/枚(g5)
-# Worker4にSD1.5+SDXL2つで均等化
+# 13ワーカー: 1モデル1台（最大並列）
+# GPU Spot limit = 64 vCPU, g5/g6e.xlarge = 4 vCPU → max 16台
 WORKER_MODELS=(
-    "wai-nsfw-illustrious-v16,wai-nsfw-illustrious-v14,wai-nsfw-illustrious-v12"
-    "wai-nsfw-illustrious-v11,wai-branch-rouwei,illustrij-v20"
-    "nova-anime-xl-il,femix-hassakuxl,animagine-xl-4.0"
-    "autismmix-sdxl,pony-diffusion-v6-xl,dreamshaper-8,aam-anylora-anime-mix"
+    "wai-nsfw-illustrious-v16"
+    "wai-nsfw-illustrious-v14"
+    "wai-nsfw-illustrious-v12"
+    "wai-nsfw-illustrious-v11"
+    "wai-branch-rouwei"
+    "illustrij-v20"
+    "nova-anime-xl-il"
+    "autismmix-sdxl"
+    "pony-diffusion-v6-xl"
+    "animagine-xl-4.0"
+    "femix-hassakuxl"
+    "dreamshaper-8"
+    "aam-anylora-anime-mix"
 )
 
-WORKER_NAMES=("wai-main" "wai-alt" "sdxl-other" "pony-sd15")
+WORKER_NAMES=(
+    "wai-v16" "wai-v14" "wai-v12" "wai-v11" "rouwei"
+    "illustrij" "nova" "autismmix" "pony" "animagine"
+    "femix" "dreamshaper" "aam"
+)
 
-# Spread across AZs for Spot availability (both AZs have private subnets)
-WORKER_AZS=("us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d")
+# Alternate AZs for Spot availability
+WORKER_AZS=(
+    "us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d"
+    "us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d"
+    "us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d"
+    "us-east-1c"
+)
 
 # AZ → Private Subnet mapping (bash 3.2 compatible, no declare -A)
 SUBNET_C="subnet-0f157f0947d8bef8e"
