@@ -162,9 +162,9 @@ document.addEventListener('alpine:init', () => {
         if (this.compareLeft) this.loadCompareExperiment('left');
         if (this.compareRight) this.loadCompareExperiment('right');
       } else if (route === 'model-grid') {
-        this.initModelGrid();
+        this.loadExperiments().then(() => this.initModelGrid());
       } else if (route === 'dashboard') {
-        this.initDashboard();
+        this.loadExperiments().then(() => this.initDashboard());
       } else if (route === 'knowledge-base') {
         this.loadExperiments().then(() => this.initKnowledgeBase());
       }

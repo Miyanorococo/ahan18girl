@@ -82,6 +82,10 @@ def route(method, path, event):
     if method == "POST" and path == "/api/infer-genre":
         return _infer_genre(event)
 
+    # POST /api/score-experiment
+    if method == "POST" and path == "/api/score-experiment":
+        return _score_experiment(event)
+
     return make_response(404, {"error": f"Not found: {method} {path}"})
 
 
@@ -103,3 +107,64 @@ def _infer_genre(event):
     if result:
         return make_response(200, result)
     return make_response(500, {"error": "Genre inference failed"})
+
+
+def _score_experiment(event):
+    """Score all images in an experiment with anime-aesthetic ONNX."""
+    import json as _json
+    from services.s3_client import S3Client
+    from services.image_scorer import score_images
+    body = event.get("body", "{}")
+    try:
+        data = _json.loads(body) if isinstance(body, str) else body
+    except _json.JSONDecodeError:
+        return make_response(400, {"error": "Invalid JSON"})
+
+    experiment_id = data.get("experiment_id", "")
+    if not experiment_id:
+        return make_response(400, {"error": "experiment_id required"})
+
+    s3 = S3Client()
+    gallery_prefix = f"gallery/experiments/{experiment_id}"
+
+    # Read metadata
+    try:
+        meta = s3.get_json(f"{gallery_prefix}/metadata.json")
+    except Exception:
+        meta = {}
+
+    # Skip if already scored (unless force=true)
+    if not data.get("force") and meta.get("aesthetic_avg") is not None:
+        return make_response(200, {"status": "already_scored", "aesthetic_avg": meta["aesthetic_avg"]})
+
+    # List images
+    image_keys = s3.list_objects(f"{gallery_prefix}/full/")
+    if not image_keys:
+        image_keys = s3.list_objects(f"{gallery_prefix}/thumb/")
+    image_keys = [k for k in image_keys if k.lower().endswith((".png", ".jpg", ".jpeg", ".webp"))]
+
+    if not image_keys:
+        return make_response(404, {"error": "No images found"})
+
+    # Score
+    image_list = []
+    for key in image_keys:
+        try:
+            img_bytes = s3.get_object(key)
+            name = key.rsplit("/", 1)[-1]
+            image_list.append((name, img_bytes))
+        except Exception:
+            pass
+
+    scores = score_images(s3, image_list)
+    if not scores:
+        return make_response(500, {"error": "Scoring failed"})
+
+    avg = round(sum(scores.values()) / len(scores), 4)
+    meta["aesthetic_scores"] = scores
+    meta["aesthetic_avg"] = avg
+    s3.put_json(f"{gallery_prefix}/metadata.json", meta)
+    # Skip index update here - caller should rebuild index once after all scoring is done
+    # This avoids S3 write conflicts when scoring many experiments in parallel
+
+    return make_response(200, {"status": "scored", "aesthetic_avg": avg, "count": len(scores)})
