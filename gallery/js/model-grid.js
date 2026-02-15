@@ -1,14 +1,46 @@
 /**
  * Model Grid mixin for Alpine.js gallery component.
- * Provides a side-by-side comparison view of N models that share
- * the same prompt, with seed-based image matching.
+ * Two-level navigation: Theme filter → Scene groups → Seed-based model comparison.
+ *
+ * Data flow:
+ *   experiments[].prompt_id  "P01_ex"  → themeNum="01", scene="ex"
+ *   experiments[].id         "20260215_model/P01_ex" → runDate="20260215"
+ *   groupKey = "{runDate}/{prompt_id}"  → one group per scene per run
  */
 function modelGridMixin() {
-  // Cache loaded experiment detail data across navigations
   const _experimentCache = {};
+
+  const SCENE_LABELS = {
+    ex: 'ベース', se: 'センシティブ', sex: 'セックス',
+    ejac: '射精', birth: '出産', lactation: '母乳',
+    orgasm: 'オーガズム', penis: 'ペニス', pregnant: '妊娠', toy: '玩具',
+  };
+
+  function extractRunDate(exp) {
+    const m = (exp.id || '').match(/^(\d{8})_/);
+    if (m) return m[1];
+    if (exp.created_at) return exp.created_at.slice(0, 10).replace(/-/g, '');
+    return 'unknown';
+  }
+
+  function extractThemeName(summary) {
+    if (!summary) return '?';
+    // "人妻_explicit" → "人妻",  "JK/学園_sensitive" → "JK/学園"
+    const idx = summary.lastIndexOf('_');
+    return idx > 0 ? summary.slice(0, idx) : summary;
+  }
+
+  // Extract theme from old-format prompt_id like
+  // "20260215_animagine-xl-4.0_txt2img_lingerie-tease_seed42x5"
+  function extractLegacyTheme(pid) {
+    const m = pid.match(/txt2img_(.+?)_(?:s\d|seed)/);
+    return m ? m[1] : null;
+  }
 
   return {
     modelGrid: {
+      themes: [],
+      selectedTheme: null,
       groups: [],
       selectedGroup: null,
       selectedSeed: null,
@@ -19,39 +51,102 @@ function modelGridMixin() {
     },
 
     /**
-     * Initialize the model grid view.
-     * Groups experiments by normalized prompt_summary, keeping only
-     * groups with 2+ distinct models.
+     * Build theme list and scene groups from experiments.
      */
     initModelGrid() {
       const groupMap = {};
 
       for (const exp of this.experiments) {
-        if (!exp.prompt_summary) continue;
-        const key = exp.prompt_summary.toLowerCase().trim();
+        if (!exp.model) continue;
+        const pid = exp.prompt_id || '';
+        if (!pid) continue;
+
+        const runDate = extractRunDate(exp);
+        const pMatch = pid.match(/^P(\d+)_(.+)$/);
+
+        let key, themeNum, themeName, scene, sceneLabel;
+
+        if (pMatch) {
+          // Structured eval format: P01_ex
+          key = runDate + '/' + pid;
+          themeNum = pMatch[1];
+          scene = pMatch[2];
+          sceneLabel = SCENE_LABELS[scene] || scene;
+          themeName = extractThemeName(exp.prompt_summary);
+        } else {
+          // Legacy format: group by prompt_summary or extracted theme
+          const theme = exp.prompt_summary || extractLegacyTheme(pid);
+          if (!theme) continue;
+          key = runDate + '/legacy_' + theme;
+          themeNum = 'L';
+          scene = theme;
+          sceneLabel = theme;
+          themeName = 'Legacy';
+        }
+
         if (!groupMap[key]) {
           groupMap[key] = {
             key,
-            prompt: exp.prompt_summary,
-            experiments: [],
-            models: new Set(),
+            themeNum,
+            themeName,
+            scene,
+            sceneLabel,
+            runDate,
+            prompt: exp.prompt_summary || scene,
+            _exps: [],
+            _models: new Set(),
           };
         }
-        groupMap[key].experiments.push(exp);
-        if (exp.model) groupMap[key].models.add(exp.model);
+        groupMap[key]._exps.push(exp);
+        groupMap[key]._models.add(exp.model);
       }
 
-      this.modelGrid.groups = Object.values(groupMap)
-        .filter((g) => g.models.size >= 2)
-        .map((g) => ({
+      // Finalize groups (2+ models only)
+      const allGroups = [];
+      for (const g of Object.values(groupMap)) {
+        if (g._models.size < 2) continue;
+        // Deduplicate: keep latest experiment per model
+        const latest = {};
+        for (const exp of g._exps) {
+          const prev = latest[exp.model];
+          if (!prev || (exp.created_at || '') > (prev.created_at || '')) {
+            latest[exp.model] = exp;
+          }
+        }
+        const exps = Object.values(latest);
+        allGroups.push({
           key: g.key,
+          themeNum: g.themeNum,
+          themeName: g.themeName,
+          scene: g.scene,
+          sceneLabel: g.sceneLabel,
+          runDate: g.runDate,
           prompt: g.prompt,
-          experiments: g.experiments,
-          models: [...g.models],
-        }))
-        .sort((a, b) => b.models.length - a.models.length);
+          experiments: exps,
+          models: exps.map((e) => e.model),
+        });
+      }
 
-      // Reset selection state
+      // Sort by theme number → scene name
+      allGroups.sort((a, b) => {
+        const t = a.themeNum.localeCompare(b.themeNum);
+        return t !== 0 ? t : a.scene.localeCompare(b.scene);
+      });
+
+      // Build theme list
+      const themeMap = {};
+      for (const g of allGroups) {
+        if (!themeMap[g.themeNum]) {
+          themeMap[g.themeNum] = { id: g.themeNum, name: g.themeName, count: 0 };
+        }
+        themeMap[g.themeNum].count++;
+      }
+
+      this.modelGrid.themes = Object.values(themeMap).sort((a, b) => a.id.localeCompare(b.id));
+      this.modelGrid.groups = allGroups;
+
+      // Reset
+      this.modelGrid.selectedTheme = null;
       this.modelGrid.selectedGroup = null;
       this.modelGrid.selectedSeed = null;
       this.modelGrid.allSeeds = [];
@@ -59,8 +154,31 @@ function modelGridMixin() {
     },
 
     /**
-     * Select a comparison group and load all its experiments.
-     * Builds model cards with seed-indexed images.
+     * Return groups filtered by selected theme.
+     */
+    getFilteredGroups() {
+      const t = this.modelGrid.selectedTheme;
+      if (!t) return this.modelGrid.groups;
+      return this.modelGrid.groups.filter((g) => g.themeNum === t);
+    },
+
+    /**
+     * Toggle theme filter.
+     */
+    selectTheme(themeId) {
+      this.modelGrid.selectedTheme = this.modelGrid.selectedTheme === themeId ? null : themeId;
+    },
+
+    /**
+     * Format run date for display: "20260215" → "2/15"
+     */
+    formatRunDate(d) {
+      if (!d || d.length !== 8) return d;
+      return parseInt(d.slice(4, 6), 10) + '/' + parseInt(d.slice(6, 8), 10);
+    },
+
+    /**
+     * Select a comparison group and load experiments + seeds.
      */
     async selectModelGroup(group) {
       this.modelGrid.selectedGroup = group;
@@ -73,7 +191,6 @@ function modelGridMixin() {
 
       const seedSet = new Set();
 
-      // Progressive loading: show each card as it arrives
       const loadOne = async (exp) => {
         const detail = await this._loadExperimentCached(exp.id);
         if (!detail) return;
@@ -101,7 +218,6 @@ function modelGridMixin() {
           seeds: images.map((img) => img._seed).filter(Boolean),
         };
 
-        // Insert card sorted by model name for deterministic order
         const cards = [...this.modelGrid.modelCards, card];
         cards.sort((a, b) => a.model.localeCompare(b.model));
         this.modelGrid.modelCards = cards;
@@ -110,37 +226,26 @@ function modelGridMixin() {
         );
         this.modelGrid._loadedCount++;
 
-        // Auto-select first seed once available
         if (!this.modelGrid.selectedSeed && this.modelGrid.allSeeds.length > 0) {
           this.modelGrid.selectedSeed = this.modelGrid.allSeeds[0];
         }
-
-        // Hide spinner after first card loads
         if (this.modelGrid._loadedCount === 1) {
           this.modelGrid.loading = false;
         }
       };
 
-      // Fire all loads in parallel, each updates UI on completion
       try {
-        await Promise.all(group.experiments.map(exp => loadOne(exp)));
+        await Promise.all(group.experiments.map((exp) => loadOne(exp)));
       } catch (e) {
         console.error('Failed to load model group:', e);
       }
       this.modelGrid.loading = false;
     },
 
-    /**
-     * Select a specific seed for single-seed view.
-     */
     selectSeed(seed) {
       this.modelGrid.selectedSeed = seed;
     },
 
-    /**
-     * Get the image for the currently selected seed from a model card.
-     * Falls back to the first image if no seed is selected or no match found.
-     */
     getCardImage(card) {
       if (this.modelGrid.selectedSeed && card.seedMap[this.modelGrid.selectedSeed]) {
         return card.seedMap[this.modelGrid.selectedSeed];
@@ -148,47 +253,28 @@ function modelGridMixin() {
       return card.images[0] || null;
     },
 
-    /**
-     * Get all images for a card (used in "all seeds" view).
-     */
     getCardImages(card) {
       return card.images;
     },
 
-    /**
-     * Build a cross-model image list for a given seed.
-     * Returns [{...img, _mgModel, _mgExperiment}, ...] across all loaded models.
-     * Used to enable left/right navigation across models in the lightbox.
-     */
     _buildCrossModelImages(seed) {
       const images = [];
       for (const card of this.modelGrid.modelCards) {
         const img = seed && card.seedMap[seed] ? card.seedMap[seed] : card.images[0];
         if (img) {
-          images.push({
-            ...img,
-            _mgModel: card.model,
-            _mgExperiment: card.detail,
-          });
+          images.push({ ...img, _mgModel: card.model, _mgExperiment: card.detail });
         }
       }
       return images;
     },
 
-    /**
-     * Open lightbox for cross-model comparison at the given model card.
-     * Left/right will navigate across models for the same seed.
-     */
     openModelGridLightbox(card) {
       const seed = this.modelGrid.selectedSeed;
       const crossImages = this._buildCrossModelImages(seed);
-      const idx = crossImages.findIndex(img => img._mgModel === card.model);
+      const idx = crossImages.findIndex((img) => img._mgModel === card.model);
       this.openLightbox(Math.max(0, idx), 'model-grid', crossImages, card.detail);
     },
 
-    /**
-     * Load an experiment via API with caching.
-     */
     async _loadExperimentCached(id) {
       if (_experimentCache[id]) return _experimentCache[id];
       try {

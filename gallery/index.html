@@ -317,23 +317,35 @@
       <!-- Group selector (shown when no group is selected) -->
       <div x-show="!modelGrid.selectedGroup">
         <h2>Model Grid</h2>
-        <p class="mg-subtitle">同一プロンプトを複数モデルで比較</p>
+        <p class="mg-subtitle">テーマ×シーン別にモデルを比較</p>
+
+        <!-- Theme filter bar -->
+        <div class="mg-theme-bar" x-show="modelGrid.themes.length > 0">
+          <button class="mg-theme-btn" :class="{'active': !modelGrid.selectedTheme}"
+                  @click="modelGrid.selectedTheme = null">All</button>
+          <template x-for="theme in modelGrid.themes" :key="'theme-' + theme.id">
+            <button class="mg-theme-btn" :class="{'active': modelGrid.selectedTheme === theme.id}"
+                    @click="selectTheme(theme.id)"
+                    x-text="theme.name + ' (' + theme.count + ')'"></button>
+          </template>
+        </div>
 
         <div x-show="modelGrid.groups.length === 0" class="empty-state">
-          比較可能なプロンプトグループがありません（2モデル以上必要）
+          比較可能なグループがありません（2モデル以上必要）
         </div>
 
         <div class="card-grid">
-          <template x-for="group in modelGrid.groups" :key="group.key">
+          <template x-for="group in getFilteredGroups()" :key="group.key">
             <div class="experiment-card" @click="selectModelGroup(group)">
               <div class="card-info">
-                <div class="card-title" x-text="group.prompt"></div>
-                <div class="card-meta">
-                  <template x-for="m in group.models" :key="'mg-' + group.key + '-' + m">
-                    <span class="badge model" x-text="displayModelName(m)"></span>
-                  </template>
+                <div class="card-title">
+                  <span x-text="group.themeName"></span>
+                  <span class="mg-scene-badge" x-text="group.sceneLabel"></span>
                 </div>
-                <div class="card-count" x-text="group.models.length + ' models / ' + group.experiments.length + ' experiments'"></div>
+                <div class="card-meta">
+                  <span class="badge date" x-text="formatRunDate(group.runDate)"></span>
+                  <span class="badge model" x-text="group.models.length + ' models'"></span>
+                </div>
               </div>
             </div>
           </template>

@@ -1137,7 +1137,46 @@ body {
 .mg-subtitle {
   color: var(--text-secondary);
   font-size: 0.875rem;
+  margin-bottom: 12px;
+}
+
+.mg-theme-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-bottom: 20px;
+}
+
+.mg-theme-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mg-theme-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mg-theme-btn.active {
+  background: rgba(233, 69, 96, 0.15);
+  color: var(--accent);
+  border-color: rgba(233, 69, 96, 0.3);
+}
+
+.mg-scene-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+  vertical-align: middle;
 }
 
 .mg-load-progress {
