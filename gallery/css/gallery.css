@@ -439,11 +439,32 @@ body {
   padding: 8px 10px;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   opacity: 0;
   transition: opacity 0.2s;
 }
+
+.overlay-top-row {
+  position: absolute;
+  top: -30px;
+  right: 6px;
+}
+
+.grid-fav {
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  transition: color 0.15s, transform 0.15s;
+}
+
+.grid-fav:hover { color: var(--accent); }
+.grid-fav.active { color: var(--accent); transform: scale(1.15); }
+
+/* Always show heart if favorited */
+.image-item:has(.grid-fav.active) .image-overlay { opacity: 1; }
 
 .image-item:hover .image-overlay {
   opacity: 1;
@@ -1281,44 +1302,168 @@ body {
   color: var(--text-secondary);
 }
 
+/* === Favorites Analysis (Dashboard) === */
+.dash-favorites {
+  margin-top: 24px;
+}
+
+.dash-favorites h3 { margin-bottom: 16px; }
+
+.dash-fav-count {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.dash-fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dash-fav-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-card);
+  padding: 14px;
+}
+
+.dash-fav-card-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dash-fav-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.dash-fav-label {
+  flex: 0 0 120px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-fav-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dash-fav-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  min-width: 4px;
+  transition: width 0.3s ease;
+}
+
+.dash-fav-count-num {
+  flex: 0 0 24px;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dash-fav-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.dash-fav-thumb {
+  position: relative;
+  aspect-ratio: 2/3;
+  border-radius: var(--radius-badge);
+  overflow: hidden;
+}
+
+.dash-fav-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dash-fav-thumb-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2px 4px;
+  background: rgba(0, 0, 0, 0.7);
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
 /* === Save Panel (in lightbox) === */
 .lb-save-section {
   margin-top: 4px;
 }
 
-.save-btn {
-  width: 100%;
+.lb-save-row {
+  display: flex;
+  gap: 6px;
+}
+
+.fav-btn {
+  flex: 0 0 auto;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-secondary);
-  padding: 8px 14px;
+  padding: 6px 14px;
   border-radius: var(--radius-badge);
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: background 0.15s, color 0.15s;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
 }
 
-.save-btn:hover {
+.fav-btn:hover {
   background: rgba(233, 69, 96, 0.12);
   color: var(--accent);
 }
 
-.save-btn.saved {
+.fav-btn.active {
   color: var(--accent);
   border-color: rgba(233, 69, 96, 0.3);
+  background: rgba(233, 69, 96, 0.15);
+  transform: scale(1.05);
 }
+
+.save-detail-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: var(--radius-badge);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.save-detail-btn:hover { background: rgba(255, 255, 255, 0.1); }
+.save-detail-btn.active { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
 
 .save-panel {
   background: rgba(15, 15, 26, 0.5);
   border-radius: var(--radius-badge);
   padding: 12px;
-}
-
-.save-panel-title {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
+  margin-top: 6px;
 }
 
 .save-labels {

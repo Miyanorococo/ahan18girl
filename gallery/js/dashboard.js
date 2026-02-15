@@ -12,6 +12,7 @@ function dashboardMixin() {
     dashboard: {
       modelStats: [],      // Per-model aggregated stats
       summary: null,       // Overall summary stats
+      favorites: null,     // Favorites analysis
       loading: false,
       chartReady: false,
     },
@@ -23,6 +24,7 @@ function dashboardMixin() {
     initDashboard() {
       this.dashboard.loading = true;
       this._computeDashboardStats();
+      this._computeFavoritesAnalysis();
       this.dashboard.loading = false;
       // Render charts after DOM update
       this.$nextTick(() => this._renderCharts());
@@ -161,6 +163,73 @@ function dashboardMixin() {
         totalCommented,
         ratingProgress: totalImages > 0 ? Math.round(totalRated / totalImages * 100) : 0,
       };
+    },
+
+    /**
+     * Analyze favorited images: breakdown by model, prompt, seed.
+     */
+    _computeFavoritesAnalysis() {
+      const expModelMap = {};
+      const expPromptMap = {};
+      for (const exp of this.experiments) {
+        if (exp.id) {
+          if (exp.model) expModelMap[exp.id] = exp.model;
+          expPromptMap[exp.id] = exp.prompt_summary || exp.id;
+        }
+      }
+
+      const byModel = {};
+      const byPrompt = {};
+      const bySeed = {};
+      const favImages = [];
+
+      for (const [key, entry] of Object.entries(this.ratings.images || {})) {
+        if (!entry?.favorited) continue;
+
+        // Identify model and prompt from key
+        let model = 'unknown', prompt = 'unknown', seed = 'unknown';
+        for (const [expId, expModel] of Object.entries(expModelMap)) {
+          if (key.includes(expId)) {
+            model = expModel;
+            prompt = expPromptMap[expId] || expId;
+            break;
+          }
+        }
+        // Extract seed from filename if present
+        const seedMatch = key.match(/seed(\d+)/);
+        if (seedMatch) seed = seedMatch[1];
+
+        byModel[model] = (byModel[model] || 0) + 1;
+        byPrompt[prompt] = (byPrompt[prompt] || 0) + 1;
+        bySeed[seed] = (bySeed[seed] || 0) + 1;
+
+        favImages.push({
+          key,
+          model,
+          prompt,
+          seed,
+          scores: entry.scores || {},
+          comment: entry.comment || '',
+          overallAvg: this._avgOfScores(entry.scores),
+        });
+      }
+
+      // Sort breakdowns
+      const sortDesc = obj => Object.entries(obj).sort((a, b) => b[1] - a[1]);
+
+      this.dashboard.favorites = {
+        total: favImages.length,
+        byModel: sortDesc(byModel),
+        byPrompt: sortDesc(byPrompt),
+        bySeed: sortDesc(bySeed),
+        topImages: favImages.sort((a, b) => b.overallAvg - a.overallAvg).slice(0, 20),
+      };
+    },
+
+    _avgOfScores(scores) {
+      if (!scores) return 0;
+      const vals = Object.values(scores).filter(v => v > 0);
+      return vals.length > 0 ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 10) / 10 : 0;
     },
 
     /**
@@ -391,6 +460,29 @@ function dashboardMixin() {
         if (s.comment) {
           lines.push('');
           lines.push(`> ${s.comment.replace(/\n/g, '\n> ')}`);
+        }
+        lines.push('');
+      }
+
+      // Favorites analysis
+      const favs = this.dashboard.favorites;
+      if (favs && favs.total > 0) {
+        lines.push('## Favorites Analysis');
+        lines.push('');
+        lines.push(`Total favorited: **${favs.total}** images`);
+        lines.push('');
+        lines.push('### By Model');
+        lines.push('| Model | Count |');
+        lines.push('|-------|-------|');
+        for (const [model, count] of favs.byModel) {
+          lines.push(`| ${model} | ${count} |`);
+        }
+        lines.push('');
+        lines.push('### By Prompt');
+        lines.push('| Prompt | Count |');
+        lines.push('|--------|-------|');
+        for (const [prompt, count] of favs.byPrompt) {
+          lines.push(`| ${prompt} | ${count} |`);
         }
         lines.push('');
       }

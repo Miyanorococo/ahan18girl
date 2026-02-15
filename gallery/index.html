@@ -139,6 +139,11 @@
               <div class="image-item" :class="{'selected': isSelected(img)}">
                 <img :src="img.thumb_url" :alt="img.name" loading="lazy" @click="openLightbox(idx)">
                 <div class="image-overlay">
+                  <div class="overlay-top-row">
+                    <span class="grid-fav" :class="{'active': isImageFavorited(img)}"
+                          @click.stop="toggleFavorite(img)"
+                          x-text="isImageFavorited(img) ? '&#9829;' : '&#9825;'"></span>
+                  </div>
                   <div class="star-rating" @click.stop>
                     <template x-for="star in [1,2,3,4,5]" :key="star">
                       <span class="star"
@@ -431,6 +436,71 @@
             </div>
           </template>
         </div>
+
+        <!-- Favorites Analysis -->
+        <div class="dash-favorites" x-show="dashboard.favorites && dashboard.favorites.total > 0">
+          <h3>&#9829; お気に入り分析 <span class="dash-fav-count" x-text="'(' + (dashboard.favorites?.total || 0) + '枚)'"></span></h3>
+
+          <div class="dash-fav-grid">
+            <!-- By Model -->
+            <div class="dash-fav-card">
+              <div class="dash-fav-card-title">モデル別</div>
+              <template x-for="[model, count] in (dashboard.favorites?.byModel || [])" :key="'fm-' + model">
+                <div class="dash-fav-row">
+                  <span class="dash-fav-label" x-text="displayModelName(model)"></span>
+                  <div class="dash-fav-bar-wrap">
+                    <div class="dash-fav-bar" :style="'width:' + (count / (dashboard.favorites?.total || 1) * 100) + '%'"></div>
+                  </div>
+                  <span class="dash-fav-count-num" x-text="count"></span>
+                </div>
+              </template>
+            </div>
+
+            <!-- By Prompt -->
+            <div class="dash-fav-card">
+              <div class="dash-fav-card-title">プロンプト別</div>
+              <template x-for="[prompt, count] in (dashboard.favorites?.byPrompt || [])" :key="'fp-' + prompt">
+                <div class="dash-fav-row">
+                  <span class="dash-fav-label" x-text="prompt"></span>
+                  <div class="dash-fav-bar-wrap">
+                    <div class="dash-fav-bar" :style="'width:' + (count / (dashboard.favorites?.total || 1) * 100) + '%'"></div>
+                  </div>
+                  <span class="dash-fav-count-num" x-text="count"></span>
+                </div>
+              </template>
+            </div>
+
+            <!-- By Seed -->
+            <div class="dash-fav-card">
+              <div class="dash-fav-card-title">シード別</div>
+              <template x-for="[seed, count] in (dashboard.favorites?.bySeed || [])" :key="'fs-' + seed">
+                <div class="dash-fav-row">
+                  <span class="dash-fav-label" x-text="'seed ' + seed"></span>
+                  <div class="dash-fav-bar-wrap">
+                    <div class="dash-fav-bar" :style="'width:' + (count / (dashboard.favorites?.total || 1) * 100) + '%'"></div>
+                  </div>
+                  <span class="dash-fav-count-num" x-text="count"></span>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- Top favorited images preview -->
+          <div class="dash-fav-top" x-show="(dashboard.favorites?.topImages || []).length > 0">
+            <div class="dash-fav-card-title">Top お気に入り</div>
+            <div class="dash-fav-thumbs">
+              <template x-for="fav in (dashboard.favorites?.topImages || []).slice(0, 12)" :key="'ft-' + fav.key">
+                <div class="dash-fav-thumb">
+                  <img :src="fav.key" loading="lazy">
+                  <div class="dash-fav-thumb-info">
+                    <span x-text="displayModelName(fav.model)"></span>
+                    <span x-show="fav.overallAvg > 0" x-text="'★' + fav.overallAvg"></span>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -482,14 +552,18 @@
           </div>
         </div>
       </div>
-      <!-- Save to training data -->
+      <!-- Heart favorite + Save to training data -->
       <div class="lb-save-section">
-        <template x-if="!savePanel.open">
-          <button class="save-btn" @click="openSavePanel()" :class="{'saved': savePanel.saved}">&#9829; Save</button>
-        </template>
+        <div class="lb-save-row">
+          <button class="fav-btn" :class="{'active': isImageFavorited(lightbox.currentImage)}"
+                  @click="toggleFavorite(lightbox.currentImage)">
+            <span x-text="isImageFavorited(lightbox.currentImage) ? '&#9829;' : '&#9825;'"></span>
+          </button>
+          <button class="save-detail-btn" @click="savePanel.open = !savePanel.open"
+                  :class="{'active': savePanel.open}">Labels</button>
+        </div>
         <template x-if="savePanel.open">
           <div class="save-panel">
-            <div class="save-panel-title">Save to Training Data</div>
             <div class="save-labels">
               <template x-for="label in getAllSaveLabels()" :key="'sl-' + label">
                 <button class="save-label-btn" :class="{'selected': isSaveLabelSelected(label)}"

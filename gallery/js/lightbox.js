@@ -30,6 +30,9 @@ function lightboxMixin() {
       saved: false,
     },
 
+    // Favorite (heart) state - per image
+    _favSaving: false,
+
     openLightbox(index, source, images, experiment) {
       let imgList;
       if (images) {
@@ -155,6 +158,51 @@ function lightboxMixin() {
       const presets = this.SAVE_LABEL_PRESETS || [];
       const custom = this._customLabels || [];
       return [...new Set([...presets, ...custom])];
+    },
+
+    // --- Heart (favorite) toggle ---
+    isImageFavorited(img) {
+      const key = this._ratingKey(img);
+      return key ? !!this.ratings.images?.[key]?.favorited : false;
+    },
+
+    async toggleFavorite(img, experiment) {
+      const key = this._ratingKey(img);
+      if (!key || this._favSaving) return;
+
+      const exp = experiment || this.lightbox.sourceExperiment || this.currentExperiment;
+      if (!exp) return;
+
+      const entry = this.ratings.images[key] || { scores: {}, comment: '', updated_at: '' };
+      const wasFavorited = !!entry.favorited;
+
+      // Toggle locally immediately for UI responsiveness
+      if (!this.ratings.images[key]) {
+        this.ratings.images[key] = entry;
+      }
+      this.ratings.images[key].favorited = !wasFavorited;
+      this.ratings.images[key].updated_at = new Date().toISOString();
+      this._persistRatings();
+
+      // If newly favorited, save to training-data
+      if (!wasFavorited) {
+        this._favSaving = true;
+        try {
+          const metadata = {
+            scores: entry.scores || {},
+            comment: entry.comment || '',
+          };
+          await GalleryAPI.saveToTraining(
+            exp.id,
+            [img.name],
+            ['favorite'],
+            metadata
+          );
+        } catch (e) {
+          console.error('Failed to save favorite to training:', e);
+        }
+        this._favSaving = false;
+      }
     },
 
     async executeSave() {
