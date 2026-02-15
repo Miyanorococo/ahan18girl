@@ -71,17 +71,16 @@ def _process_zip(s3, zip_key):
         # Walk extracted files
         metadata = {}
         image_count = 0
+        image_scores = {}  # name -> aesthetic score
         extracted_path = Path(extract_dir)
 
+        # Collect images first for batch scoring
+        image_files = []
         for file_path in sorted(extracted_path.rglob("*")):
             if not file_path.is_file():
                 continue
-
-            relative = file_path.relative_to(extracted_path)
             name = file_path.name
             suffix = file_path.suffix.lower()
-
-            # Handle metadata.json
             if name == "metadata.json":
                 with open(file_path, "r", encoding="utf-8") as f:
                     metadata = json.load(f)
@@ -91,41 +90,64 @@ def _process_zip(s3, zip_key):
                     content_type="application/json",
                 )
                 logger.info("Uploaded metadata.json")
-                continue
+            elif suffix in IMAGE_EXTENSIONS:
+                image_files.append(file_path)
 
-            # Handle images
-            if suffix in IMAGE_EXTENSIONS:
-                image_bytes = file_path.read_bytes()
-                image_count += 1
+        # Auto-score images
+        try:
+            from services.image_scorer import score_images
+            score_input = [(fp.name, fp.read_bytes()) for fp in image_files]
+            image_scores = score_images(s3, score_input)
+            logger.info("Scored %d images (avg=%.3f)", len(image_scores),
+                        sum(image_scores.values()) / max(len(image_scores), 1))
+        except Exception:
+            logger.exception("Auto-scoring failed (non-fatal)")
 
-                # Determine content type
-                content_types = {
-                    ".png": "image/png",
-                    ".jpg": "image/jpeg",
-                    ".jpeg": "image/jpeg",
-                    ".webp": "image/webp",
-                }
-                content_type = content_types.get(suffix, "application/octet-stream")
+        # Upload images + thumbnails
+        for file_path in image_files:
+            image_bytes = file_path.read_bytes()
+            name = file_path.name
+            suffix = file_path.suffix.lower()
+            image_count += 1
 
-                # Upload original to full/
-                full_key = f"{gallery_prefix}/full/{name}"
-                s3.put_object(full_key, image_bytes, content_type=content_type)
+            content_types = {
+                ".png": "image/png",
+                ".jpg": "image/jpeg",
+                ".jpeg": "image/jpeg",
+                ".webp": "image/webp",
+            }
+            content_type = content_types.get(suffix, "application/octet-stream")
 
-                # Generate and upload thumbnail to thumb/
-                stem = file_path.stem
-                thumb_key = f"{gallery_prefix}/thumb/{stem}.webp"
-                try:
-                    thumb_bytes = generate_thumbnail(image_bytes)
-                    s3.put_object(thumb_key, thumb_bytes, content_type="image/webp")
-                except Exception:
-                    logger.exception("Failed to generate thumbnail for %s", name)
+            full_key = f"{gallery_prefix}/full/{name}"
+            s3.put_object(full_key, image_bytes, content_type=content_type)
 
-                logger.info("Uploaded image %d: %s", image_count, name)
+            stem = file_path.stem
+            thumb_key = f"{gallery_prefix}/thumb/{stem}.webp"
+            try:
+                thumb_bytes = generate_thumbnail(image_bytes)
+                s3.put_object(thumb_key, thumb_bytes, content_type="image/webp")
+            except Exception:
+                logger.exception("Failed to generate thumbnail for %s", name)
+
+            logger.info("Uploaded image %d: %s", image_count, name)
 
         # Update index
         if not metadata:
             metadata = {}
         metadata.setdefault("image_count", image_count)
+
+        # Save aesthetic scores to metadata
+        if image_scores:
+            metadata["aesthetic_scores"] = image_scores
+            avg_score = sum(image_scores.values()) / len(image_scores)
+            metadata["aesthetic_avg"] = round(avg_score, 4)
+            # Re-upload metadata with scores
+            s3.put_object(
+                f"{gallery_prefix}/metadata.json",
+                json.dumps(metadata, ensure_ascii=False, indent=2).encode(),
+                content_type="application/json",
+            )
+            logger.info("Aesthetic avg: %.3f", avg_score)
 
         # Auto-infer genre if not present
         if not metadata.get("genre"):
