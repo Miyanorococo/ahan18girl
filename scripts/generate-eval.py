@@ -259,7 +259,6 @@ def upload_to_s3(bucket, experiment_id, images, metadata):
         Body=json.dumps(metadata, ensure_ascii=False, indent=2).encode(),
         ContentType="application/json",
     )
-    log.info("Uploaded %s", meta_key)
 
     # Upload images to full/ and create thumbnails in thumb/
     for img_name, img_data in images:
@@ -267,15 +266,81 @@ def upload_to_s3(bucket, experiment_id, images, metadata):
         s3.put_object(
             Bucket=bucket, Key=full_key, Body=img_data, ContentType="image/png"
         )
-
-        # Simple thumbnail: just upload same image to thumb/ for now
-        # A proper thumbnail service would resize, but for evaluation this is fine
         thumb_key = f"{base}/thumb/{img_name}"
         s3.put_object(
             Bucket=bucket, Key=thumb_key, Body=img_data, ContentType="image/png"
         )
 
     log.info("Uploaded %d images to %s", len(images), base)
+
+
+def rebuild_gallery_index(bucket):
+    """Scan all metadata.json files in S3 and rebuild gallery index.json."""
+    if not boto3:
+        log.error("boto3 required for index rebuild")
+        return
+
+    s3 = boto3.client("s3")
+    prefix = f"{GALLERY_PREFIX}/"
+    index = []
+
+    # List all metadata.json files
+    paginator = s3.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        for obj in page.get("Contents", []):
+            key = obj["Key"]
+            if not key.endswith("/metadata.json"):
+                continue
+
+            try:
+                resp = s3.get_object(Bucket=bucket, Key=key)
+                meta = json.loads(resp["Body"].read())
+            except Exception as e:
+                log.warning("Failed to read %s: %s", key, e)
+                continue
+
+            # Extract experiment ID from path
+            # gallery/experiments/{date}_{model}/{prompt_id}/metadata.json
+            parts = key[len(prefix):].rstrip("/metadata.json").rsplit("/", 1)
+            exp_id = key[len(prefix):-len("/metadata.json")]
+
+            # Count images
+            img_prefix = f"{prefix}{exp_id}/full/"
+            img_resp = s3.list_objects_v2(Bucket=bucket, Prefix=img_prefix, MaxKeys=100)
+            image_count = img_resp.get("KeyCount", 0)
+
+            # Find first thumbnail
+            thumb_prefix = f"{prefix}{exp_id}/thumb/"
+            thumb_resp = s3.list_objects_v2(Bucket=bucket, Prefix=thumb_prefix, MaxKeys=1)
+            thumbnail = ""
+            for t in thumb_resp.get("Contents", []):
+                thumbnail = f"/{t['Key']}"
+                break
+
+            entry = {
+                "id": exp_id,
+                "model": meta.get("model", {}).get("checkpoint", "unknown"),
+                "pipeline": meta.get("pipeline", "txt2img"),
+                "prompt_summary": meta.get("prompt_summary", ""),
+                "date": meta.get("date", ""),
+                "image_count": image_count,
+                "thumbnail": thumbnail,
+                "created_at": meta.get("created_at", ""),
+            }
+            index.append(entry)
+
+    # Sort by created_at descending
+    index.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+
+    # Upload index
+    index_key = f"{GALLERY_PREFIX}/index.json"
+    s3.put_object(
+        Bucket=bucket,
+        Key=index_key,
+        Body=json.dumps(index, ensure_ascii=False, indent=2).encode(),
+        ContentType="application/json",
+    )
+    log.info("Gallery index rebuilt: %d experiments -> %s", len(index), index_key)
 
 
 # ---------------------------------------------------------------------------
@@ -461,11 +526,16 @@ def main():
     parser.add_argument("--prompts", type=str, help="Comma-separated prompt IDs to generate")
     parser.add_argument("--prompts-file", type=str, default=PROMPTS_FILE)
     parser.add_argument("--no-resume", action="store_true", help="Regenerate all, ignoring existing S3 images")
+    parser.add_argument("--rebuild-index", action="store_true", help="Rebuild gallery index.json from S3 metadata")
     args = parser.parse_args()
 
     if args.status:
         ok = check_status()
         sys.exit(0 if ok else 1)
+
+    if args.rebuild_index:
+        rebuild_gallery_index(S3_BUCKET)
+        sys.exit(0)
 
     config = load_prompts(args.prompts_file)
     model_filter = set(args.models.split(",")) if args.models else None
