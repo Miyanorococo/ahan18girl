@@ -940,12 +940,9 @@
        @keydown.escape.window="closeLightbox()"
        @keydown.arrow-left.window="lightboxPrev()"
        @keydown.arrow-right.window="lightboxNext()"
-       @keydown.1.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 1)"
-       @keydown.2.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 2)"
-       @keydown.3.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 3)"
-       @keydown.4.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 4)"
-       @keydown.5.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 5)"
-       @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) toggleFavorite(lightbox.currentImage)">
+       @keydown.s.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 5)"
+       @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 3)"
+       @keydown.d.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 1)">
     <div class="lightbox-backdrop" @click="closeLightbox()"></div>
     <div class="lightbox-body">
       <div class="lightbox-content">
@@ -959,47 +956,41 @@
         <div class="lb-model-badge" x-show="lightbox.source === 'model-grid' && lightbox.currentImage?._mgModel"
              x-text="displayModelName(lightbox.currentImage?._mgModel || '')"></div>
       </div>
-      <!-- Evaluation panel: 5-axis rating + comment -->
-      <div class="eval-panel" :class="{'collapsed': !evalPanel.expanded}">
-        <div class="eval-panel-toggle" @click="evalPanel.expanded = !evalPanel.expanded">
-          <span class="eval-panel-title">Evaluation</span>
-          <span class="eval-toggle-icon" x-text="evalPanel.expanded ? '&#9660;' : '&#9650;'"></span>
-        </div>
-        <div class="eval-panel-body" x-show="evalPanel.expanded" x-cloak>
-          <!-- 5-axis star ratings -->
-          <template x-for="axis in RATING_AXES" :key="'eval-' + axis.key">
-            <div class="eval-axis">
-              <span class="eval-axis-label" x-text="axis.label"></span>
-              <div class="star-rating">
-                <template x-for="star in [1,2,3,4,5]" :key="'eval-' + axis.key + '-' + star">
-                  <span class="star"
-                        :class="{'filled': getImageScore(lightbox.currentImage, axis.key) >= star}"
-                        @click="setImageScore(lightbox.currentImage, axis.key, star)">&#9733;</span>
-                </template>
-              </div>
-            </div>
-          </template>
-          <!-- Comment textarea -->
-          <div class="eval-comment">
-            <textarea class="eval-comment-input"
-                      placeholder="Comment..."
-                      rows="3"
-                      :value="evalPanel.commentDraft"
-                      @input="onCommentInput($event.target.value)"
-                      @keydown.stop></textarea>
-          </div>
-        </div>
+      <!-- Quick 4-tier rating: ★ Best / ♥ Like / 👎 Bad -->
+      <div class="lb-quick-rate">
+        <button class="rate-btn rate-bad"
+                :class="{'active': getImageRating(lightbox.currentImage) === 1}"
+                @click="quickRate(lightbox.currentImage, 1)"
+                title="Bad (D key)">
+          <span class="rate-icon">&#128078;</span>
+          <span class="rate-label">Bad</span>
+        </button>
+        <button class="rate-btn rate-heart"
+                :class="{'active': getImageRating(lightbox.currentImage) === 3}"
+                @click="quickRate(lightbox.currentImage, 3)"
+                title="Like (F key)">
+          <span class="rate-icon">&#9825;</span>
+          <span class="rate-label">Like</span>
+        </button>
+        <button class="rate-btn rate-star"
+                :class="{'active': getImageRating(lightbox.currentImage) === 5}"
+                @click="quickRate(lightbox.currentImage, 5)"
+                title="Best (S key)">
+          <span class="rate-icon">&#9733;</span>
+          <span class="rate-label">Best</span>
+        </button>
       </div>
-      <!-- Heart favorite + Save to training data -->
+      <!-- Comment -->
+      <div class="lb-comment">
+        <textarea class="eval-comment-input"
+                  placeholder="Comment..."
+                  rows="2"
+                  :value="evalPanel.commentDraft"
+                  @input="onCommentInput($event.target.value)"
+                  @keydown.stop></textarea>
+      </div>
+      <!-- Save to training data -->
       <div class="lb-save-section">
-        <div class="lb-save-row">
-          <button class="fav-btn" :class="{'active': isImageFavorited(lightbox.currentImage)}"
-                  @click="toggleFavorite(lightbox.currentImage)">
-            <span x-text="isImageFavorited(lightbox.currentImage) ? '&#9829;' : '&#9825;'"></span>
-          </button>
-          <button class="save-detail-btn" @click="savePanel.open = !savePanel.open"
-                  :class="{'active': savePanel.open}">Labels</button>
-        </div>
         <template x-if="savePanel.open">
           <div class="save-panel">
             <div class="save-labels">

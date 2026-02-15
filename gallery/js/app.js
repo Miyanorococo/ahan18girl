@@ -438,6 +438,34 @@ document.addEventListener('alpine:init', () => {
       this.setImageScore(img, 'overall', rating);
     },
 
+    /** Quick 4-tier rating: ★5 / ♥3 / 👎1 / toggle off if same */
+    quickRate(img, score) {
+      if (!img) return;
+      const current = this.getImageRating(img);
+      // Toggle off if clicking same tier
+      const newScore = current === score ? 0 : score;
+      this.setImageScore(img, 'overall', newScore || 0);
+      // Also set favorited flag for ♥ and ★
+      const key = this._ratingKey(img);
+      if (key && this.ratings.images[key]) {
+        const shouldFav = newScore >= 3;
+        if (this.ratings.images[key].favorited !== shouldFav) {
+          this.ratings.images = {
+            ...this.ratings.images,
+            [key]: { ...this.ratings.images[key], favorited: shouldFav },
+          };
+          this._persistRatings();
+        }
+        // Save ★ to training-data as 'best-quality'
+        if (newScore === 5) {
+          const exp = this.lightbox.sourceExperiment || this.currentExperiment;
+          if (exp) {
+            GalleryAPI.saveToTraining(exp.id, [img.name], ['best-quality'], {}).catch(() => {});
+          }
+        }
+      }
+    },
+
     /** Set comment for an image */
     setImageComment(img, comment) {
       const key = this._ratingKey(img);
