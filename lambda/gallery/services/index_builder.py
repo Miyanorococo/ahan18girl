@@ -64,11 +64,28 @@ def _build_entry(s3_client, experiment_id, metadata):
             words = positive.split(",")[:4]
             prompt_summary = ", ".join(w.strip() for w in words if w.strip())[:80]
 
+    # Extract genre and type for Knowledge Base matrix
+    genre = metadata.get("genre", "")
+    content_type = metadata.get("type", "")
+    if not genre and prompt_summary:
+        parts = prompt_summary.split("_", 1)
+        genre = parts[0] if parts else ""
+    if not content_type and prompt_summary and "_" in prompt_summary:
+        content_type = prompt_summary.split("_", 1)[1]
+
+    # Extract prompt_id from experiment_id (e.g., "20260215_model/P01_ex" → "P01_ex")
+    prompt_id = ""
+    if "/" in experiment_id:
+        prompt_id = experiment_id.split("/")[-1]
+
     return {
         "id": experiment_id,
         "model": meta_model,
         "pipeline": metadata.get("pipeline", "txt2img"),
         "prompt_summary": prompt_summary,
+        "genre": genre,
+        "content_type": content_type,
+        "prompt_id": prompt_id,
         "date": metadata.get("date", date or ""),
         "image_count": image_count,
         "thumbnail": thumbnail,

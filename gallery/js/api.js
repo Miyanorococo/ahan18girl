@@ -52,6 +52,17 @@ const GalleryAPI = {
    * @param {string[]} labels - Labels to apply
    * @param {object} metadata - Extra metadata (scores, comment, etc.)
    */
+  deleteExperiment(experimentId) {
+    return this.fetchJSON('/api/select', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        experiment_id: experimentId,
+        action: 'delete-experiment',
+      }),
+    });
+  },
+
   saveToTraining(experimentId, images, labels, metadata = {}) {
     return this.fetchJSON('/api/select', {
       method: 'POST',

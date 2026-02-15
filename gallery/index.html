@@ -16,6 +16,7 @@
       <a :class="{'active': route === 'compare'}" @click.prevent="navigate('compare')">Compare</a>
       <a :class="{'active': route === 'model-grid'}" @click.prevent="navigate('model-grid')">Grid</a>
       <a :class="{'active': route === 'dashboard'}" @click.prevent="navigate('dashboard')">Dashboard</a>
+      <a :class="{'active': route === 'knowledge-base'}" @click.prevent="navigate('knowledge-base')">KB</a>
     </div>
     <div class="nav-actions">
       <button class="blind-toggle" :class="{'active': blindMode}" @click="toggleBlindMode()">
@@ -32,7 +33,7 @@
   </nav>
 
   <!-- Main content area -->
-  <main class="content" :class="{'content-wide': route === 'model-grid' || route === 'dashboard'}">
+  <main class="content" :class="{'content-wide': route === 'model-grid' || route === 'dashboard' || route === 'knowledge-base'}">
 
     <!-- Experiments list view -->
     <div x-show="route === 'experiments'" x-cloak>
@@ -104,6 +105,7 @@
         <button class="back-btn" @click="navigate('experiments')">&larr; Back</button>
         <h2 x-text="currentExperiment?.prompt_summary || currentExperiment?.id"></h2>
         <button class="compare-btn" @click="addToCompare(currentExperiment?.id)">Add to Compare</button>
+        <button class="delete-btn" @click="deleteExperiment(currentExperiment?.id)">Delete</button>
       </div>
 
       <div class="detail-layout">
@@ -690,6 +692,195 @@
       </div>
     </div>
 
+    <!-- Knowledge Base view -->
+    <div x-show="route === 'knowledge-base'" x-cloak>
+      <div class="section-header">
+        <h2>Knowledge Base</h2>
+        <div class="kb-tabs" style="display:flex;gap:8px;margin-left:auto;">
+          <button :class="{'active': kb.activeTab === 'recommend'}" @click="kb.activeTab = 'recommend'" class="filter-btn">Recommend</button>
+          <button :class="{'active': kb.activeTab === 'matrix'}" @click="kb.activeTab = 'matrix'" class="filter-btn">Matrix</button>
+          <button :class="{'active': kb.activeTab === 'prompts'}" @click="kb.activeTab = 'prompts'" class="filter-btn">Prompts</button>
+        </div>
+      </div>
+
+      <template x-if="kb.loading">
+        <div class="loading-spinner">Computing knowledge base...</div>
+      </template>
+
+      <!-- Quick Recommendation -->
+      <div x-show="kb.activeTab === 'recommend' && !kb.loading">
+        <div class="card" style="padding:24px;margin-bottom:24px;">
+          <h3 style="margin-bottom:16px;">Quick Recommendation</h3>
+          <p style="color:var(--text-secondary);margin-bottom:16px;">Genre + Type to select the best model and prompt</p>
+          <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+            <select x-model="kb.selectedGenre" @change="computeRecommendation()" style="padding:8px 12px;background:var(--bg-card);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;">
+              <option value="">-- Genre --</option>
+              <template x-for="g in kb.matrix?.genres || []">
+                <option :value="g" x-text="g"></option>
+              </template>
+            </select>
+            <select x-model="kb.selectedType" @change="computeRecommendation()" style="padding:8px 12px;background:var(--bg-card);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;">
+              <option value="">-- Type (all) --</option>
+              <option value="explicit">explicit</option>
+              <option value="sensitive">sensitive</option>
+              <option value="sex">sex</option>
+              <option value="penis">penis</option>
+              <option value="toy">toy</option>
+              <option value="orgasm">orgasm</option>
+              <option value="pregnant">pregnant</option>
+              <option value="lactation">lactation</option>
+              <option value="birth">birth</option>
+              <option value="ejac">ejac</option>
+            </select>
+          </div>
+          <template x-if="kb.recommendation">
+            <div class="card" style="background:var(--bg-deepest);padding:20px;">
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+                <span style="font-size:2rem;">&#127942;</span>
+                <div>
+                  <div style="font-size:1.3rem;font-weight:600;" x-text="kb.recommendation.model"></div>
+                  <div style="color:var(--text-secondary);">
+                    Score: <span x-text="kb.recommendation.score" style="color:var(--accent);font-weight:600;"></span>
+                    / 5.0 &nbsp;|&nbsp;
+                    <span x-text="kb.recommendation.count"></span> samples &nbsp;|&nbsp;
+                    Fav: <span x-text="kb.recommendation.favRate"></span>%
+                  </div>
+                </div>
+              </div>
+              <template x-if="kb.recommendation.topPrompt">
+                <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;">
+                  <div style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:4px;">Top Prompt:</div>
+                  <code style="font-size:0.85rem;color:var(--text-primary);" x-text="kb.recommendation.topPrompt.id"></code>
+                  <span style="color:var(--text-muted);font-size:0.8rem;" x-text="'  avg ' + kb.recommendation.topPrompt.avg"></span>
+                </div>
+              </template>
+            </div>
+          </template>
+          <div x-show="kb.selectedGenre && !kb.recommendation" style="color:var(--text-muted);padding:12px;">
+            No rated data for this combination yet.
+          </div>
+        </div>
+      </div>
+
+      <!-- Decision Matrix -->
+      <div x-show="kb.activeTab === 'matrix' && !kb.loading">
+        <div class="card" style="padding:16px;margin-bottom:16px;">
+          <h3 style="margin-bottom:8px;">Genre x Model Matrix</h3>
+          <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px;">Click a genre row to drill down by type. Cell color = score (red→green).</p>
+          <div style="overflow-x:auto;">
+            <table class="kb-matrix" style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.1);">Genre</th>
+                  <template x-for="model in kb.matrix?.models || []">
+                    <th style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,0.1);white-space:nowrap;" x-text="shortModelName(model)"></th>
+                  </template>
+                  <th style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.1);">Best</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="genre in kb.matrix?.genres || []">
+                  <tr style="cursor:pointer;" @click="drillIntoGenre(genre)" :class="{'kb-drill-active': kb.matrixDrillGenre === genre}">
+                    <td style="padding:6px 8px;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.04);" x-text="genre"></td>
+                    <template x-for="model in kb.matrix.models">
+                      <td style="padding:4px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"
+                          :style="'background:' + matrixCellColor(kb.matrix.cells[genre]?.[model]?.avg || 0)">
+                        <span x-text="kb.matrix.cells[genre]?.[model]?.avg || '-'" style="font-weight:500;"></span>
+                        <div style="font-size:0.65rem;color:var(--text-muted);" x-text="'n=' + (kb.matrix.cells[genre]?.[model]?.count || 0)"></div>
+                      </td>
+                    </template>
+                    <td style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--accent);font-weight:600;"
+                        x-text="matrixWinner(genre)?.model ? shortModelName(matrixWinner(genre).model) : '-'"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Drill-down by type -->
+        <template x-if="kb.matrixDrill">
+          <div class="card" style="padding:16px;">
+            <h3 style="margin-bottom:8px;" x-text="kb.matrixDrillGenre + ' - Type Breakdown'"></h3>
+            <div style="overflow-x:auto;">
+              <table class="kb-matrix" style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.1);">Type</th>
+                    <template x-for="model in kb.matrixDrill.models">
+                      <th style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,0.1);white-space:nowrap;" x-text="shortModelName(model)"></th>
+                    </template>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="type in kb.matrixDrill.types">
+                    <tr>
+                      <td style="padding:6px 8px;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.04);" x-text="type"></td>
+                      <template x-for="model in kb.matrixDrill.models">
+                        <td style="padding:4px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"
+                            :style="'background:' + matrixCellColor(kb.matrixDrill.cells[type]?.[model]?.avg || 0)">
+                          <span x-text="kb.matrixDrill.cells[type]?.[model]?.avg || '-'"></span>
+                        </td>
+                      </template>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </template>
+
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="action-btn" @click="copyKBMarkdown()">Copy Markdown</button>
+          <button class="action-btn" @click="copyKBJSON()">Copy JSON</button>
+        </div>
+      </div>
+
+      <!-- Prompt Library -->
+      <div x-show="kb.activeTab === 'prompts' && !kb.loading">
+        <div class="card" style="padding:16px;margin-bottom:16px;">
+          <h3 style="margin-bottom:12px;">Prompt Quality Rankings</h3>
+          <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+            <input type="text" x-model="kb.promptFilter" placeholder="Filter by genre, type, ID..."
+                   style="padding:8px 12px;background:var(--bg-deepest);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;flex:1;min-width:200px;">
+            <select x-model="kb.promptSort" style="padding:8px 12px;background:var(--bg-card);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;">
+              <option value="score">Sort: Score</option>
+              <option value="favRate">Sort: Fav Rate</option>
+              <option value="genre">Sort: Genre</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+              <thead>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                  <th style="text-align:left;padding:8px;">#</th>
+                  <th style="text-align:left;padding:8px;">Prompt</th>
+                  <th style="text-align:left;padding:8px;">Genre</th>
+                  <th style="text-align:left;padding:8px;">Type</th>
+                  <th style="text-align:center;padding:8px;">Avg</th>
+                  <th style="text-align:center;padding:8px;">n</th>
+                  <th style="text-align:center;padding:8px;">Fav%</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="(p, idx) in filteredPromptRankings" :key="p.id">
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                    <td style="padding:6px 8px;color:var(--text-muted);" x-text="idx + 1"></td>
+                    <td style="padding:6px 8px;font-weight:600;" x-text="p.id"></td>
+                    <td style="padding:6px 8px;" x-text="p.genre"></td>
+                    <td style="padding:6px 8px;" x-text="p.type"></td>
+                    <td style="padding:6px 8px;text-align:center;font-weight:600;" :style="'color:' + (p.avg >= 4 ? '#4caf50' : p.avg >= 3 ? '#ff9800' : '#f44336')" x-text="p.avg"></td>
+                    <td style="padding:6px 8px;text-align:center;color:var(--text-muted);" x-text="p.count"></td>
+                    <td style="padding:6px 8px;text-align:center;" x-text="p.favRate + '%'"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- Lightbox overlay -->
@@ -824,6 +1015,7 @@
   <script src="/gallery/js/compare.js"></script>
   <script src="/gallery/js/model-grid.js"></script>
   <script src="/gallery/js/dashboard.js"></script>
+  <script src="/gallery/js/knowledge-base.js"></script>
   <script src="/gallery/js/app.js"></script>
 </body>
 </html>

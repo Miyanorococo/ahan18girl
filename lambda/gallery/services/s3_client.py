@@ -32,6 +32,9 @@ class S3Client:
                 keys.append(obj["Key"])
         return keys
 
+    def delete_object(self, key):
+        self.s3.delete_object(Bucket=self.bucket, Key=key)
+
     def copy_object(self, src_key, dst_key):
         self.s3.copy_object(
             Bucket=self.bucket,

@@ -33,6 +33,7 @@ document.addEventListener('alpine:init', () => {
     ...compareMixin(),
     ...modelGridMixin(),
     ...dashboardMixin(),
+    ...knowledgeBaseMixin(),
 
     // Debounced server rating save
     _ratingSaveTimer: null,
@@ -162,6 +163,8 @@ document.addEventListener('alpine:init', () => {
         this.initModelGrid();
       } else if (route === 'dashboard') {
         this.initDashboard();
+      } else if (route === 'knowledge-base') {
+        this.initKnowledgeBase();
       }
     },
 
@@ -551,6 +554,25 @@ document.addEventListener('alpine:init', () => {
       } catch (e) {
         console.error('Failed to select images:', e);
         alert('Failed to copy images. Please try again.');
+      }
+    },
+
+    // --- Delete experiment ---
+    async deleteExperiment(expId) {
+      if (!expId) return;
+      if (!confirm(`Delete experiment?\n${expId}`)) return;
+      try {
+        await GalleryAPI.deleteExperiment(expId);
+        this.experiments = this.experiments.filter(e => e.id !== expId);
+        this._buildFilterOptions();
+        this.filterExperiments();
+        this._expCountCache = null;
+        if (this.currentExperiment?.id === expId) {
+          this.navigate('experiments');
+        }
+      } catch (e) {
+        console.error('Delete failed:', e);
+        alert('Delete failed.');
       }
     },
 

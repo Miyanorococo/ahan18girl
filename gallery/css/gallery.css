@@ -361,9 +361,19 @@ body {
 }
 
 .back-btn:hover,
-.compare-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+.compare-btn:hover { background: rgba(255, 255, 255, 0.12); }
+
+.delete-btn {
+  background: transparent;
+  border: 1px solid rgba(233, 69, 96, 0.2);
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: var(--radius-badge);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s;
 }
+.delete-btn:hover { background: rgba(233, 69, 96, 0.1); }
 
 /* === Detail Layout (sidebar + images) === */
 .detail-layout {

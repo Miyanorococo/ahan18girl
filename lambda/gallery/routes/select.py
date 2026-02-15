@@ -39,6 +39,8 @@ def select_images(event):
 
     if action == "save-training":
         return _save_to_training(s3, data)
+    elif action == "delete-experiment":
+        return _delete_experiment(s3, data)
     else:
         return _select_to_production(s3, data)
 
@@ -137,6 +139,36 @@ def _save_to_training(s3, data):
         "errors": errors,
         "total_copied": len(copied),
     })
+
+
+def _delete_experiment(s3, data):
+    """Delete an experiment's gallery data and update index."""
+    experiment_id = data.get("experiment_id")
+    if not experiment_id:
+        return _response(400, {"error": "experiment_id is required"})
+
+    prefix = f"gallery/experiments/{experiment_id}/"
+    try:
+        keys = s3.list_objects(prefix)
+        for key in keys:
+            s3.delete_object(key)
+        logger.info("Deleted %d objects from %s", len(keys), prefix)
+    except Exception as e:
+        logger.error("Failed to delete %s: %s", prefix, e)
+        return _response(500, {"error": f"Failed to delete: {e}"})
+
+    # Remove from index
+    try:
+        from services.index_builder import INDEX_KEY
+        index = s3.get_json(INDEX_KEY)
+        if isinstance(index, list):
+            index = [e for e in index if e.get("id") != experiment_id]
+            s3.put_json(INDEX_KEY, index)
+            logger.info("Removed %s from index", experiment_id)
+    except Exception as e:
+        logger.error("Failed to update index: %s", e)
+
+    return _response(200, {"deleted": experiment_id, "objects_deleted": len(keys)})
 
 
 def _now_iso():
