@@ -8,20 +8,21 @@ logger = logging.getLogger(__name__)
 
 REGION = "us-east-1"
 
-# Fallback chain: cheapest Anthropic first. Nova models are excluded because
-# they refuse to classify NSFW content (return empty responses).
+# Fallback chain: best quality first. Nova models excluded (refuse NSFW).
+# Haiku 3.5/4.5 require inference profiles (us.* prefix).
+# Haiku 3 works with direct on-demand model ID.
 MODEL_CHAIN = [
     {
+        "id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+        "format": "anthropic",  # best accuracy, ~$0.00080/call
+    },
+    {
+        "id": "us.anthropic.claude-3-5-haiku-20241022-v1:0",
+        "format": "anthropic",  # good accuracy, ~$0.00080/call
+    },
+    {
         "id": "anthropic.claude-3-haiku-20240307-v1:0",
-        "format": "anthropic",  # $0.25/1M input, $1.25/1M output
-    },
-    {
-        "id": "anthropic.claude-3-5-haiku-20241022-v1:0",
-        "format": "anthropic",  # $0.80/1M input, $4/1M output
-    },
-    {
-        "id": "anthropic.claude-haiku-4-5-20251001-v1:0",
-        "format": "anthropic",  # newest Haiku
+        "format": "anthropic",  # cheapest, ~$0.00025/call, adequate accuracy
     },
 ]
 
