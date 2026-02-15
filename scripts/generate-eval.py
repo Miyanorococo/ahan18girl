@@ -22,6 +22,7 @@ import logging
 import os
 import sys
 import time
+import urllib.parse
 import urllib.request
 import urllib.error
 from datetime import datetime, timezone
@@ -301,7 +302,6 @@ def rebuild_gallery_index(bucket):
 
             # Extract experiment ID from path
             # gallery/experiments/{date}_{model}/{prompt_id}/metadata.json
-            parts = key[len(prefix):].rstrip("/metadata.json").rsplit("/", 1)
             exp_id = key[len(prefix):-len("/metadata.json")]
 
             # Count images

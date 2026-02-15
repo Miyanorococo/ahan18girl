@@ -64,7 +64,8 @@ echo ""
 echo "[4/6] Syncing frontend to S3..."
 if [[ -d "${PROJECT_DIR}/gallery" ]]; then
     aws s3 sync "${PROJECT_DIR}/gallery/" "s3://${S3_BUCKET}/gallery/" \
-        --delete \
+        --exclude 'experiments/*' \
+        --exclude 'user-data/*' \
         --exclude '*.DS_Store' \
         --region "${REGION}"
 else
