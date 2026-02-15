@@ -940,112 +940,58 @@
        @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 2)"
        @keydown.d.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, -1)">
     <div class="lightbox-backdrop" @click="closeLightbox()"></div>
-    <div class="lightbox-body">
-      <div class="lightbox-content">
+
+    <!-- Carousel: prev / current / next -->
+    <div class="lb-carousel">
+      <!-- Previous image (dimmed) -->
+      <div class="lb-side lb-prev" @click="lightboxPrev()">
+        <img :src="lbAdjacentImage(-1)?.full_url" x-show="lbAdjacentImage(-1)">
+      </div>
+
+      <!-- Current image (center) -->
+      <div class="lb-center">
         <img :src="lightbox.currentImage?.full_url" :alt="lightbox.currentImage?.name">
-        <div class="lightbox-controls">
-          <button @click="lightboxPrev()">&larr;</button>
-          <span x-text="(lightbox.index + 1) + ' / ' + lightbox.images.length"></span>
-          <button @click="lightboxNext()">&rarr;</button>
+
+        <!-- Top overlay: model badge + counter + close -->
+        <div class="lb-top-bar">
+          <span class="lb-model-badge" x-show="lightbox.source === 'model-grid' && lightbox.currentImage?._mgModel"
+                x-text="displayModelName(lightbox.currentImage?._mgModel || '')"></span>
+          <span class="lb-counter" x-text="(lightbox.index + 1) + ' / ' + lightbox.images.length"></span>
+          <span class="lb-genre-badge" x-show="getExpGenre(lightbox.sourceExperiment || currentExperiment)"
+                x-text="getExpGenre(lightbox.sourceExperiment || currentExperiment)"></span>
+          <button class="lb-close-btn" @click="closeLightbox()">&times;</button>
         </div>
-        <!-- Model name overlay for cross-model grid navigation -->
-        <div class="lb-model-badge" x-show="lightbox.source === 'model-grid' && lightbox.currentImage?._mgModel"
-             x-text="displayModelName(lightbox.currentImage?._mgModel || '')"></div>
-      </div>
-      <!-- Quick 4-tier rating: ★ Best / ♥ Like / 👎 Bad -->
-      <div class="lb-quick-rate">
-        <button class="rate-btn rate-bad"
-                :class="{'active': getImageRating(lightbox.currentImage) === -1}"
-                @click="quickRate(lightbox.currentImage, -1)"
-                title="Bad (D key)">
-          <span class="rate-icon">&#128078;</span>
-          <span class="rate-label">Bad</span>
-        </button>
-        <button class="rate-btn rate-heart"
-                :class="{'active': getImageRating(lightbox.currentImage) === 2}"
-                @click="quickRate(lightbox.currentImage, 2)"
-                title="Like (F key)">
-          <span class="rate-icon">&#9825;</span>
-          <span class="rate-label">Like</span>
-        </button>
-        <button class="rate-btn rate-star"
-                :class="{'active': getImageRating(lightbox.currentImage) === 5}"
-                @click="quickRate(lightbox.currentImage, 5)"
-                title="Best (S key)">
-          <span class="rate-icon">&#9733;</span>
-          <span class="rate-label">Best</span>
-        </button>
-      </div>
-      <!-- Comment -->
-      <div class="lb-comment">
-        <textarea class="eval-comment-input"
-                  placeholder="Comment..."
-                  rows="2"
-                  :value="evalPanel.commentDraft"
-                  @input="onCommentInput($event.target.value)"
-                  @keydown.stop></textarea>
-      </div>
-      <!-- Save to training data -->
-      <div class="lb-save-section">
-        <template x-if="savePanel.open">
-          <div class="save-panel">
-            <div class="save-labels">
-              <template x-for="label in getAllSaveLabels()" :key="'sl-' + label">
-                <button class="save-label-btn" :class="{'selected': isSaveLabelSelected(label)}"
-                        @click="toggleSaveLabel(label)" x-text="label"></button>
-              </template>
-            </div>
-            <div class="save-custom-row">
-              <input type="text" class="save-custom-input" x-model="savePanel.customLabelInput"
-                     @keydown.enter="addCustomLabel()" @keydown.stop placeholder="Custom label...">
-              <button class="save-custom-add" @click="addCustomLabel()">+</button>
-            </div>
-            <div class="save-panel-actions">
-              <button class="btn-primary" @click="executeSave()"
-                      :disabled="savePanel.selectedLabels.length === 0 || savePanel.saving">
-                <span x-show="!savePanel.saving && !savePanel.saved">Save</span>
-                <span x-show="savePanel.saving">Saving...</span>
-                <span x-show="savePanel.saved">Saved &#10003;</span>
-              </button>
-              <button class="btn-ghost" @click="closeSavePanel()">Cancel</button>
-            </div>
+
+        <!-- Bottom overlay: rating buttons -->
+        <div class="lb-bottom-bar">
+          <div class="lb-rate-buttons">
+            <button class="rate-btn rate-bad"
+                    :class="{'active': getImageRating(lightbox.currentImage) === -1}"
+                    @click.stop="quickRate(lightbox.currentImage, -1)" title="Bad (D)">
+              <span class="rate-icon">&#128078;</span>
+            </button>
+            <button class="rate-btn rate-heart"
+                    :class="{'active': getImageRating(lightbox.currentImage) === 2}"
+                    @click.stop="quickRate(lightbox.currentImage, 2)" title="Like (F)">
+              <span class="rate-icon">&#9825;</span>
+            </button>
+            <button class="rate-btn rate-star"
+                    :class="{'active': getImageRating(lightbox.currentImage) === 5}"
+                    @click.stop="quickRate(lightbox.currentImage, 5)" title="Best (S)">
+              <span class="rate-icon">&#9733;</span>
+            </button>
           </div>
-        </template>
-      </div>
-      <!-- Lightbox metadata panel -->
-      <div class="lightbox-meta" x-show="lightbox.sourceExperiment?.metadata || currentExperiment?.metadata">
-        <div class="lb-meta-item">
-          <span class="lb-meta-label">Model</span>
-          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.model?.checkpoint || '—'"></span>
-        </div>
-        <div class="lb-meta-item">
-          <span class="lb-meta-label">Pipeline</span>
-          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.pipeline || '—'"></span>
-        </div>
-        <div class="lb-meta-divider"></div>
-        <div class="lb-meta-item">
-          <span class="lb-meta-label">Steps</span>
-          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.parameters?.steps || '—'"></span>
-        </div>
-        <div class="lb-meta-item">
-          <span class="lb-meta-label">CFG</span>
-          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.parameters?.cfg_scale || '—'"></span>
-        </div>
-        <div class="lb-meta-item">
-          <span class="lb-meta-label">Sampler</span>
-          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.parameters?.sampler || '—'"></span>
-        </div>
-        <div class="lb-meta-divider"></div>
-        <div class="lb-meta-prompt">
-          <span class="lb-meta-label">Prompt</span>
-          <p x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.prompt?.positive || '—'"></p>
-        </div>
-        <div class="lb-meta-item" x-show="lightbox.currentImage?.name">
-          <span class="lb-meta-label">File</span>
-          <span x-text="lightbox.currentImage?.name"></span>
+          <div class="lb-info-line">
+            <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.model?.checkpoint || ''"></span>
+            <span x-text="lightbox.currentImage?.name || ''"></span>
+          </div>
         </div>
       </div>
-      <button class="lightbox-close" @click="closeLightbox()">&times;</button>
+
+      <!-- Next image (dimmed) -->
+      <div class="lb-side lb-next" @click="lightboxNext()">
+        <img :src="lbAdjacentImage(1)?.full_url" x-show="lbAdjacentImage(1)">
+      </div>
     </div>
   </div>
 

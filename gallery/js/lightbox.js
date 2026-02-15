@@ -97,6 +97,15 @@ function lightboxMixin() {
       this.savePanel.saved = false;
     },
 
+    /** Get adjacent image for carousel preview (-1=prev, +1=next) */
+    lbAdjacentImage(offset) {
+      const images = this.lightbox.images;
+      const len = images.length;
+      if (len <= 1) return null;
+      const idx = (this.lightbox.index + offset + len) % len;
+      return images[idx] || null;
+    },
+
     _preloadAdjacent(images, idx) {
       const len = images.length;
       if (len <= 1) return;
