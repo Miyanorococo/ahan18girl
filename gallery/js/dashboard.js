@@ -4,10 +4,6 @@
  * model-level comments and verdicts, and Markdown/JSON export.
  */
 function dashboardMixin() {
-  // Chart.js instance references for cleanup
-  let _radarChart = null;
-  let _barChart = null;
-
   return {
     dashboard: {
       modelStats: [],      // Per-model aggregated stats
@@ -17,7 +13,6 @@ function dashboardMixin() {
       insights: [],        // Auto-detected patterns
       _expandedModel: null, // currently expanded model in ranking
       loading: false,
-      chartReady: false,
     },
 
     /**
@@ -31,7 +26,6 @@ function dashboardMixin() {
       this._computeHeatmap();
       this._computeInsights();
       this.dashboard.loading = false;
-      this.$nextTick(() => this._renderCharts());
     },
 
     /**
@@ -339,89 +333,6 @@ function dashboardMixin() {
       }
 
       this.dashboard.insights = insights.slice(0, 10);
-    },
-
-    /**
-     * Render Chart.js radar and bar charts.
-     * Charts are created/updated in existing canvas elements.
-     */
-    _renderCharts() {
-      if (typeof Chart === 'undefined') {
-        this.dashboard.chartReady = false;
-        return;
-      }
-      this.dashboard.chartReady = true;
-
-      const stats = this.dashboard.modelStats.filter(s => s.ratedCount > 0);
-      if (stats.length === 0) return;
-
-      // --- Stacked bar chart (★/♥/👎 counts per model) ---
-      const radarCanvas = document.getElementById('radar-chart');
-      if (radarCanvas) {
-        if (_radarChart) _radarChart.destroy();
-
-        const chartData = stats.slice(0, 13);
-        _radarChart = new Chart(radarCanvas, {
-          type: 'bar',
-          data: {
-            labels: chartData.map(s => s.displayName),
-            datasets: [
-              { label: '★ Best', data: chartData.map(s => s.tiers?.star || 0), backgroundColor: 'rgba(255, 215, 0, 0.7)', borderRadius: 3 },
-              { label: '♥ Like', data: chartData.map(s => s.tiers?.heart || 0), backgroundColor: 'rgba(233, 69, 96, 0.7)', borderRadius: 3 },
-              { label: '👎 Bad', data: chartData.map(s => s.tiers?.bad || 0), backgroundColor: 'rgba(244, 67, 54, 0.5)', borderRadius: 3 },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            scales: {
-              x: { stacked: true, ticks: { color: '#666' }, grid: { color: 'rgba(255,255,255,0.04)' } },
-              y: { stacked: true, ticks: { color: '#aaa', font: { size: 11 } }, grid: { display: false } },
-            },
-            plugins: {
-              legend: { labels: { color: '#aaa', boxWidth: 12, font: { size: 11 } }, position: 'bottom' },
-            },
-          },
-        });
-      }
-
-      // --- Bar chart (weighted average score) ---
-      const barCanvas = document.getElementById('bar-chart');
-      if (barCanvas) {
-        if (_barChart) _barChart.destroy();
-
-        const barData = stats.slice(0, 13);
-        const barColors = barData.map(s =>
-          s.overallAvg >= 3 ? 'rgba(76, 175, 80, 0.7)' :
-          s.overallAvg >= 0 ? 'rgba(255, 193, 7, 0.7)' :
-          'rgba(244, 67, 54, 0.7)'
-        );
-
-        _barChart = new Chart(barCanvas, {
-          type: 'bar',
-          data: {
-            labels: barData.map(s => s.displayName),
-            datasets: [{
-              label: 'Weighted Avg',
-              data: barData.map(s => s.overallAvg),
-              backgroundColor: barColors,
-              borderRadius: 4,
-              barThickness: 28,
-            }],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            scales: {
-              x: { min: -1, max: 5, ticks: { color: '#666', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } },
-              y: { ticks: { color: '#aaa', font: { size: 11 } }, grid: { display: false } },
-            },
-            plugins: { legend: { display: false } },
-          },
-        });
-      }
     },
 
     /**
