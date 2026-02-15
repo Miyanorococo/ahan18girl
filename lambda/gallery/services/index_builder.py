@@ -39,8 +39,19 @@ def _build_entry(s3_client, experiment_id, metadata):
     if isinstance(meta_model, dict):
         meta_model = meta_model.get("checkpoint", model)
 
-    # Extract prompt summary from prompt if not explicitly set
+    # Extract prompt summary: metadata > experiment_id > positive prompt fallback
     prompt_summary = metadata.get("prompt_summary", "")
+    if not prompt_summary:
+        # Try to extract from experiment_id: {date}_{model}/{date}_{model}_txt2img_{summary}_...
+        # or {date}_{model}/{prompt_id}
+        basename = experiment_id.split("/")[-1] if "/" in experiment_id else ""
+        if "_txt2img_" in basename:
+            # e.g. 20260215_wai-nsfw-v16_txt2img_girl-school-uniform_s25-cfg7-euler-a_seed42x5
+            after_txt2img = basename.split("_txt2img_", 1)[1]
+            # Strip params suffix (starts with _s{digits} or _seed)
+            prompt_part = re.split(r"_s\d+[-_]|_seed", after_txt2img)[0]
+            if prompt_part:
+                prompt_summary = prompt_part
     if not prompt_summary:
         prompt = metadata.get("prompt", {})
         if isinstance(prompt, dict):
