@@ -130,15 +130,34 @@ else
     log "Mounting ${EBS_DEVICE} at ${DATA_DIR}"
     mount "${EBS_DEVICE}" "${DATA_DIR}"
 
-    # Add to fstab if not already present
-    if ! grep -q "${EBS_DEVICE}" /etc/fstab; then
-        log "Adding ${EBS_DEVICE} to /etc/fstab"
-        echo "${EBS_DEVICE} ${DATA_DIR} ext4 defaults,nofail 0 2" >> /etc/fstab
-    fi
+    # Add to fstab using UUID (NVMe device names change across reboots)
+    EBS_UUID=$(blkid -s UUID -o value "${EBS_DEVICE}")
+    sed -i '\|/data|d' /etc/fstab
+    log "Adding UUID=${EBS_UUID} to /etc/fstab"
+    echo "UUID=${EBS_UUID} ${DATA_DIR} ext4 defaults,nofail 0 2" >> /etc/fstab
 fi
 
 chown -R ubuntu:ubuntu "${DATA_DIR}"
 log "EBS volume ready at ${DATA_DIR}"
+
+# =============================================================================
+# 1.5. Ensure NVIDIA driver is loaded
+# =============================================================================
+log_section "Step 1.5: NVIDIA driver check"
+
+if modprobe nvidia 2>/dev/null; then
+    log "NVIDIA driver loaded successfully"
+else
+    log "NVIDIA driver not loaded, rebuilding DKMS..."
+    apt-get install -y linux-headers-"$(uname -r)" -qq
+    dkms install nvidia/580.126.09 -k "$(uname -r)" || true
+    if modprobe nvidia 2>/dev/null; then
+        log "NVIDIA driver loaded after DKMS rebuild"
+    else
+        log "WARNING: NVIDIA driver still not loaded"
+    fi
+fi
+nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null || log "WARNING: nvidia-smi failed"
 
 # =============================================================================
 # 2. Install ComfyUI

@@ -462,8 +462,58 @@ Resources:
               exit 1
             fi
             mount "$EBS_DEV" /data
-            grep -q "$EBS_DEV" /etc/fstab || echo "$EBS_DEV /data ext4 defaults,nofail 0 2" >> /etc/fstab
+            # Use UUID in fstab (NVMe device names change across reboots)
+            EBS_UUID=$(blkid -s UUID -o value "$EBS_DEV")
+            sed -i '\|/data|d' /etc/fstab
+            echo "UUID=$EBS_UUID /data ext4 defaults,nofail 0 2" >> /etc/fstab
             chown -R ubuntu:ubuntu /data
+
+            # Save config for setup.sh
+            echo "EBS_VOLUME_ID=${EBSVolume}" > /data/.env
+            echo "S3_BUCKET=${S3BucketName}" >> /data/.env
+            echo "AWS_REGION=us-east-1" >> /data/.env
+
+            # Rebuild NVIDIA DKMS for current kernel if needed
+            if ! modprobe nvidia 2>/dev/null; then
+              echo "NVIDIA driver not loaded, rebuilding DKMS..."
+              apt-get install -y linux-headers-$(uname -r) -qq
+              dkms install nvidia/580.126.09 -k $(uname -r) || true
+              modprobe nvidia || echo "WARNING: NVIDIA driver still not loaded"
+            fi
+
+            # Run full setup (ComfyUI install, systemd service, custom nodes)
+            if [ -f /data/ComfyUI/venv/bin/python ]; then
+              # Existing installation: just configure systemd and start
+              echo "Existing ComfyUI found, configuring service..."
+            fi
+            # Download and run setup.sh from S3 or use inline minimal setup
+            # For now, setup.sh is expected to be on EBS from first run
+            if [ -x /data/setup.sh ]; then
+              /data/setup.sh
+            else
+              # Minimal inline: create systemd service and start
+              cat > /etc/systemd/system/comfyui.service << 'SVC'
+            [Unit]
+            Description=ComfyUI
+            After=network.target
+            [Service]
+            Type=simple
+            User=ubuntu
+            Group=ubuntu
+            WorkingDirectory=/data/ComfyUI
+            ExecStart=/data/ComfyUI/venv/bin/python /data/ComfyUI/main.py --listen 0.0.0.0 --port 8188 --highvram
+            Restart=on-failure
+            RestartSec=10
+            StandardOutput=journal
+            StandardError=journal
+            LimitNOFILE=65536
+            [Install]
+            WantedBy=multi-user.target
+            SVC
+              systemctl daemon-reload
+              systemctl enable comfyui
+              systemctl start comfyui
+            fi
 
   # ============================================================
   # Application Load Balancer
