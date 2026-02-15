@@ -537,8 +537,9 @@ check_progress() {
 WATCH_INTERVAL=120  # seconds between checks
 MAX_RETRIES=5       # per worker; matches Spot/OD break-even point
 
-# Retry counters (associative array: worker_name → count)
-declare -A RETRY_COUNTS
+# Retry counters stored in /tmp files (compatible with bash 3.x on macOS)
+RETRY_DIR="/tmp/parallel-eval-retries"
+mkdir -p "${RETRY_DIR}" 2>/dev/null || true
 
 get_worker_index() {
     local target="$1"
@@ -558,9 +559,12 @@ relaunch_worker() {
         return 1
     fi
 
-    local retries="${RETRY_COUNTS[$name]:-0}"
+    local retries=0
+    if [[ -f "${RETRY_DIR}/${name}" ]]; then
+        retries=$(cat "${RETRY_DIR}/${name}")
+    fi
     retries=$((retries + 1))
-    RETRY_COUNTS[$name]=$retries
+    echo "${retries}" > "${RETRY_DIR}/${name}"
 
     # Clear interrupted marker
     aws s3 rm "s3://${S3_BUCKET}/eval-status/${name}-interrupted.txt" --region "${REGION}" 2>/dev/null || true

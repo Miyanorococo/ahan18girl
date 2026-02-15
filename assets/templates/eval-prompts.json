@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "description": "13モデル横並び比較用プロンプトセット v3 (99 prompts)",
+    "description": "13モデル横並び比較用プロンプトセット v4 (122 prompts)",
     "created": "2026-02-15",
     "updated": "2026-02-15",
-    "structure": "11ジャンル × 10タイプ(ex, se, sex, penis, toy, orgasm, pregnant, lactation, birth, ejac) = 110プロンプト",
+    "structure": "11ジャンル × 10タイプ = 110 anime + 10 realistic (5 SFW + 5 NSFW) = 120 prompts",
     "variants": "A: Illustrious系 / A2: Illustrij / B: Nova / C: Pony系 / D: Animagine / E: FeMix / F: SD1.5",
     "seeds": [
       42,
@@ -12,13 +12,16 @@
       789,
       1024
     ],
-    "total_images": "110 prompts × 5 seeds × 13 models = 7,150 images"
+    "total_images": "122 prompts × 5 seeds × 13 models = 7,930 images"
   },
   "negative_common": {
     "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
     "explicit": "censored, mosaic censoring, bar censor, ",
     "sensitive": "censored, ",
-    "safe": ""
+    "safe": "",
+    "realistic_safe": "flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_explicit": "censored, mosaic censoring, bar censor, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_sensitive": "censored, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, "
   },
   "model_groups": {
     "A_illustrious": {
@@ -38,7 +41,7 @@
         "width": 1024,
         "height": 1536
       },
-      "quality_prefix": "masterpiece, best quality, amazing quality, ",
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
       "quality_suffix": "",
       "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
     },
@@ -55,7 +58,7 @@
         "width": 832,
         "height": 1216
       },
-      "quality_prefix": "masterpiece, best quality, ultra-detailed, sharp focus, detailed eyes, ",
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ultra-detailed, sharp focus, detailed eyes, ",
       "quality_suffix": "",
       "negative": "worst quality, bad quality, bad anatomy, bad hands, extra digits, fewer digits"
     },
@@ -72,7 +75,7 @@
         "width": 1024,
         "height": 1536
       },
-      "quality_prefix": "masterpiece, best quality, amazing quality, very aesthetic, high resolution, ultra-detailed, absurdres, newest, ",
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, very aesthetic, high resolution, ultra-detailed, absurdres, newest, ",
       "quality_suffix": ", BREAK, depth of field, volumetric lighting",
       "negative": "modern, recent, old, oldest, cartoon, graphic, text, painting, abstract, deformed, mutated, ugly, disfigured, lowres, bad anatomy, bad hands, missing fingers, extra digits, fewer digits, (worst quality, bad quality:1.2), sketch, jpeg artifacts, signature, watermark"
     },
@@ -90,7 +93,7 @@
         "width": 1024,
         "height": 1536
       },
-      "quality_prefix": "score_9, score_8_up, score_7_up, score_6_up, source_anime, BREAK, ",
+      "quality_prefix": "score_9, score_8_up, score_7_up, score_6_up, source_anime, masterpiece, best quality, amazing quality, high score, great score, BREAK, ",
       "quality_suffix": "",
       "negative": "score_1, score_2, score_3, bad anatomy, bad hands, 3d"
     },
@@ -108,7 +111,7 @@
         "height": 1536
       },
       "quality_prefix": "",
-      "quality_suffix": ", masterpiece, high score, great score, absurdres",
+      "quality_suffix": ", masterpiece, best quality, amazing quality, high score, great score, absurdres",
       "negative": "lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, blurry"
     },
     "E_femix": {
@@ -124,7 +127,7 @@
         "width": 832,
         "height": 1216
       },
-      "quality_prefix": "masterpiece, best quality, detailed, ",
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, detailed, ",
       "quality_suffix": "",
       "negative": "worst quality, bad quality, sketch, signature, bad anatomy, bad hands, extra digits, fewer digits"
     },
@@ -142,7 +145,7 @@
         "width": 512,
         "height": 768
       },
-      "quality_prefix": "",
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
       "quality_suffix": "",
       "negative": "worst quality, low quality, bad anatomy, bad hands, extra digits, fewer digits, deformed, blurry, watermark, signature",
       "_note": "BadDream/UnrealisticDream embeddingは未インストールのため除外。インストール後に追加可"
@@ -1460,6 +1463,143 @@
         "C_pony": "rating_explicit, 1boy, 1girl, long hair, grey hair, green eyes, red bowtie, cum, cumshot, facial, cum on face, cum dripping from chin, open mouth, tongue out, kneeling, field, grass, outdoor, blushing, school bag nearby, after school, from front",
         "D_animagine": "1boy, 1girl, long hair, grey hair, green eyes, red bowtie, cum, cumshot, facial, cum on face, cum dripping from chin, open mouth, tongue out, kneeling, field, grass, outdoor, blushing, school bag nearby, after school, from front, explicit",
         "F_sd15": "a grey-haired girl with green eyes and red bowtie kneeling in a grassy field outdoors, receiving a facial cumshot, cum on her face dripping from chin, mouth open with tongue out, blushing, school bag on the ground nearby, after school setting, front view"
+      }
+    },
+    {
+      "id": "R01_sfw",
+      "genre": "realistic portrait",
+      "type": "realistic_safe",
+      "content": {
+        "default": "realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, young woman, 22 years old, long brown hair, brown eyes, natural expression, subtle smile, wearing white blouse, sitting in cafe, holding coffee cup, window light, warm tones, soft shadows, sidelighting, skin pores, natural skin tone, detailed eyes, catchlight, upper body, looking at viewer",
+        "C_pony": "rating_safe, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, young woman, 22 years old, long brown hair, brown eyes, natural expression, subtle smile, wearing white blouse, sitting in cafe, holding coffee cup, window light, warm tones, soft shadows, sidelighting, skin pores, natural skin tone, detailed eyes, upper body, looking at viewer",
+        "D_animagine": "1girl, solo, young woman, long brown hair, brown eyes, natural expression, subtle smile, white blouse, sitting, cafe, holding coffee cup, window light, warm tones, sidelighting, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, upper body, looking at viewer",
+        "F_sd15": "RAW photo, photorealistic portrait of a 22-year-old woman with long brown hair and brown eyes, sitting in a cafe holding a coffee cup. She wears a white blouse and has a subtle natural smile. Soft window light illuminates her face from the side. Warm color tones, visible skin texture and pores, detailed eyes with catchlights. 85mm lens, f/1.4, shallow depth of field, film grain. DSLR quality, upper body shot."
+      }
+    },
+    {
+      "id": "R02_sfw",
+      "genre": "realistic fashion",
+      "type": "realistic_safe",
+      "content": {
+        "default": "realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, fashion model, tall, slender, 25 years old, black hair, ponytail, red lipstick, wearing leather jacket, black tank top, jeans, standing, urban street, neon signs, night, wet pavement, reflections, backlighting, rim light, chromatic aberration, full body, confident pose, looking away, wind",
+        "C_pony": "rating_safe, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, fashion model, tall, slender, black hair, ponytail, red lipstick, leather jacket, black tank top, jeans, standing, urban street, neon signs, night, wet pavement, reflections, backlighting, rim light, full body, confident pose, looking away, wind",
+        "D_animagine": "1girl, solo, fashion model, black hair, ponytail, red lipstick, leather jacket, tank top, jeans, standing, urban street, neon signs, night, wet pavement, reflections, backlighting, rim light, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, full body, looking away",
+        "F_sd15": "RAW photo, editorial fashion photograph of a tall slender 25-year-old woman with black hair in a ponytail and red lipstick. She wears a leather jacket over a black tank top with jeans. Standing confidently on an urban street at night with neon signs reflecting on wet pavement. Strong rim lighting and backlighting. Shot on Canon EOS R5, 50mm f/1.8, chromatic aberration, film grain ISO 400."
+      }
+    },
+    {
+      "id": "R03_sfw",
+      "genre": "realistic beach",
+      "type": "realistic_safe",
+      "content": {
+        "default": "realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, athletic, toned body, 23 years old, blonde hair, messy hair, blue eyes, freckles, white bikini, standing on beach, ocean waves, golden hour, sunset, warm lighting, lens flare, wet skin, water droplets, sand, wind, hair blowing, full body, looking at viewer, natural smile, sun kissed skin",
+        "C_pony": "rating_safe, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, athletic, toned body, blonde hair, messy hair, blue eyes, freckles, white bikini, standing, beach, ocean, golden hour, sunset, warm lighting, lens flare, wet skin, water droplets, wind, full body, looking at viewer, natural smile",
+        "D_animagine": "1girl, solo, athletic, blonde hair, messy hair, blue eyes, freckles, white bikini, beach, ocean, golden hour, sunset, lens flare, wet skin, water droplets, wind, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, full body, looking at viewer, smile",
+        "F_sd15": "RAW photo, golden hour beach photograph of a fit 23-year-old blonde woman with messy hair, blue eyes and freckles. She wears a white bikini and stands at the water's edge with ocean waves behind her. Sunset backlighting creates a warm glow and lens flare. Water droplets glisten on her sun-kissed skin. Wind blows her hair. Kodak Portra 400, 85mm f/1.4, shallow depth of field, natural film grain."
+      }
+    },
+    {
+      "id": "R04_sfw",
+      "genre": "realistic business",
+      "type": "realistic_safe",
+      "content": {
+        "default": "realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, businesswoman, 28 years old, black hair, short hair, bob cut, glasses, red lips, wearing navy blazer, white shirt, pearl earrings, office, glass windows, city skyline, natural lighting, overcast, soft diffused light, professional, serious expression, upper body, portrait, looking at viewer, detailed eyes, skin texture",
+        "C_pony": "rating_safe, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, businesswoman, black hair, short hair, bob cut, glasses, red lips, navy blazer, white shirt, pearl earrings, office, glass windows, city skyline, natural lighting, professional, serious expression, upper body, portrait, looking at viewer",
+        "D_animagine": "1girl, solo, businesswoman, black hair, bob cut, glasses, red lips, blazer, white shirt, office, city skyline, natural lighting, professional, serious expression, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, upper body, portrait, looking at viewer",
+        "F_sd15": "RAW photo, corporate portrait of a 28-year-old businesswoman with a sleek black bob cut and glasses. She wears a navy blazer over a white shirt with pearl earrings. Professional serious expression. Photographed in a modern office with floor-to-ceiling glass windows showing a city skyline. Soft overcast natural light diffuses through the windows. Shot on Nikon D850, 85mm f/2.8, studio quality, detailed skin texture."
+      }
+    },
+    {
+      "id": "R05_sfw",
+      "genre": "realistic garden",
+      "type": "realistic_safe",
+      "content": {
+        "default": "realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, ethereal, 20 years old, silver hair, long hair, green eyes, pale skin, wearing flowing white dress, flower garden, roses, lavender, morning dew, soft morning light, overexposure, bokeh, dreamy, delicate features, bare feet, grass, petals falling, medium shot, looking up, closed eyes, serene expression, translucent fabric",
+        "C_pony": "rating_safe, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, 1girl, solo, silver hair, long hair, green eyes, pale skin, flowing white dress, flower garden, roses, lavender, morning dew, soft light, bokeh, delicate features, bare feet, grass, petals falling, medium shot, looking up, closed eyes, serene expression",
+        "D_animagine": "1girl, solo, silver hair, long hair, green eyes, pale skin, white dress, flower garden, roses, lavender, morning light, bokeh, petals falling, medium shot, closed eyes, serene, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain",
+        "F_sd15": "RAW photo, ethereal photograph of a 20-year-old woman with long silver hair and green eyes in a flower garden filled with roses and lavender. She wears a flowing translucent white dress and stands barefoot on dewy grass. Morning sunlight creates a soft overexposed dreamy atmosphere. Flower petals drift through the air. She looks upward with closed eyes and a serene expression. Fujifilm Pro 400H, 135mm f/2, heavy bokeh, film grain."
+      }
+    },
+    {
+      "id": "R06_nsfw",
+      "genre": "realistic boudoir",
+      "type": "realistic_sensitive",
+      "content": {
+        "default": "nsfw, sensitive, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, young woman, 24 years old, red hair, wavy hair, green eyes, freckles, wearing black lace lingerie, garter belt, stockings, lying on bed, silk sheets, dim lighting, warm candlelight, soft shadows, seductive expression, looking at viewer, collarbone, cleavage, thighs, detailed skin texture, skin pores, upper body",
+        "C_pony": "rating_questionable, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, young woman, red hair, wavy hair, green eyes, freckles, black lace lingerie, garter belt, stockings, lying on bed, silk sheets, dim lighting, candlelight, seductive expression, looking at viewer, collarbone, cleavage, thighs, upper body",
+        "D_animagine": "1girl, solo, red hair, wavy hair, green eyes, freckles, black lace lingerie, garter belt, stockings, lying on bed, silk sheets, dim lighting, candlelight, seductive expression, looking at viewer, cleavage, thighs, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, questionable",
+        "F_sd15": "RAW photo, intimate boudoir photograph of a 24-year-old woman with wavy red hair, green eyes and freckles. She wears black lace lingerie with garter belt and stockings, lying on silk sheets. Warm candlelight creates dim atmospheric lighting with soft shadows. Seductive expression looking directly at camera. Visible skin texture and pores. 85mm f/1.4, shallow depth of field, warm color grade, film grain ISO 200."
+      },
+      "subtype": "lingerie boudoir"
+    },
+    {
+      "id": "R07_nsfw",
+      "genre": "realistic shower",
+      "type": "realistic_sensitive",
+      "content": {
+        "default": "nsfw, sensitive, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, young woman, 23 years old, black hair, long wet hair, brown eyes, nude, naked, standing in shower, water running, steam, wet skin, glistening, water droplets on skin, glass door, bathroom, warm lighting, soft shadows, covering breasts with arm, looking away, shy expression, blush, bare shoulders, back, detailed skin texture, specular highlights on skin",
+        "C_pony": "rating_questionable, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, young woman, black hair, long wet hair, brown eyes, nude, standing in shower, water running, steam, wet skin, glistening, water droplets, glass door, bathroom, warm lighting, covering breasts, looking away, shy expression, bare shoulders, back",
+        "D_animagine": "1girl, solo, black hair, wet hair, brown eyes, nude, shower, water, steam, wet skin, water droplets, glass door, bathroom, warm lighting, covering breasts, looking away, shy, bare shoulders, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, questionable",
+        "F_sd15": "RAW photo, artistic photograph of a 23-year-old woman with long wet black hair in a shower. Water runs over her glistening skin creating specular highlights. Steam fills the glass-enclosed bathroom. She covers her breasts with one arm and looks away shyly. Warm lighting, visible water droplets and detailed wet skin texture. DSLR, 50mm f/1.8, shallow depth of field, film grain."
+      },
+      "subtype": "shower artistic"
+    },
+    {
+      "id": "R08_nsfw",
+      "genre": "realistic nude",
+      "type": "realistic_explicit",
+      "content": {
+        "default": "nsfw, explicit, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, young woman, 25 years old, brunette, medium hair, hazel eyes, nude, naked, lying on white sheets, bedroom, natural window light, morning, soft diffused light, relaxed pose, one arm behind head, looking at viewer, natural proportions, small breasts, navel, hips, thighs, areolae, nipples, detailed skin texture, skin pores, natural skin tone, full body",
+        "C_pony": "rating_explicit, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, young woman, brunette, medium hair, hazel eyes, nude, naked, lying on bed, white sheets, bedroom, natural window light, morning, relaxed pose, one arm behind head, looking at viewer, natural proportions, small breasts, navel, hips, thighs, areolae, nipples, full body",
+        "D_animagine": "1girl, solo, brunette, medium hair, hazel eyes, nude, lying on bed, white sheets, bedroom, morning light, relaxed, looking at viewer, small breasts, navel, hips, areolae, nipples, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, full body, explicit",
+        "F_sd15": "RAW photo, fine art nude photograph of a 25-year-old brunette woman with hazel eyes lying nude on white sheets. Natural morning window light creates soft diffused illumination. Relaxed pose with one arm behind her head, looking at camera. Natural body proportions, detailed skin texture with visible pores and natural skin tone. Canon EOS R5, 50mm f/2, natural color, film grain ISO 100."
+      },
+      "subtype": "artistic nude"
+    },
+    {
+      "id": "R09_nsfw",
+      "genre": "realistic onsen",
+      "type": "realistic_sensitive",
+      "content": {
+        "default": "nsfw, sensitive, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, japanese woman, 26 years old, black hair, hair up, brown eyes, nude, naked, sitting in hot spring, onsen, outdoor, rocks, steam, mountain scenery, autumn leaves, warm water, wet skin, glistening, towel on head, relaxed expression, eyes closed, natural lighting, overcast sky, medium shot, collarbone, bare shoulders, partial body in water",
+        "C_pony": "rating_questionable, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, japanese woman, black hair, hair up, brown eyes, nude, sitting in hot spring, onsen, outdoor, rocks, steam, mountain, autumn leaves, wet skin, towel on head, relaxed, eyes closed, natural lighting, medium shot, bare shoulders",
+        "D_animagine": "1girl, solo, japanese, black hair, hair up, brown eyes, nude, hot spring, onsen, outdoor, rocks, steam, autumn leaves, wet skin, towel on head, eyes closed, relaxed, natural lighting, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, medium shot, questionable",
+        "F_sd15": "RAW photo, Japanese woman, 26 years old, with black hair pinned up, relaxing nude in an outdoor hot spring onsen. Rocky natural setting with autumn leaves and mountain scenery in the background. Steam rises from the warm water. She has a towel on her head and eyes closed in a relaxed expression. Wet glistening skin, overcast natural lighting. Fujifilm X-T5, 56mm f/1.2, soft bokeh, film grain."
+      },
+      "subtype": "onsen scenic"
+    },
+    {
+      "id": "R10_nsfw",
+      "genre": "realistic explicit",
+      "type": "realistic_explicit",
+      "content": {
+        "default": "nsfw, explicit, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1boy, 1girl, hetero, sex, vaginal, young woman, 24 years old, blonde hair, blue eyes, nude, naked, lying on back, bed, dim lighting, warm ambient, sweat, wet skin, glistening, missionary, legs wrapped around partner, gripping sheets, open mouth, panting, blush, medium breasts, bouncing breasts, navel, detailed skin texture, skin pores, natural proportions, pov, from above",
+        "C_pony": "rating_explicit, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, 1boy, 1girl, hetero, sex, vaginal, blonde hair, blue eyes, nude, lying on back, bed, dim lighting, sweat, wet skin, missionary, legs wrapped, gripping sheets, open mouth, panting, blush, medium breasts, bouncing breasts, navel, pov, from above",
+        "D_animagine": "1boy, 1girl, hetero, sex, vaginal, blonde hair, blue eyes, nude, lying on back, bed, dim lighting, sweat, missionary, open mouth, panting, blush, medium breasts, navel, pov, from above, realistic, photorealistic, depth_of_field, detailed skin, sharp focus, film_grain, subsurface_scattering, explicit",
+        "F_sd15": "RAW photo, intimate scene of a 24-year-old blonde woman with blue eyes having sex in missionary position. She lies on her back on a bed in dim warm lighting, legs wrapped around her partner. Her body glistens with sweat. Expression of pleasure with mouth open. First person perspective from above. Realistic skin texture, natural body proportions. 35mm f/2, warm color grade, film grain ISO 400."
+      },
+      "subtype": "realistic sex"
+    },
+    {
+      "id": "R_bed_sfw",
+      "genre": "realistic bed (SFW)",
+      "type": "realistic_safe",
+      "content": {
+        "default": "realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, japanese girl, 20 years old, dark blue hair, long hair, side braid, bangs, amber eyes, large breasts, wearing oversized white t-shirt, bare legs, sitting on bed, white sheets, pillows, morning, natural window light, soft shadows, messy hair, sleepy expression, stretching, yawning, cozy bedroom, warm tones, looking at viewer, bare shoulders, collarbone, thighs, detailed skin texture, skin pores, natural skin tone, upper body",
+        "C_pony": "rating_safe, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, japanese girl, 20 years old, dark blue hair, long hair, side braid, bangs, amber eyes, large breasts, oversized white t-shirt, bare legs, sitting on bed, white sheets, morning, window light, messy hair, sleepy expression, stretching, cozy bedroom, warm tones, looking at viewer, bare shoulders, collarbone, thighs, upper body",
+        "D_animagine": "1girl, solo, japanese girl, 20 years old, dark blue hair, long hair, side braid, bangs, amber eyes, large breasts, oversized white t-shirt, bare legs, sitting on bed, white sheets, morning, window light, messy hair, sleepy, stretching, bedroom, warm tones, looking at viewer, bare shoulders, collarbone, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, subsurface_scattering, upper body",
+        "F_sd15": "RAW photo, photorealistic portrait of a 20-year-old Japanese girl with long dark blue hair in a side braid and amber eyes, sitting on a bed wearing an oversized white t-shirt. Morning sunlight streams through the window onto white sheets. She looks sleepy with messy hair, stretching after waking up. Bare shoulders and legs visible. Cozy warm bedroom atmosphere. Canon EOS R5, 50mm f/1.4, shallow depth of field, warm color grade, film grain ISO 200."
+      }
+    },
+    {
+      "id": "R_bed_nsfw",
+      "genre": "realistic bed (NSFW)",
+      "type": "realistic_explicit",
+      "content": {
+        "default": "nsfw, explicit, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, japanese girl, 20 years old, dark blue hair, long hair, side braid, bangs, amber eyes, large breasts, nude, naked, lying on bed, white sheets, bedroom, dim warm lighting, soft shadows, looking at viewer, seductive expression, slight blush, one hand on pillow, hair spread on pillow, nipples, areolae, navel, hips, thighs, detailed skin texture, skin pores, natural skin tone, sweat, glistening skin, full body, from above",
+        "C_pony": "rating_explicit, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, subsurface_scattering, 1girl, solo, japanese girl, 20 years old, dark blue hair, long hair, side braid, bangs, amber eyes, large breasts, nude, naked, lying on bed, white sheets, bedroom, dim warm lighting, looking at viewer, seductive expression, blush, hair spread on pillow, nipples, areolae, navel, hips, thighs, sweat, glistening skin, full body, from above",
+        "D_animagine": "1girl, solo, japanese girl, 20 years old, dark blue hair, long hair, side braid, bangs, amber eyes, large breasts, nude, lying on bed, white sheets, bedroom, dim lighting, looking at viewer, seductive, blush, nipples, areolae, navel, hips, thighs, sweat, full body, from above, realistic, photorealistic, depth_of_field, bokeh, detailed skin, sharp focus, film_grain, subsurface_scattering, explicit",
+        "F_sd15": "RAW photo, intimate photograph of a 20-year-old Japanese girl with long dark blue hair and amber eyes lying nude on white sheets. Dim warm ambient lighting with soft shadows. She looks at the camera with a seductive expression and slight blush. Hair spread across the pillow. Glistening skin with subtle sweat. Natural body proportions, detailed skin texture. Shot from above. 35mm f/1.8, warm color grade, film grain ISO 400."
       }
     }
   ]

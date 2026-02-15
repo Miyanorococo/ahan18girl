@@ -101,8 +101,10 @@ function modelGridMixin() {
           seeds: images.map((img) => img._seed).filter(Boolean),
         };
 
-        // Insert card and update seeds reactively
-        this.modelGrid.modelCards = [...this.modelGrid.modelCards, card];
+        // Insert card sorted by model name for deterministic order
+        const cards = [...this.modelGrid.modelCards, card];
+        cards.sort((a, b) => a.model.localeCompare(b.model));
+        this.modelGrid.modelCards = cards;
         this.modelGrid.allSeeds = [...seedSet].sort(
           (a, b) => parseInt(a, 10) - parseInt(b, 10)
         );

@@ -409,18 +409,18 @@ document.addEventListener('alpine:init', () => {
         }
       }
 
-      if (!this.ratings.images[key]) {
-        this.ratings.images[key] = { scores: {}, comment: '', updated_at: '' };
-      }
-
-      const entry = this.ratings.images[key];
+      const existing = this.ratings.images[key] || { scores: {}, comment: '' };
+      const newScores = { ...existing.scores };
       // Toggle off if clicking the same score
-      if (entry.scores[axis] === score) {
-        delete entry.scores[axis];
+      if (newScores[axis] === score) {
+        delete newScores[axis];
       } else {
-        entry.scores[axis] = score;
+        newScores[axis] = score;
       }
-      entry.updated_at = new Date().toISOString();
+      this.ratings.images = {
+        ...this.ratings.images,
+        [key]: { ...existing, scores: newScores, updated_at: new Date().toISOString() },
+      };
 
       this._persistRatings();
 
@@ -443,12 +443,11 @@ document.addEventListener('alpine:init', () => {
       const key = this._ratingKey(img);
       if (!key) return;
 
-      if (!this.ratings.images[key]) {
-        this.ratings.images[key] = { scores: {}, comment: '', updated_at: '' };
-      }
-
-      this.ratings.images[key].comment = comment;
-      this.ratings.images[key].updated_at = new Date().toISOString();
+      const existing = this.ratings.images[key] || { scores: {}, comment: '' };
+      this.ratings.images = {
+        ...this.ratings.images,
+        [key]: { ...existing, comment, updated_at: new Date().toISOString() },
+      };
       this._persistRatings();
     },
 
