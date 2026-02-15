@@ -58,6 +58,12 @@
           <option value="rated">Fully Rated</option>
           <option value="favorited">Has Favorites</option>
         </select>
+        <select x-model="sortBy" @change="filterExperiments()">
+          <option value="date-desc">Newest</option>
+          <option value="date-asc">Oldest</option>
+          <option value="model">Model</option>
+          <option value="rated">Most Rated</option>
+        </select>
         <span class="filter-count" x-text="filteredExperiments.length + ' / ' + experiments.length"></span>
       </div>
 

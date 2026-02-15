@@ -11,8 +11,9 @@ document.addEventListener('alpine:init', () => {
     selectedImages: [],
     loading: false,
 
-    // Filters
+    // Filters & sorting
     filters: { search: '', model: '', pipeline: '', ratingStatus: '' },
+    sortBy: 'date-desc', // date-desc, date-asc, model, rated
     availableModels: [],
     availablePipelines: [],
 
@@ -284,8 +285,19 @@ document.addEventListener('alpine:init', () => {
         result = result.filter((exp) => this._getExpFavCount(exp) > 0);
       }
 
+      // Sort
+      if (this.sortBy === 'date-asc') {
+        result.sort((a, b) => (a.created_at || '').localeCompare(b.created_at || ''));
+      } else if (this.sortBy === 'model') {
+        result.sort((a, b) => (a.model || '').localeCompare(b.model || ''));
+      } else if (this.sortBy === 'rated') {
+        result.sort((a, b) => this._getExpRatedCount(b) - this._getExpRatedCount(a));
+      } else {
+        result.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      }
+
       this.filteredExperiments = result;
-      this.page = 1; // reset to first page on filter change
+      this.page = 1;
     },
 
     /** Cached rated/fav counts per experiment. Rebuilt on rating changes. */
