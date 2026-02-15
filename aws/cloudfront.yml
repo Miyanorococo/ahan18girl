@@ -22,8 +22,18 @@ Parameters:
     Default: ''
     Description: Optional custom domain name for CloudFront
 
+  S3BucketName:
+    Type: String
+    Default: r18-anime-assets
+
+  GalleryLambdaUrl:
+    Type: String
+    Default: ''
+    Description: API Gateway URL from gallery stack (e.g. https://xxx.execute-api.us-east-1.amazonaws.com)
+
 Conditions:
   HasCustomDomain: !Not [!Equals [!Ref CustomDomainName, '']]
+  HasGalleryLambda: !Not [!Equals [!Ref GalleryLambdaUrl, '']]
 
 Resources:
   BasicAuthFunction:
@@ -68,6 +78,33 @@ Resources:
           };
         }
 
+  S3OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: r18-anime-gallery-s3-oac
+        Description: OAC for gallery S3 origin
+        SigningProtocol: sigv4
+        SigningBehavior: always
+        OriginAccessControlOriginType: s3
+
+  GalleryBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketName
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontOACReadGallery
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub 'arn:aws:s3:::${S3BucketName}/gallery/*'
+            Condition:
+              StringEquals:
+                'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -82,6 +119,49 @@ Resources:
               OriginProtocolPolicy: http-only
               OriginKeepaliveTimeout: 60
               OriginReadTimeout: 60
+          - Id: S3Origin
+            DomainName: !Sub '${S3BucketName}.s3.us-east-1.amazonaws.com'
+            OriginAccessControlId: !GetAtt S3OriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+          - !If
+            - HasGalleryLambda
+            - Id: LambdaOrigin
+              DomainName: !Select [2, !Split ['/', !Ref GalleryLambdaUrl]]
+              CustomOriginConfig:
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
+            - !Ref 'AWS::NoValue'
+        CacheBehaviors:
+          - !If
+            - HasGalleryLambda
+            - PathPattern: '/api/*'
+              TargetOriginId: LambdaOrigin
+              ViewerProtocolPolicy: allow-all
+              AllowedMethods:
+                - GET
+                - HEAD
+                - OPTIONS
+                - PUT
+                - PATCH
+                - POST
+                - DELETE
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+              OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+              FunctionAssociations:
+                - EventType: viewer-request
+                  FunctionARN: !GetAtt BasicAuthFunction.FunctionARN
+            - !Ref 'AWS::NoValue'
+          - PathPattern: '/gallery/*'
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: allow-all
+            AllowedMethods:
+              - GET
+              - HEAD
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+            FunctionAssociations:
+              - EventType: viewer-request
+                FunctionARN: !GetAtt BasicAuthFunction.FunctionARN
         DefaultCacheBehavior:
           TargetOriginId: ALBOrigin
           ViewerProtocolPolicy: allow-all

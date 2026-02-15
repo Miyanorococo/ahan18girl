@@ -1,0 +1,306 @@
+{
+  "_meta": {
+    "description": "13モデル横並び比較用プロンプトセット v2",
+    "created": "2026-02-15",
+    "updated": "2026-02-15",
+    "structure": "10ジャンル × 2タイプ(explicit + sensitive) + 立ち絵 2タイプ(safe + explicit) = 22プロンプト",
+    "variants": "A: Illustrious系 / B: Nova / C: Pony系 / D: Animagine / E: FeMix / F: SD1.5",
+    "seeds": [42, 123, 456, 789, 1024],
+    "total_images": "22 prompts × 5 seeds × 13 models = 1430 images"
+  },
+  "negative_common": {
+    "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, ",
+    "safe": ""
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": ["wai-nsfw-illustrious-v16", "wai-nsfw-illustrious-v14", "wai-nsfw-illustrious-v12", "wai-nsfw-illustrious-v11", "wai-branch-rouwei"],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "A2_illustrij": {
+      "models": ["illustrij-v20"],
+      "cfg": 7,
+      "steps": 30,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {"width": 832, "height": 1216},
+      "quality_prefix": "masterpiece, best quality, ultra-detailed, sharp focus, detailed eyes, ",
+      "quality_suffix": "",
+      "negative": "worst quality, bad quality, bad anatomy, bad hands, extra digits, fewer digits"
+    },
+    "B_nova": {
+      "models": ["nova-anime-xl-il"],
+      "cfg": 5,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, very aesthetic, high resolution, ultra-detailed, absurdres, newest, ",
+      "quality_suffix": ", BREAK, depth of field, volumetric lighting",
+      "negative": "modern, recent, old, oldest, cartoon, graphic, text, painting, abstract, deformed, mutated, ugly, disfigured, lowres, bad anatomy, bad hands, missing fingers, extra digits, fewer digits, (worst quality, bad quality:1.2), sketch, jpeg artifacts, signature, watermark"
+    },
+    "C_pony": {
+      "models": ["autismmix-sdxl", "pony-diffusion-v6-xl"],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "score_9, score_8_up, score_7_up, score_6_up, source_anime, BREAK, ",
+      "quality_suffix": "",
+      "negative": "score_1, score_2, score_3, bad anatomy, bad hands, 3d"
+    },
+    "D_animagine": {
+      "models": ["animagine-xl-4.0"],
+      "cfg": 5,
+      "steps": 28,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "",
+      "quality_suffix": ", masterpiece, high score, great score, absurdres",
+      "negative": "lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, blurry"
+    },
+    "E_femix": {
+      "models": ["femix-hassakuxl"],
+      "cfg": 6,
+      "steps": 25,
+      "sampler": "dpmpp_2m_karras",
+      "scheduler": "normal",
+      "clip_skip": 1,
+      "resolution": {"width": 832, "height": 1216},
+      "quality_prefix": "masterpiece, best quality, detailed, ",
+      "quality_suffix": "",
+      "negative": "worst quality, bad quality, sketch, signature, bad anatomy, bad hands, extra digits, fewer digits"
+    },
+    "F_sd15": {
+      "models": ["dreamshaper-8", "aam-anylora-anime-mix"],
+      "cfg": 8,
+      "steps": 25,
+      "sampler": "dpmpp_sde_karras",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {"width": 512, "height": 768},
+      "quality_prefix": "",
+      "quality_suffix": "",
+      "negative": "worst quality, low quality, bad anatomy, bad hands, extra digits, fewer digits, deformed, blurry, watermark, signature",
+      "_note": "BadDream/UnrealisticDream embeddingは未インストールのため除外。インストール後に追加可"
+    }
+  },
+  "prompts": [
+    {
+      "id": "P01_ex", "genre": "人妻", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked apron, kitchen, leaning forward, from below, sweat, blushing, parted lips, looking at viewer, spread legs, indoor",
+        "C_pony": "rating_explicit, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked apron, kitchen, leaning forward, from below, sweat, blushing, parted lips, looking at viewer, spread legs, indoor",
+        "D_animagine": "1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked apron, kitchen, leaning forward, from below, sweat, blushing, parted lips, looking at viewer, spread legs, indoor, explicit",
+        "F_sd15": "a mature housewife with brown hair in a bun, wearing only an apron in the kitchen, leaning forward seductively, blushing and sweating, wedding ring visible, looking at the viewer"
+      }
+    },
+    {
+      "id": "P01_se", "genre": "人妻", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, apron, sundress, cleavage, kitchen, cooking, side glance, gentle smile, bare shoulders, indoor, warm lighting, steam",
+        "C_pony": "rating_questionable, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, apron, sundress, cleavage, kitchen, cooking, side glance, gentle smile, bare shoulders, indoor, warm lighting",
+        "D_animagine": "1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, apron, sundress, cleavage, kitchen, cooking, side glance, gentle smile, bare shoulders, indoor, warm lighting, steam, sensitive",
+        "F_sd15": "a gentle housewife with brown hair in a bun, wearing a sundress and apron in the kitchen, showing cleavage, cooking with a warm smile, wedding ring, soft warm lighting"
+      }
+    },
+    {
+      "id": "P02_ex", "genre": "JK/学園", "type": "explicit",
+      "note": "adult, 18+ を明示",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, no panties, lifted skirt, thighhighs, black hair, ponytail, classroom, sitting on desk, spread legs, blushing, embarrassed, looking away, afternoon light",
+        "C_pony": "rating_explicit, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, no panties, lifted skirt, thighhighs, black hair, ponytail, classroom, sitting on desk, spread legs, blushing, embarrassed, looking away, afternoon light",
+        "D_animagine": "1girl, solo, adult, school uniform, sailor uniform, blue skirt, no panties, lifted skirt, thighhighs, black hair, ponytail, classroom, sitting on desk, spread legs, blushing, embarrassed, looking away, afternoon light, explicit",
+        "F_sd15": "an adult girl in a sailor school uniform sitting on a desk in a classroom, skirt lifted up with no underwear, black hair in ponytail, blushing and looking away embarrassed, thigh-high stockings, afternoon sunlight"
+      }
+    },
+    {
+      "id": "P02_se", "genre": "JK/学園", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, classroom, wind lift, skirt lift, pantyshot, blushing, hands on skirt, embarrassed, standing, window, afternoon light",
+        "C_pony": "rating_questionable, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, classroom, wind lift, skirt lift, pantyshot, blushing, hands on skirt, embarrassed, standing, window",
+        "D_animagine": "1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, classroom, wind lift, skirt lift, pantyshot, blushing, hands on skirt, embarrassed, standing, window, afternoon light, sensitive",
+        "F_sd15": "an adult girl in a sailor uniform in a classroom, wind lifting her blue skirt slightly, trying to hold it down with both hands, blushing, black ponytail, thigh-high stockings, afternoon light through window"
+      }
+    },
+    {
+      "id": "P03_ex", "genre": "催眠/洗脳", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, hypnosis, mind control, spiral eyes, heart-shaped pupils, blank expression, drooling, open mouth, tongue out, silver hair, long hair, nude, collar, leash, kneeling, dark room, purple ambient light, sweat",
+        "C_pony": "rating_explicit, 1girl, solo, hypnosis, mind control, spiral eyes, heart-shaped pupils, blank expression, drooling, open mouth, tongue out, silver hair, long hair, nude, collar, leash, kneeling, dark room, purple ambient light, sweat",
+        "D_animagine": "1girl, solo, hypnosis, mind control, spiral eyes, heart-shaped pupils, blank expression, drooling, open mouth, tongue out, silver hair, long hair, nude, collar, leash, kneeling, dark room, purple ambient light, sweat, explicit",
+        "F_sd15": "a silver-haired girl under hypnosis with spiral eyes and heart pupils, drooling with blank expression, completely nude wearing only a collar and leash, kneeling in a dark room with purple lighting, sweating"
+      }
+    },
+    {
+      "id": "P03_se", "genre": "催眠/洗脳", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo, hypnosis, mind control, heart-shaped pupils, half-closed eyes, dazed expression, silver hair, long hair, see-through nightgown, lingerie, collar, sitting, dark room, purple ambient light, glowing pendant, reaching out",
+        "C_pony": "rating_questionable, 1girl, solo, hypnosis, mind control, heart-shaped pupils, half-closed eyes, dazed expression, silver hair, long hair, see-through nightgown, lingerie, collar, sitting, dark room, purple ambient light, glowing pendant",
+        "D_animagine": "1girl, solo, hypnosis, mind control, heart-shaped pupils, half-closed eyes, dazed expression, silver hair, long hair, see-through nightgown, lingerie, collar, sitting, dark room, purple ambient light, glowing pendant, reaching out, sensitive",
+        "F_sd15": "a silver-haired girl in a trance with heart-shaped pupils and dazed expression, wearing a see-through nightgown and collar, sitting in a dark room with purple lighting, a glowing pendant swinging"
+      }
+    },
+    {
+      "id": "P04_ex", "genre": "百合", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 2girls, yuri, kiss, french kiss, saliva trail, mutual embrace, intertwined legs, nude, lying on bed, white sheets, blonde hair, black hair, long hair, closed eyes, blushing, hand on breast, intimate, soft lighting, bedroom, from above",
+        "C_pony": "rating_explicit, 2girls, yuri, kiss, french kiss, saliva trail, mutual embrace, intertwined legs, nude, lying on bed, white sheets, blonde hair, black hair, long hair, closed eyes, blushing, hand on breast, intimate, soft lighting, bedroom, from above",
+        "D_animagine": "2girls, yuri, kiss, french kiss, saliva trail, mutual embrace, intertwined legs, nude, lying on bed, white sheets, blonde hair, black hair, long hair, closed eyes, blushing, hand on breast, intimate, soft lighting, bedroom, from above, explicit",
+        "F_sd15": "two girls kissing passionately on a bed with white sheets, one blonde one black-haired, both nude and embracing each other, intertwined legs, saliva trail, blushing with closed eyes, soft bedroom lighting, viewed from above"
+      }
+    },
+    {
+      "id": "P04_se", "genre": "百合", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 2girls, yuri, forehead touch, holding hands, interlocked fingers, blonde hair, black hair, long hair, school uniform, sailor uniform, close-up, blushing, half-closed eyes, romantic, cherry blossoms, petals, outdoor, sunset, gentle wind",
+        "C_pony": "rating_questionable, 2girls, yuri, forehead touch, holding hands, interlocked fingers, blonde hair, black hair, long hair, school uniform, sailor uniform, close-up, blushing, half-closed eyes, romantic, cherry blossoms, petals, outdoor, sunset",
+        "D_animagine": "2girls, yuri, forehead touch, holding hands, interlocked fingers, blonde hair, black hair, long hair, school uniform, sailor uniform, close-up, blushing, half-closed eyes, romantic, cherry blossoms, petals, outdoor, sunset, gentle wind, sensitive",
+        "F_sd15": "two girls in sailor uniforms touching foreheads and holding hands, one blonde and one black-haired, blushing with half-closed eyes, romantic atmosphere, cherry blossom petals falling, sunset background"
+      }
+    },
+    {
+      "id": "P05_ex", "genre": "おねショタ", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo focus, mature female, large breasts, red hair, wavy hair, seductive smile, half-closed eyes, nude, lying on back, on bed, spread legs, beckoning, sweat, blushing, dim lighting, bedroom, from above, pillow",
+        "C_pony": "rating_explicit, 1girl, solo focus, mature female, large breasts, red hair, wavy hair, seductive smile, half-closed eyes, nude, lying on back, on bed, spread legs, beckoning, sweat, blushing, dim lighting, bedroom, from above, pillow",
+        "D_animagine": "1girl, solo focus, mature female, large breasts, red hair, wavy hair, seductive smile, half-closed eyes, nude, lying on back, on bed, spread legs, beckoning, sweat, blushing, dim lighting, bedroom, from above, pillow, explicit",
+        "F_sd15": "a seductive mature woman with wavy red hair lying on her back on a bed, completely nude, large breasts, beckoning with a seductive smile, sweating and blushing, dim bedroom lighting, viewed from above"
+      }
+    },
+    {
+      "id": "P05_se", "genre": "おねショタ", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo focus, mature female, large breasts, red hair, wavy hair, ara ara, gentle smile, half-closed eyes, camisole, cleavage, sitting on bed, patting lap, inviting gesture, bedroom, warm lighting, soft focus, maternal expression",
+        "C_pony": "rating_questionable, 1girl, solo focus, mature female, large breasts, red hair, wavy hair, gentle smile, half-closed eyes, camisole, cleavage, sitting on bed, patting lap, inviting gesture, bedroom, warm lighting",
+        "D_animagine": "1girl, solo focus, mature female, large breasts, red hair, wavy hair, gentle smile, half-closed eyes, camisole, cleavage, sitting on bed, patting lap, inviting gesture, bedroom, warm lighting, soft focus, maternal expression, sensitive",
+        "F_sd15": "a gentle mature woman with wavy red hair sitting on a bed in a camisole, showing cleavage, patting her lap invitingly, warm maternal smile, soft warm bedroom lighting"
+      }
+    },
+    {
+      "id": "P06_ex", "genre": "NTR", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, married woman, wedding ring, nude, lying on hotel bed, messy hair, brown hair, tears, crying, ahegao, tongue out, sweat, love bite on neck, hickey, disheveled, hotel room, dim lighting, curtains",
+        "C_pony": "rating_explicit, 1girl, solo, married woman, wedding ring, nude, lying on hotel bed, messy hair, brown hair, tears, crying, ahegao, tongue out, sweat, love bite on neck, hickey, disheveled, hotel room, dim lighting, curtains",
+        "D_animagine": "1girl, solo, married woman, wedding ring, nude, lying on hotel bed, messy hair, brown hair, tears, crying, ahegao, tongue out, sweat, love bite on neck, hickey, disheveled, hotel room, dim lighting, curtains, explicit",
+        "F_sd15": "a married woman lying nude on a hotel bed, wedding ring visible, messy brown hair, crying with tears while showing an ahegao expression, love bites on her neck, sweating, dim hotel room lighting"
+      }
+    },
+    {
+      "id": "P06_se", "genre": "NTR", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo, married woman, wedding ring, guilty expression, messy hair, brown hair, tears, biting lip, clothes in disarray, open shirt, bra visible, skirt pulled up, thighhighs, hotel room, sitting on bed, looking at viewer, dim lighting",
+        "C_pony": "rating_questionable, 1girl, solo, married woman, wedding ring, guilty expression, messy hair, brown hair, tears, biting lip, clothes in disarray, open shirt, bra visible, skirt pulled up, thighhighs, hotel room, sitting on bed, looking at viewer",
+        "D_animagine": "1girl, solo, married woman, wedding ring, guilty expression, messy hair, brown hair, tears, biting lip, clothes in disarray, open shirt, bra visible, skirt pulled up, thighhighs, hotel room, sitting on bed, looking at viewer, dim lighting, sensitive",
+        "F_sd15": "a married woman sitting on a hotel bed looking guilty, wedding ring on her finger, brown hair disheveled, shirt open showing her bra, skirt pulled up, tears in her eyes biting her lip, dim lighting"
+      }
+    },
+    {
+      "id": "P07_ex", "genre": "ファンタジー/異世界", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, elf, pointy ears, green eyes, silver hair, long hair, nude, torn armor, defeated, lying on ground, spread legs, sweat, bruises, forest, ancient ruins, dramatic lighting, vine restraints, panting",
+        "C_pony": "rating_explicit, 1girl, solo, elf, pointy ears, green eyes, silver hair, long hair, nude, torn armor, defeated, lying on ground, spread legs, sweat, bruises, forest, ancient ruins, dramatic lighting, vine restraints, panting",
+        "D_animagine": "1girl, solo, elf, pointy ears, green eyes, silver hair, long hair, nude, torn armor, defeated, lying on ground, spread legs, sweat, bruises, forest, ancient ruins, dramatic lighting, vine restraints, panting, explicit",
+        "F_sd15": "a defeated elf warrior with silver hair and pointed ears lying on the ground in forest ruins, her armor torn off leaving her nude, vines restraining her, sweating and panting, dramatic forest lighting"
+      }
+    },
+    {
+      "id": "P07_se", "genre": "ファンタジー/異世界", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo, elf, pointy ears, green eyes, silver hair, long hair, bikini armor, cleavage, midriff, thigh gap, fantasy, adventurer, sword, forest, ancient ruins, dramatic lighting, cape, wind, dynamic pose, confident expression",
+        "C_pony": "rating_questionable, 1girl, solo, elf, pointy ears, green eyes, silver hair, long hair, bikini armor, cleavage, midriff, thigh gap, fantasy, adventurer, sword, forest, ancient ruins, dramatic lighting, cape, wind, dynamic pose",
+        "D_animagine": "1girl, solo, elf, pointy ears, green eyes, silver hair, long hair, bikini armor, cleavage, midriff, thigh gap, fantasy, adventurer, sword, forest, ancient ruins, dramatic lighting, cape, wind, dynamic pose, confident expression, sensitive",
+        "F_sd15": "a confident elf adventurer with silver hair and pointy ears in revealing bikini armor, showing cleavage and midriff, holding a sword, standing in ancient forest ruins with dramatic lighting, cape flowing in the wind"
+      }
+    },
+    {
+      "id": "P08_ex", "genre": "陵辱", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, restrained, arms behind back, rope bondage, torn clothes, nude, blindfold, ball gag, black hair, crying, tears, trembling, dungeon, stone wall, chains, dark atmosphere, candle light, kneeling",
+        "C_pony": "rating_explicit, 1girl, solo, restrained, arms behind back, rope bondage, torn clothes, nude, blindfold, ball gag, black hair, crying, tears, trembling, dungeon, stone wall, chains, dark atmosphere, candle light, kneeling",
+        "D_animagine": "1girl, solo, restrained, arms behind back, rope bondage, torn clothes, nude, blindfold, ball gag, black hair, crying, tears, trembling, dungeon, stone wall, chains, dark atmosphere, candle light, kneeling, explicit",
+        "F_sd15": "a black-haired girl restrained with rope bondage in a dungeon, blindfolded and gagged, torn clothes leaving her exposed, crying and trembling, stone walls with chains, candlelight in dark atmosphere"
+      }
+    },
+    {
+      "id": "P08_se", "genre": "陵辱", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo, restrained, arms behind back, rope bondage, torn clothes, torn shirt, exposed shoulder, white dress, disheveled hair, black hair, crying, tears, fearful expression, kneeling, dungeon, stone wall, chains, dark atmosphere",
+        "C_pony": "rating_questionable, 1girl, solo, restrained, arms behind back, rope bondage, torn clothes, torn shirt, exposed shoulder, white dress, disheveled hair, black hair, crying, tears, fearful expression, kneeling, dungeon, stone wall, chains",
+        "D_animagine": "1girl, solo, restrained, arms behind back, rope bondage, torn clothes, torn shirt, exposed shoulder, white dress, disheveled hair, black hair, crying, tears, fearful expression, kneeling, dungeon, stone wall, chains, dark atmosphere, sensitive",
+        "F_sd15": "a black-haired girl in a torn white dress restrained with ropes, kneeling in a dungeon, shoulder exposed through torn fabric, crying with fearful expression, stone walls and chains, dark atmosphere"
+      }
+    },
+    {
+      "id": "P09_ex", "genre": "ふたなり", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, futanari, erection, large penis, nude, athletic build, toned body, abs, sweat, pink hair, short hair, flushed face, embarrassed, standing, locker room, steam, mirror, full body",
+        "C_pony": "rating_explicit, 1girl, solo, futanari, erection, large penis, nude, athletic build, toned body, abs, sweat, pink hair, short hair, flushed face, embarrassed, standing, locker room, steam, mirror, full body",
+        "D_animagine": "1girl, solo, futanari, erection, large penis, nude, athletic build, toned body, abs, sweat, pink hair, short hair, flushed face, embarrassed, standing, locker room, steam, mirror, full body, explicit",
+        "F_sd15": "a futanari girl with pink short hair standing nude in a steamy locker room, athletic muscular body with abs, fully erect, flushed face with embarrassed expression, reflected in mirror, sweating"
+      }
+    },
+    {
+      "id": "P09_se", "genre": "ふたなり", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo, futanari, bulge, tight shorts, sports bra, athletic build, toned body, abs, sweat, pink hair, short hair, flushed face, embarrassed expression, locker room, standing, hand covering crotch, steam, towel",
+        "C_pony": "rating_questionable, 1girl, solo, futanari, bulge, tight shorts, sports bra, athletic build, toned body, abs, sweat, pink hair, short hair, flushed face, embarrassed expression, locker room, standing, hand covering crotch, steam",
+        "D_animagine": "1girl, solo, futanari, bulge, tight shorts, sports bra, athletic build, toned body, abs, sweat, pink hair, short hair, flushed face, embarrassed expression, locker room, standing, hand covering crotch, steam, towel, sensitive",
+        "F_sd15": "an athletic futanari girl with pink short hair in tight shorts and sports bra, visible bulge, trying to cover with hand, embarrassed flushed face, abs showing, steamy locker room"
+      }
+    },
+    {
+      "id": "P10_ex", "genre": "モンスター娘", "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, nude, large breasts, coiling tail, spreading, seductive pose, cave, crystals, bioluminescent, fantasy, from below, tongue out, fangs",
+        "C_pony": "rating_explicit, 1girl, solo, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, nude, large breasts, coiling tail, spreading, seductive pose, cave, crystals, bioluminescent, fantasy, from below, tongue out, fangs",
+        "D_animagine": "1girl, solo, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, nude, large breasts, coiling tail, spreading, seductive pose, cave, crystals, bioluminescent, fantasy, from below, tongue out, fangs, explicit",
+        "F_sd15": "a nude lamia monster girl with purple hair and yellow snake eyes in a crystal cave, large breasts, long snake tail with scales coiling around, seductive pose showing fangs and tongue, bioluminescent cave lighting"
+      }
+    },
+    {
+      "id": "P10_se", "genre": "モンスター娘", "type": "sensitive",
+      "content": {
+        "default": "nsfw, 1girl, solo, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, forked tongue, fangs, halter top, cleavage, midriff, coiling tail, seductive pose, cave, crystals, glowing mushrooms, fantasy, mysterious atmosphere, from below",
+        "C_pony": "rating_questionable, 1girl, solo, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, forked tongue, fangs, halter top, cleavage, midriff, coiling tail, seductive pose, cave, crystals, glowing mushrooms, fantasy",
+        "D_animagine": "1girl, solo, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, forked tongue, fangs, halter top, cleavage, midriff, coiling tail, seductive pose, cave, crystals, glowing mushrooms, fantasy, mysterious atmosphere, from below, sensitive",
+        "F_sd15": "a lamia monster girl with purple hair and yellow snake eyes in a mysterious cave, wearing a halter top showing cleavage, long snake tail coiling, fangs visible, surrounded by glowing crystals and mushrooms, fantasy atmosphere"
+      }
+    },
+    {
+      "id": "P11_safe", "genre": "立ち絵", "type": "safe",
+      "content": {
+        "default": "1girl, solo, long hair, grey hair, green eyes, white shirt, collared shirt, open mouth, v, red bowtie, field, wind, standing, full body, blue sky, clouds, grass, sunlight, cheerful expression, hair flowing, pleated skirt, school bag",
+        "C_pony": "1girl, solo, long hair, grey hair, green eyes, white shirt, collared shirt, open mouth, v, red bowtie, field, wind, standing, full body, blue sky, clouds, grass, sunlight, cheerful expression, hair flowing, pleated skirt, school bag",
+        "D_animagine": "1girl, solo, long hair, grey hair, green eyes, white shirt, collared shirt, open mouth, v, red bowtie, field, wind, standing, full body, blue sky, clouds, grass, sunlight, cheerful expression, hair flowing, pleated skirt, school bag, safe",
+        "F_sd15": "a cheerful girl with long grey hair and green eyes standing in a grassy field, wearing a white collared shirt with red bowtie and pleated skirt, making a peace sign, wind blowing her hair, blue sky with clouds, bright sunlight"
+      }
+    },
+    {
+      "id": "P11_nsfw", "genre": "立ち絵", "type": "explicit",
+      "note": "同一キャラのNSFW版。safeとの対比でモデルのNSFW切り替え能力を評価",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, long hair, grey hair, green eyes, nude, standing, field, wind, blushing, embarrassed expression, covering breasts, hand between legs, hair flowing, blue sky, clouds, grass, sunlight, red bowtie around neck, school bag on ground",
+        "C_pony": "rating_explicit, 1girl, solo, long hair, grey hair, green eyes, nude, standing, field, wind, blushing, embarrassed expression, covering breasts, hand between legs, hair flowing, blue sky, clouds, grass, sunlight, red bowtie around neck, school bag on ground",
+        "D_animagine": "1girl, solo, long hair, grey hair, green eyes, nude, standing, field, wind, blushing, embarrassed expression, covering breasts, hand between legs, hair flowing, blue sky, clouds, grass, sunlight, red bowtie around neck, school bag on ground, explicit",
+        "F_sd15": "a nude girl with long grey hair and green eyes standing embarrassed in a grassy field, trying to cover herself with her hands, blushing, wind blowing her hair, red bowtie still around her neck, school bag on the ground, blue sky"
+      }
+    }
+  ]
+}

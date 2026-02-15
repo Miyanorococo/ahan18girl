@@ -1,0 +1,127 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: r18_anime - Gallery Lambda + S3 Event Trigger
+
+Parameters:
+  S3BucketName:
+    Type: String
+    Default: r18-anime-assets
+
+  LambdaCodeS3Key:
+    Type: String
+    Default: lambda/gallery.zip
+    Description: S3 key for Lambda deployment package
+
+Resources:
+  # Lambda execution role
+  GalleryLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: r18-anime-gallery-lambda-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${S3BucketName}'
+                  - !Sub 'arn:aws:s3:::${S3BucketName}/*'
+
+  # Lambda function
+  GalleryLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: r18-anime-gallery
+      Runtime: python3.12
+      Handler: lambda_function.handler
+      Code:
+        S3Bucket: !Ref S3BucketName
+        S3Key: !Ref LambdaCodeS3Key
+      MemorySize: 512
+      Timeout: 300
+      Architectures:
+        - x86_64
+      Role: !GetAtt GalleryLambdaRole.Arn
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref S3BucketName
+      Layers:
+        # Pillow layer for x86_64 Python 3.12
+        # https://api.klayers.cloud/api/v2/p3.12/layers/latest/us-east-1
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p312-Pillow:9
+
+  # API Gateway HTTP API
+  GalleryApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: r18-anime-gallery-api
+      ProtocolType: HTTP
+
+  GalleryApiIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GalleryApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt GalleryLambda.Arn
+      PayloadFormatVersion: '2.0'
+
+  GalleryApiRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GalleryApi
+      RouteKey: '$default'
+      Target: !Sub 'integrations/${GalleryApiIntegration}'
+
+  GalleryApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref GalleryApi
+      StageName: '$default'
+      AutoDeploy: true
+
+  # Permission for API Gateway to invoke Lambda
+  ApiGatewayLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref GalleryLambda
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GalleryApi}/*'
+
+  # Permission for S3 to invoke Lambda
+  S3InvokeLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref GalleryLambda
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+      SourceArn: !Sub 'arn:aws:s3:::${S3BucketName}'
+
+Outputs:
+  GalleryLambdaArn:
+    Value: !GetAtt GalleryLambda.Arn
+    Export:
+      Name: r18-anime-gallery-lambda-arn
+
+  GalleryApiUrl:
+    Value: !Sub 'https://${GalleryApi}.execute-api.${AWS::Region}.amazonaws.com'
+    Export:
+      Name: r18-anime-gallery-api-url
+
+  GalleryLambdaRoleArn:
+    Value: !GetAtt GalleryLambdaRole.Arn

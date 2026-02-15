@@ -302,10 +302,8 @@ Resources:
                   - s3:ListBucket
                   - s3:DeleteObject
                 Resource:
-                  - !Sub 'arn:aws:s3:::${S3BucketName}'
-                  - !Sub 'arn:aws:s3:::${S3BucketName}/*'
-                  - 'arn:aws:s3:::illust-novel-ah18'
-                  - 'arn:aws:s3:::illust-novel-ah18/*'
+                  - 'arn:aws:s3:::r18-anime-assets'
+                  - 'arn:aws:s3:::r18-anime-assets/*'
         - PolicyName: EC2SpotAccess
           PolicyDocument:
             Version: '2012-10-17'

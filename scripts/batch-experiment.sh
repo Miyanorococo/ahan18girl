@@ -25,7 +25,7 @@ if [[ -f "${SCRIPT_DIR}/../.env" ]]; then
     source "${SCRIPT_DIR}/../.env"
 fi
 
-S3_BUCKET="${S3_BUCKET:-illust-novel-ah18}"
+S3_BUCKET="${S3_BUCKET:-r18-anime-assets}"
 DATE=$(date +%Y%m%d)
 
 # Defaults
