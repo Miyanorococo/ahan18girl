@@ -3,10 +3,10 @@
     "description": "13モデル横並び比較用プロンプトセット v2",
     "created": "2026-02-15",
     "updated": "2026-02-15",
-    "structure": "10ジャンル × 2タイプ(explicit + sensitive) + 立ち絵 2タイプ(safe + explicit) = 22プロンプト",
+    "structure": "10ジャンル × 2タイプ(explicit + sensitive) + 立ち絵 2タイプ(safe + explicit) + 男性絡み 2(セックス + 男性器) = 24プロンプト",
     "variants": "A: Illustrious系 / B: Nova / C: Pony系 / D: Animagine / E: FeMix / F: SD1.5",
     "seeds": [42, 123, 456, 789, 1024],
-    "total_images": "22 prompts × 5 seeds × 13 models = 1430 images"
+    "total_images": "24 prompts × 5 seeds × 13 models = 1560 images"
   },
   "negative_common": {
     "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
@@ -300,6 +300,26 @@
         "C_pony": "rating_explicit, 1girl, solo, long hair, grey hair, green eyes, nude, standing, field, wind, blushing, embarrassed expression, covering breasts, hand between legs, hair flowing, blue sky, clouds, grass, sunlight, red bowtie around neck, school bag on ground",
         "D_animagine": "1girl, solo, long hair, grey hair, green eyes, nude, standing, field, wind, blushing, embarrassed expression, covering breasts, hand between legs, hair flowing, blue sky, clouds, grass, sunlight, red bowtie around neck, school bag on ground, explicit",
         "F_sd15": "a nude girl with long grey hair and green eyes standing embarrassed in a grassy field, trying to cover herself with her hands, blushing, wind blowing her hair, red bowtie still around her neck, school bag on the ground, blue sky"
+      }
+    },
+    {
+      "id": "P12_ex", "genre": "セックス", "type": "explicit",
+      "note": "男女の性行為シーン。1boy+1girlの複数キャラ構図での品質を評価",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, sex, vaginal, missionary, hetero, lying on back, spread legs, girl on bottom, brown hair, long hair, large breasts, blushing, open mouth, moaning, tears, sweat, grabbing sheets, bedroom, on bed, white sheets, dim lighting, pov",
+        "C_pony": "rating_explicit, 1boy, 1girl, sex, vaginal, missionary, hetero, lying on back, spread legs, girl on bottom, brown hair, long hair, large breasts, blushing, open mouth, moaning, tears, sweat, grabbing sheets, bedroom, on bed, white sheets, dim lighting, pov",
+        "D_animagine": "1boy, 1girl, sex, vaginal, missionary, hetero, lying on back, spread legs, girl on bottom, brown hair, long hair, large breasts, blushing, open mouth, moaning, tears, sweat, grabbing sheets, bedroom, on bed, white sheets, dim lighting, pov, explicit",
+        "F_sd15": "a girl with long brown hair lying on her back on a bed during missionary sex, large breasts, blushing and moaning with tears, sweating, grabbing the white sheets, dim bedroom lighting, point of view shot"
+      }
+    },
+    {
+      "id": "P13_ex", "genre": "男性器描写", "type": "explicit",
+      "note": "男性器が画面に映っているシーン。モデルの男性器描写品質を評価",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, penis, erection, handjob, hetero, girl holding penis, close-up, black hair, long hair, blushing, looking at penis, kneeling, from side, bedroom, detailed hands, sweat",
+        "C_pony": "rating_explicit, 1boy, 1girl, penis, erection, handjob, hetero, girl holding penis, close-up, black hair, long hair, blushing, looking at penis, kneeling, from side, bedroom, detailed hands, sweat",
+        "D_animagine": "1boy, 1girl, penis, erection, handjob, hetero, girl holding penis, close-up, black hair, long hair, blushing, looking at penis, kneeling, from side, bedroom, detailed hands, sweat, explicit",
+        "F_sd15": "a black-haired girl kneeling and holding an erect penis with both hands, blushing while looking at it, close-up side view, bedroom setting, detailed hands, sweating"
       }
     }
   ]
