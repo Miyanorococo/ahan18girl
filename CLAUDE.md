@@ -69,11 +69,11 @@ ComfyUIおよびカスタムノード群（ControlNet, ADetailer, IP-Adapter, Pu
 3. スポット中断検知時: 自動で `sync-output.sh` 実行
 4. モデルファイル: S3に永続保存、EC2起動時にEBSへ同期
 
-**S3バケット**: `illust-novel-ah18`
+**S3バケット**: `r18-anime-assets`
 
 **S3構造**:
 ```
-s3://illust-novel-ah18/
+s3://r18-anime-assets/
 ├── models/                     # モデルファイル永続保存
 │   ├── checkpoints/
 │   ├── loras/
@@ -95,8 +95,25 @@ s3://illust-novel-ah18/
 │   ├── poses/
 │   ├── faces/
 │   └── styles/
-└── ami-configs/                # AMI再構築用設定
+├── ami-configs/                # AMI再構築用設定
+├── gallery/                    # ギャラリーフロントエンド + Lambda展開データ
+│   ├── css/                    # スタイルシート
+│   ├── js/                     # Alpine.js + mixins
+│   ├── index.html              # SPA エントリポイント
+│   ├── experiments/            # Lambda自動展開（Zip→thumb/full/metadata.json）
+│   ├── user-data/              # ratings.json (評価データ)
+│   └── ★ gallery/のS3 syncは --exclude 'experiments/*' --exclude 'user-data/*' 必須
+└── training-data/              # ♥ Save で保存した学習データ
+    ├── {model}/{label}/        # ラベル別画像
+    └── labels.json             # メタデータ
 ```
+
+**ギャラリーデプロイ（フロントエンドのみ）**:
+```bash
+aws s3 sync gallery/ s3://r18-anime-assets/gallery/ \
+  --exclude 'experiments/*' --exclude 'user-data/*'
+```
+⚠️ `--delete` を使うとLambdaが展開した実験データ・評価データが消える。絶対に使わない。
 
 **実験Zip命名規則**:
 ```
