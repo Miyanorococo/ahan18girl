@@ -166,6 +166,18 @@ main() {
         log "NOTE: Root EBS volume has been destroyed."
         log "NOTE: Persistent data volume (EBS_VOLUME_ID) is NOT affected."
     else
+        # Spot instances cannot be stopped, only terminated
+        local lifecycle
+        lifecycle=$(aws ec2 describe-instances --region "${REGION}" \
+            --instance-ids "${instance_id}" \
+            --query 'Reservations[0].Instances[0].InstanceLifecycle' --output text 2>/dev/null || true)
+
+        if [[ "${lifecycle}" == "spot" ]]; then
+            log "Instance is a Spot instance — Spot instances cannot be stopped."
+            log "Use --terminate to terminate, or let it run."
+            exit 1
+        fi
+
         log "Stopping instance ${instance_id}..."
         aws ec2 stop-instances \
             --region "${REGION}" \

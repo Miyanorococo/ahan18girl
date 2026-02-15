@@ -54,15 +54,16 @@ function dashboardMixin() {
         modelImageCounts[model].experiments += 1;
       }
 
-      // Map rating keys to models via experiment id substring matching.
-      // Rating keys are full_url / thumb_url / name, which typically
-      // contain the experiment id in their path.
+      // Map experiment IDs to models for O(1) lookup
       const expModelMap = {};
       for (const exp of this.experiments) {
         if (exp.id && exp.model) {
           expModelMap[exp.id] = exp.model;
         }
       }
+
+      // Pre-compiled regex for extracting experiment ID from rating key paths
+      const expPathRegex = /gallery\/experiments\/(.+?)\/(full|thumb)\//;
 
       // Aggregate scores per model
       const modelScores = {}; // model -> { [axis]: { sum, count } }
@@ -74,11 +75,17 @@ function dashboardMixin() {
         const hasScore = Object.values(entry.scores).some(v => v > 0);
         if (!hasScore) continue;
 
-        // Identify model from rating key by matching experiment id
+        // Extract experiment ID from path using regex (replaces O(n) includes() loop)
         let model = null;
-        for (const [expId, expModel] of Object.entries(expModelMap)) {
-          if (key.includes(expId)) {
-            model = expModel;
+        const pathMatch = key.match(expPathRegex);
+        if (pathMatch) {
+          model = expModelMap[pathMatch[1]];
+        }
+        // Fallback to includes() for non-standard paths
+        if (!model) {
+          for (const [expId, expModel] of Object.entries(expModelMap)) {
+            if (key.includes(expId)) {
+              model = expModel;
             break;
           }
         }
