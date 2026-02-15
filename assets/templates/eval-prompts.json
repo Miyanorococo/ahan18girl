@@ -163,90 +163,98 @@
     {
       "id": "P01_se",
       "genre": "人妻",
-      "type": "sensitive着衣",
+      "type": "sensitive",
       "content": {
         "default": "nsfw, sensitive, masterpiece, best quality, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked apron, apron, sideboob, no bra, no panties, kitchen, indoor, morning light, from side, blush, smile, cooking, steam, cleavage, thighs, bare shoulders",
         "C_pony": "score_9, score_8_up, score_7_up, rating_questionable, source_anime, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked apron, apron, sideboob, no bra, no panties, kitchen, indoor, morning light, from side, blush, smile, cooking, steam, cleavage, thighs, bare shoulders",
         "D_animagine": "1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked apron, apron, sideboob, no bra, no panties, kitchen, indoor, morning light, from side, blush, smile, cooking, steam, cleavage, thighs, bare shoulders, questionable",
         "F_sd15": "A mature housewife with brown hair in a bun, wearing nothing but a cooking apron in the kitchen. Her sideboob and bare shoulders are visible, with no underwear beneath. She wears a wedding ring and is cooking with steam rising. Morning sunlight filters through the window. She is blushing with a gentle smile. Viewed from the side. Anime style illustration."
-      }
+      },
+      "subtype": "sensitive着衣"
     },
     {
       "id": "P01_sex",
       "genre": "人妻",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1boy, 1girl, sex, vaginal, hetero, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, missionary, lying on back, legs spread, bed, bedroom, dim lighting, from above, blush, sweat, open mouth, moaning, grabbing sheets, bouncing breasts, navel, pov",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1boy, 1girl, sex, vaginal, hetero, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, missionary, lying on back, legs spread, bed, bedroom, dim lighting, from above, blush, sweat, open mouth, moaning, bouncing breasts, navel, pov",
         "D_animagine": "1boy, 1girl, sex, vaginal, hetero, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, missionary, lying on back, legs spread, bed, bedroom, dim lighting, from above, blush, sweat, open mouth, moaning, bouncing breasts, navel, pov, explicit",
         "F_sd15": "A mature housewife with brown hair in a bun having sex with a man in missionary position on a bed. She is lying on her back with legs spread, wearing a wedding ring. Her large breasts are bouncing. The dimly lit bedroom sets an intimate mood. She is blushing, sweating, mouth open moaning, gripping the sheets. First person perspective from above. Anime style illustration."
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P01_penis",
       "genre": "人妻",
-      "type": "penis",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1boy, 1girl, hetero, fellatio, oral, penis, erection, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, kneeling, looking up, tongue out, licking, saliva, bedroom, indoor, lamp light, from side, blush, half-closed eyes, hand on penis, pov",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1boy, 1girl, hetero, fellatio, oral, penis, erection, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, kneeling, looking up, tongue out, licking, saliva, bedroom, indoor, lamp light, from side, blush, half-closed eyes, hand on penis, pov",
         "D_animagine": "1boy, 1girl, hetero, fellatio, oral, penis, erection, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, kneeling, looking up, tongue out, licking, saliva, bedroom, indoor, lamp light, from side, blush, half-closed eyes, hand on penis, pov, explicit",
         "F_sd15": "A mature housewife with brown hair in a bun kneeling in the bedroom, performing fellatio. She is looking up with half-closed eyes, tongue out, licking. She wears a wedding ring and has large breasts. The room is lit by a bedside lamp. Saliva drips from her mouth. She is blushing. Viewed from the side in first person perspective. Anime style illustration."
-      }
+      },
+      "subtype": "penis"
     },
     {
       "id": "P01_toy",
       "genre": "人妻",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, vibrator, sex toy, vibrator on clitoris, spread legs, sitting on couch, living room, daytime, curtains, from front, blush, open mouth, trembling, sweat, half-closed eyes, dress lift, panties aside, wet panties",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, vibrator, sex toy, vibrator on clitoris, spread legs, sitting on couch, living room, daytime, curtains, from front, blush, open mouth, trembling, sweat, half-closed eyes, dress lift, panties aside, wet panties",
         "D_animagine": "1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, vibrator, sex toy, vibrator on clitoris, spread legs, sitting on couch, living room, daytime, curtains, from front, blush, open mouth, trembling, sweat, half-closed eyes, dress lift, panties aside, wet panties, explicit",
         "F_sd15": "A mature housewife with brown hair in a bun sitting on a couch in the living room during daytime, using a vibrator on herself. She has lifted her dress and pushed her wet panties aside. Her legs are spread, she is trembling with half-closed eyes and mouth open. She wears a wedding ring. Curtains filter the daylight. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P01_orgasm",
       "genre": "人妻",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, spread legs, arched back, lying on bed, bedroom, night, moonlight, from above, heavy breathing, sweat, drooling, flushed skin, clenched hands",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, spread legs, arched back, lying on bed, bedroom, night, moonlight, from above, heavy breathing, sweat, drooling, flushed skin, clenched hands",
         "D_animagine": "1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, spread legs, arched back, lying on bed, bedroom, night, moonlight, from above, heavy breathing, sweat, drooling, flushed skin, clenched hands, explicit",
         "F_sd15": "A mature housewife with brown hair in a bun experiencing intense orgasm on a bed at night. Her eyes are rolling back, tongue out in an ahegao expression. Her back is arched, legs spread, body trembling and squirting. She is drenched in sweat, drooling, skin flushed. Moonlight illuminates the bedroom. Her hands are clenched. Viewed from above. Anime style illustration."
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P01_pregnant",
       "genre": "人妻",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, pregnant, pregnant belly, swollen belly, huge belly, nude, standing, hands on belly, bathroom, mirror, mirror reflection, tiled floor, soft lighting, from side, blush, gentle smile, navel, dark areolae, wide hips, linea nigra",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, pregnant, pregnant belly, swollen belly, huge belly, nude, standing, hands on belly, bathroom, mirror, mirror reflection, tiled floor, soft lighting, from side, blush, gentle smile, navel, dark areolae, wide hips, linea nigra",
         "D_animagine": "1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, pregnant, pregnant belly, swollen belly, huge belly, nude, standing, hands on belly, bathroom, mirror, mirror reflection, tiled floor, soft lighting, from side, blush, gentle smile, navel, dark areolae, wide hips, linea nigra, explicit",
         "F_sd15": "A pregnant mature housewife with brown hair in a bun standing nude in a bathroom, looking at her reflection in the mirror. She has a huge swollen belly, hands resting gently on it. Her large breasts have dark areolae. She wears a wedding ring and has a gentle blushing smile. The bathroom has tiled floors and soft lighting. Side view showing her full pregnant profile. Anime style illustration."
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P01_lactation",
       "genre": "人妻",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, lactation, breast milk, milk, leaking, dripping, breast squeeze, sitting, nursing chair, nursery room, pastel colors, warm lighting, from front, blush, closed eyes, open mouth, wet chest, engorged breasts, milk stains",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, lactation, breast milk, milk, leaking, dripping, breast squeeze, sitting, nursing chair, nursery room, pastel colors, warm lighting, from front, blush, closed eyes, open mouth, wet chest, engorged breasts, milk stains",
         "D_animagine": "1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, lactation, breast milk, milk, leaking, dripping, breast squeeze, sitting, nursing chair, nursery room, pastel colors, warm lighting, from front, blush, closed eyes, open mouth, wet chest, engorged breasts, milk stains, explicit",
         "F_sd15": "A mature housewife with brown hair in a bun sitting in a nursing chair in a pastel-colored nursery room. Her large engorged breasts are leaking breast milk, dripping down her wet chest. She is squeezing her breasts with eyes closed and mouth open. She wears a wedding ring. Warm lighting fills the room. Milk stains on her skin. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P01_birth",
       "genre": "人妻",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on back, hospital bed, hospital room, white sheets, bright lighting, from front, screaming, crying, sweat, tears, clenched teeth, gripping sheets, IV drip, medical equipment",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on back, hospital bed, hospital room, white sheets, bright lighting, from front, screaming, crying, sweat, tears, clenched teeth, gripping sheets, IV drip, medical equipment",
         "D_animagine": "1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on back, hospital bed, hospital room, white sheets, bright lighting, from front, screaming, crying, sweat, tears, clenched teeth, gripping sheets, IV drip, medical equipment, explicit",
         "F_sd15": "A pregnant mature housewife with brown hair in a bun giving birth in a hospital room. She is lying on her back on a hospital bed with white sheets, legs spread wide. She is screaming with clenched teeth, tears and sweat running down her face, gripping the sheets tightly. An IV drip and medical equipment are visible. The room is brightly lit. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P02_ex",
@@ -262,90 +270,98 @@
     {
       "id": "P02_se",
       "genre": "JK/学園",
-      "type": "sensitive着衣",
+      "type": "sensitive",
       "content": {
         "default": "nsfw, sensitive, masterpiece, best quality, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, wet clothes, see-through, rain, soaked, white shirt, visible bra, skirt clinging, standing, school entrance, lockers, fluorescent lighting, from front, blush, surprised expression, arms covering chest, water droplets, zettai ryouiki",
         "C_pony": "score_9, score_8_up, score_7_up, rating_questionable, source_anime, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, wet clothes, see-through, rain, soaked, white shirt, visible bra, skirt clinging, standing, school entrance, lockers, fluorescent lighting, from front, blush, surprised expression, arms covering chest, water droplets, zettai ryouiki",
         "D_animagine": "1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, wet clothes, see-through, rain, soaked, white shirt, visible bra, skirt clinging, standing, school entrance, lockers, fluorescent lighting, from front, blush, surprised expression, arms covering chest, water droplets, zettai ryouiki, questionable",
         "F_sd15": "An adult girl with black hair in a ponytail in a sailor school uniform completely soaked from rain, standing at the school entrance near lockers. Her white shirt has become see-through revealing her bra underneath. The blue skirt clings to her body. She is blushing with a surprised expression, trying to cover her chest with her arms. Water droplets on her skin. Fluorescent lighting. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "sensitive着衣"
     },
     {
       "id": "P02_sex",
       "genre": "JK/学園",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1boy, 1girl, sex, vaginal, hetero, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, sex from behind, bent over desk, skirt lifted, panties around thighs, classroom, chalkboard, after school, sunset, orange light, from side, blush, drooling, gripping desk edge, sweat, trembling legs",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1boy, 1girl, sex, vaginal, hetero, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, sex from behind, bent over desk, skirt lifted, panties around thighs, classroom, chalkboard, after school, sunset, orange light, from side, blush, drooling, gripping desk edge, sweat, trembling legs",
         "D_animagine": "1boy, 1girl, sex, vaginal, hetero, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, sex from behind, bent over desk, skirt lifted, panties around thighs, classroom, chalkboard, after school, sunset, orange light, from side, blush, drooling, gripping desk edge, sweat, trembling legs, explicit",
         "F_sd15": "An adult girl with black hair in a ponytail in a sailor school uniform having sex with a man from behind, bent over a classroom desk. Her blue skirt is lifted and panties pulled down around her thighs. She wears thigh-high stockings. The classroom has a chalkboard, with sunset casting orange light. She is blushing, drooling, gripping the desk edge with trembling legs. Side view. Anime style illustration."
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P02_penis",
       "genre": "JK/学園",
-      "type": "penis",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1boy, 1girl, hetero, handjob, penis, erection, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, sitting on lap, hand on penis, stairwell, school staircase, hidden location, dim lighting, from front, blush, nervous expression, looking down, sweat, trembling hand",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1boy, 1girl, hetero, handjob, penis, erection, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, sitting on lap, hand on penis, stairwell, school staircase, hidden location, dim lighting, from front, blush, nervous expression, looking down, sweat, trembling hand",
         "D_animagine": "1boy, 1girl, hetero, handjob, penis, erection, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, sitting on lap, hand on penis, stairwell, school staircase, hidden location, dim lighting, from front, blush, nervous expression, looking down, sweat, trembling hand, explicit",
         "F_sd15": "An adult girl with black hair in a ponytail wearing a sailor school uniform sitting on a man's lap in a dim school stairwell, giving a handjob. Her trembling hand grips the erect penis. She wears a blue skirt and thigh-high stockings. She is blushing with a nervous expression, looking down. Sweat on her skin. Dim lighting in the hidden staircase location. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "penis"
     },
     {
       "id": "P02_toy",
       "genre": "JK/学園",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, vibrator, sex toy, vibrator under panties, remote control vibrator, sitting in chair, library, bookshelves, quiet setting, soft lighting, close-up, blush, biting lip, clenched thighs, fidgeting, sweat, trying to stay quiet, skirt tented",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, vibrator, sex toy, vibrator under panties, remote control vibrator, sitting in chair, library, bookshelves, quiet setting, soft lighting, close-up, blush, biting lip, clenched thighs, fidgeting, sweat, trying to stay quiet, skirt tented",
         "D_animagine": "1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, vibrator, sex toy, vibrator under panties, remote control vibrator, sitting in chair, library, bookshelves, quiet setting, soft lighting, close-up, blush, biting lip, clenched thighs, fidgeting, sweat, trying to stay quiet, skirt tented, explicit",
         "F_sd15": "An adult girl with black hair in a ponytail in a sailor school uniform sitting in a library chair with a remote control vibrator hidden under her panties. She is biting her lip trying to stay quiet, thighs clenched together, fidgeting in her seat. She wears a blue skirt and thigh-high stockings. Bookshelves surround her in soft lighting. She is blushing and sweating. Close-up view. Anime style illustration."
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P02_orgasm",
       "genre": "JK/学園",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, slumped against wall, legs giving out, toilet stall, school bathroom, tile walls, harsh fluorescent light, from front, heavy breathing, sweat, tears, drooling, disheveled uniform, loose ribbon",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, slumped against wall, legs giving out, toilet stall, school bathroom, tile walls, harsh fluorescent light, from front, heavy breathing, sweat, tears, drooling, disheveled uniform, loose ribbon",
         "D_animagine": "1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, slumped against wall, legs giving out, toilet stall, school bathroom, tile walls, harsh fluorescent light, from front, heavy breathing, sweat, tears, drooling, disheveled uniform, loose ribbon, explicit",
         "F_sd15": "An adult girl with black hair in a messy ponytail in a disheveled sailor school uniform experiencing intense orgasm in a school bathroom stall. She is slumped against the tile wall with her legs giving out, eyes rolling back, tongue out in an ahegao expression. Squirting, trembling, sweating, tears and drool on her face. Her uniform ribbon is loose. Harsh fluorescent lighting reflects off tile walls. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P02_pregnant",
       "genre": "JK/学園",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, pregnant, pregnant belly, swollen belly, tight uniform, shirt straining, buttons popping, skirt barely fitting, standing, school hallway, windows, afternoon sun, from front, blush, hand on belly, looking down, concerned expression, stretched fabric, visible navel through shirt",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, pregnant, pregnant belly, swollen belly, tight uniform, shirt straining, buttons popping, skirt barely fitting, standing, school hallway, windows, afternoon sun, from front, blush, hand on belly, looking down, concerned expression, stretched fabric, visible navel through shirt",
         "D_animagine": "1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, pregnant, pregnant belly, swollen belly, tight uniform, shirt straining, buttons popping, skirt barely fitting, standing, school hallway, windows, afternoon sun, from front, blush, hand on belly, looking down, concerned expression, stretched fabric, visible navel through shirt, explicit",
         "F_sd15": "An adult pregnant girl with black hair in a ponytail wearing a sailor school uniform that is straining against her swollen belly. Buttons are popping and the blue skirt barely fits. She stands in a school hallway with afternoon sun streaming through windows, hand on her belly, looking down with a concerned blushing expression. Her navel is visible through the stretched shirt fabric. Thigh-high stockings. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P02_lactation",
       "genre": "JK/学園",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, lactation, breast milk, milk, leaking through shirt, wet stains on chest, milk dripping, covering chest, infirmary, school nurse office, white curtain, bed, daylight, from front, blush, embarrassed, crying, wet shirt, visible nipples through clothes",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, lactation, breast milk, milk, leaking through shirt, wet stains on chest, milk dripping, covering chest, infirmary, school nurse office, white curtain, bed, daylight, from front, blush, embarrassed, crying, wet shirt, visible nipples through clothes",
         "D_animagine": "1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, lactation, breast milk, milk, leaking through shirt, wet stains on chest, milk dripping, covering chest, infirmary, school nurse office, white curtain, bed, daylight, from front, blush, embarrassed, crying, wet shirt, visible nipples through clothes, explicit",
         "F_sd15": "An adult girl with black hair in a ponytail in a sailor school uniform in the school infirmary, her breast milk leaking through her white shirt creating wet stains on her chest. She is trying to cover her chest in embarrassment, blushing and crying. Nipples visible through the wet fabric. The nurse office has white curtains and a bed with daylight streaming in. She wears a blue skirt and thigh-high stockings. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P02_birth",
       "genre": "JK/学園",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on floor, infirmary bed, school nurse office, white sheets, panties removed, skirt pushed up, emergency, bright overhead light, from above, screaming, crying, sweat, tears, gripping sheets, contractions, wet floor",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on floor, infirmary bed, school nurse office, white sheets, panties removed, skirt pushed up, emergency, bright overhead light, from above, screaming, crying, sweat, tears, gripping sheets, contractions, wet floor",
         "D_animagine": "1girl, solo, adult, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on floor, infirmary bed, school nurse office, white sheets, panties removed, skirt pushed up, emergency, bright overhead light, from above, screaming, crying, sweat, tears, gripping sheets, contractions, wet floor, explicit",
         "F_sd15": "An adult pregnant girl with black hair in a ponytail in a sailor school uniform giving birth on the infirmary bed in the school nurse office. Her blue skirt is pushed up, panties removed, legs spread on white sheets. She is screaming and crying with sweat and tears, gripping the sheets during contractions. Bright overhead light illuminates the emergency scene. The floor is wet. Viewed from above. Anime style illustration."
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P03_ex",
@@ -361,90 +377,98 @@
     {
       "id": "P03_se",
       "genre": "催眠/洗脳",
-      "type": "sensitive着衣",
+      "type": "sensitive",
       "content": {
         "default": "nsfw, sensitive, masterpiece, best quality, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, micro bikini, string bikini, see-through negligee, high heels, standing, arms at sides, swaying, hypnotic spiral background, glowing eyes, purple haze, neon lights, from front, blank expression, half-closed eyes, swaying hips, trance, drool, flushed cheeks",
         "C_pony": "score_9, score_8_up, score_7_up, rating_questionable, source_anime, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, micro bikini, string bikini, see-through negligee, high heels, standing, arms at sides, swaying, hypnotic spiral background, glowing eyes, purple haze, neon lights, from front, blank expression, half-closed eyes, swaying hips, trance, drool, flushed cheeks",
         "D_animagine": "1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, micro bikini, string bikini, see-through negligee, high heels, standing, arms at sides, swaying, hypnotic spiral background, glowing eyes, purple haze, neon lights, from front, blank expression, half-closed eyes, swaying hips, trance, drool, flushed cheeks, questionable",
         "F_sd15": "A girl with long silver hair and glowing heart-shaped pupils wearing a collar, micro string bikini, and see-through negligee with high heels. She stands with arms at her sides, hips swaying in a hypnotic trance. The background has a swirling hypnotic spiral pattern with purple haze and neon lights. Her expression is blank with half-closed eyes, drool on her lips, cheeks flushed. She is under mind control. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "sensitive着衣"
     },
     {
       "id": "P03_sex",
       "genre": "催眠/洗脳",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1boy, 1girl, sex, vaginal, hetero, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, leash held by boy, riding, cowgirl position, straddling, girl on top, dark bedroom, candles, purple lighting, occult symbols on floor, from front, blank expression, heart-shaped pupils glowing, drooling, mechanical movement, sweat, bouncing breasts, empty eyes",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1boy, 1girl, sex, vaginal, hetero, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, leash held by boy, riding, cowgirl position, straddling, girl on top, dark bedroom, candles, purple lighting, occult symbols on floor, from front, blank expression, heart-shaped pupils glowing, drooling, mechanical movement, sweat, bouncing breasts, empty eyes",
         "D_animagine": "1boy, 1girl, sex, vaginal, hetero, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, leash held by boy, riding, cowgirl position, straddling, girl on top, dark bedroom, candles, purple lighting, occult symbols on floor, from front, blank expression, heart-shaped pupils glowing, drooling, mechanical movement, sweat, bouncing breasts, empty eyes, explicit",
         "F_sd15": "A girl with long silver hair and glowing heart-shaped pupils under mind control, riding a man in cowgirl position. She wears a collar with a leash held by the man. Her expression is blank and empty, drooling, moving mechanically. Her breasts bounce as she moves, covered in sweat. The dark bedroom is lit by candles and purple lighting with occult symbols drawn on the floor. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P03_penis",
       "genre": "催眠/洗脳",
-      "type": "penis",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1boy, 1girl, hetero, fellatio, oral, penis, deepthroat, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, leash, kneeling, hands behind back, obedient, throat bulge, saliva, tears, dark dungeon, stone walls, torch light, chains, from side, blank expression, glazed eyes, messy hair, drool strings",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1boy, 1girl, hetero, fellatio, oral, penis, deepthroat, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, leash, kneeling, hands behind back, obedient, throat bulge, saliva, tears, dark dungeon, stone walls, torch light, chains, from side, blank expression, glazed eyes, messy hair, drool strings",
         "D_animagine": "1boy, 1girl, hetero, fellatio, oral, penis, deepthroat, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, leash, kneeling, hands behind back, obedient, throat bulge, saliva, tears, dark dungeon, stone walls, torch light, chains, from side, blank expression, glazed eyes, messy hair, drool strings, explicit",
         "F_sd15": "A girl with long silver hair and heart-shaped pupils kneeling obediently with hands behind her back, performing deep fellatio. She wears a collar and leash. Her throat bulges, saliva and drool strings drip from her mouth, tears in her glazed blank eyes. The scene is in a dark dungeon with stone walls, torch light, and chains. Her hair is messy. Viewed from the side. Anime style illustration."
-      }
+      },
+      "subtype": "penis"
     },
     {
       "id": "P03_toy",
       "genre": "催眠/洗脳",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, vibrator, sex toy, dildo, multiple insertions, bound, rope bondage, shibari, tied to chair, legs spread, forced orgasm, dark room, one-way mirror, observation room, cold lighting, from front, blank expression, trembling, sweat, drooling, overstimulation, twitching",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, vibrator, sex toy, dildo, multiple insertions, bound, rope bondage, shibari, tied to chair, legs spread, forced orgasm, dark room, one-way mirror, observation room, cold lighting, from front, blank expression, trembling, sweat, drooling, overstimulation, twitching",
         "D_animagine": "1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, vibrator, sex toy, dildo, multiple insertions, bound, rope bondage, shibari, tied to chair, legs spread, forced orgasm, dark room, one-way mirror, observation room, cold lighting, from front, blank expression, trembling, sweat, drooling, overstimulation, twitching, explicit",
         "F_sd15": "A girl with long silver hair and heart-shaped pupils bound with shibari rope bondage to a chair in a dark observation room with a one-way mirror. She wears a collar. Multiple sex toys including vibrators and a dildo are inserted. Her legs are spread, body trembling and twitching from overstimulation and forced orgasm. Cold clinical lighting. Her expression is blank, sweating and drooling. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P03_orgasm",
       "genre": "催眠/洗脳",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, orgasm, ahegao, rolling eyes, tongue out, mind break, trembling, squirting, full body spasm, arched back, kneeling, head thrown back, dark void background, glowing hypnotic circles, purple energy, from front, broken expression, drooling heavily, tears, sweat, convulsing, loss of consciousness",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, orgasm, ahegao, rolling eyes, tongue out, mind break, trembling, squirting, full body spasm, arched back, kneeling, head thrown back, dark void background, glowing hypnotic circles, purple energy, from front, broken expression, drooling heavily, tears, sweat, convulsing, loss of consciousness",
         "D_animagine": "1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, orgasm, ahegao, rolling eyes, tongue out, mind break, trembling, squirting, full body spasm, arched back, kneeling, head thrown back, dark void background, glowing hypnotic circles, purple energy, from front, broken expression, drooling heavily, tears, sweat, convulsing, loss of consciousness, explicit",
         "F_sd15": "A girl with long silver hair and heart-shaped pupils wearing a collar experiencing mind-breaking orgasm. She is kneeling with her back arched and head thrown back, eyes rolling, tongue out in an extreme ahegao expression. Her entire body convulses in spasms, squirting. She is drooling heavily with tears and sweat. The background is a dark void with glowing purple hypnotic circles and energy. Her mind is completely broken. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P03_pregnant",
       "genre": "催眠/洗脳",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, pregnant, pregnant belly, huge belly, swollen belly, nude, standing, hands on belly, brainwashed, breeding, womb tattoo, body writing, dark laboratory, glass tubes, monitors, green ambient light, from front, blank happy expression, empty smile, glazed eyes, sweat, glowing tattoo marks",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, pregnant, pregnant belly, huge belly, swollen belly, nude, standing, hands on belly, brainwashed, breeding, womb tattoo, body writing, dark laboratory, glass tubes, monitors, green ambient light, from front, blank happy expression, empty smile, glazed eyes, sweat, glowing tattoo marks",
         "D_animagine": "1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, pregnant, pregnant belly, huge belly, swollen belly, nude, standing, hands on belly, brainwashed, breeding, womb tattoo, body writing, dark laboratory, glass tubes, monitors, green ambient light, from front, blank happy expression, empty smile, glazed eyes, sweat, glowing tattoo marks, explicit",
         "F_sd15": "A girl with long silver hair and heart-shaped pupils wearing a collar, standing nude in a dark laboratory with a huge pregnant belly. She has glowing womb tattoos and body writing on her skin. She is brainwashed, hands on her belly with a blank happy expression and empty smile, glazed eyes. The lab has glass tubes, monitors, and green ambient lighting. Sweat glistens on her skin. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P03_lactation",
       "genre": "催眠/洗脳",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, lactation, breast milk, milk, leaking, dripping, breast pump, milking machine, tubes attached to nipples, large breasts, engorged breasts, bound to milking frame, dark facility, industrial, metal pipes, cold blue lighting, from front, blank expression, glazed eyes, continuous milking, milk containers, docile",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, lactation, breast milk, milk, leaking, dripping, breast pump, milking machine, tubes attached to nipples, large breasts, engorged breasts, bound to milking frame, dark facility, industrial, metal pipes, cold blue lighting, from front, blank expression, glazed eyes, continuous milking, milk containers, docile",
         "D_animagine": "1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, lactation, breast milk, milk, leaking, dripping, breast pump, milking machine, tubes attached to nipples, large breasts, engorged breasts, bound to milking frame, dark facility, industrial, metal pipes, cold blue lighting, from front, blank expression, glazed eyes, continuous milking, milk containers, docile, explicit",
         "F_sd15": "A girl with long silver hair and heart-shaped pupils wearing a collar, bound to a milking frame in a dark industrial facility. Tubes from a milking machine are attached to her engorged breasts, continuously extracting breast milk into containers. She has a blank docile expression with glazed eyes. The facility has metal pipes and cold blue lighting. Milk drips and leaks from the pumps. Viewed from the front. Anime style illustration."
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P03_birth",
       "genre": "催眠/洗脳",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, masterpiece, best quality, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on ritual altar, dark temple, candles, occult circle, glowing runes, purple flames, from above, blank expression, no pain response, emotionless, sweat, glowing eyes, contractions, crowning, ritual, ceremony",
         "C_pony": "score_9, score_8_up, score_7_up, rating_explicit, source_anime, 1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on ritual altar, dark temple, candles, occult circle, glowing runes, purple flames, from above, blank expression, no pain response, emotionless, sweat, glowing eyes, contractions, crowning, ritual, ceremony",
         "D_animagine": "1girl, solo, hypnosis, mind control, heart-shaped pupils, silver hair, long hair, collar, birth, giving birth, labor, pregnant, pregnant belly, spread legs, lying on ritual altar, dark temple, candles, occult circle, glowing runes, purple flames, from above, blank expression, no pain response, emotionless, sweat, glowing eyes, contractions, crowning, ritual, ceremony, explicit",
         "F_sd15": "A girl with long silver hair and glowing heart-shaped pupils wearing a collar, lying on a ritual altar in a dark temple giving birth. Her pregnant belly contracts as she crowns, legs spread wide. Candles surround an occult circle with glowing runes and purple flames. Despite labor, her expression is completely blank and emotionless under mind control, showing no pain response. Sweat covers her body. Viewed from above. Anime style illustration."
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P04_ex",
@@ -471,81 +495,88 @@
     {
       "id": "P04_sex",
       "genre": "百合",
-      "type": "sex",
+      "type": "explicit",
       "note": "百合のため2girls同士の性行為。tribadism/scissoring構図",
       "content": {
         "default": "nsfw, explicit, 2girls, yuri, tribadism, scissoring, pussy, grinding, intertwined legs, blonde hair, black hair, long hair, nude, lying on bed, white sheets, moaning, open mouth, blushing, sweat, grabbing sheets, arched back, soft lighting, bedroom, from side",
         "C_pony": "rating_explicit, 2girls, yuri, tribadism, scissoring, pussy, grinding, intertwined legs, blonde hair, black hair, long hair, nude, lying on bed, white sheets, moaning, open mouth, blushing, sweat, grabbing sheets, arched back, soft lighting, bedroom, from side",
         "D_animagine": "2girls, yuri, tribadism, scissoring, pussy, grinding, intertwined legs, blonde hair, black hair, long hair, nude, lying on bed, white sheets, moaning, open mouth, blushing, sweat, grabbing sheets, arched back, soft lighting, bedroom, from side, explicit",
         "F_sd15": "two nude girls engaged in tribadism on a bed, one blonde and one black-haired, legs intertwined and grinding together, both moaning with arched backs, sweating and gripping the white sheets, soft bedroom lighting, side view"
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P04_penis",
       "genre": "百合",
-      "type": "strap-on",
+      "type": "explicit",
       "note": "百合のためstrap-onを使用した構図",
       "content": {
         "default": "nsfw, explicit, 2girls, yuri, strap-on, dildo, sex from behind, blonde hair, black hair, long hair, nude, doggy style, grabbing hips, moaning, open mouth, blushing, sweat, tears of pleasure, on bed, white sheets, dim lighting, bedroom, from side",
         "C_pony": "rating_explicit, 2girls, yuri, strap-on, dildo, sex from behind, blonde hair, black hair, long hair, nude, doggy style, grabbing hips, moaning, open mouth, blushing, sweat, tears of pleasure, on bed, white sheets, dim lighting, bedroom, from side",
         "D_animagine": "2girls, yuri, strap-on, dildo, sex from behind, blonde hair, black hair, long hair, nude, doggy style, grabbing hips, moaning, open mouth, blushing, sweat, tears of pleasure, on bed, white sheets, dim lighting, bedroom, from side, explicit",
         "F_sd15": "two nude girls on a bed, the blonde girl using a strap-on from behind on the black-haired girl in doggy style position, grabbing her hips, both moaning and sweating, tears of pleasure, dim bedroom lighting, side view"
-      }
+      },
+      "subtype": "strap-on"
     },
     {
       "id": "P04_toy",
       "genre": "百合",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 2girls, yuri, vibrator, sex toy, blonde hair, black hair, long hair, nude, lying side by side, mutual masturbation, shared vibrator, blushing, moaning, open mouth, hand holding, intertwined fingers, sweat, on bed, white sheets, soft lighting, bedroom, from above",
         "C_pony": "rating_explicit, 2girls, yuri, vibrator, sex toy, blonde hair, black hair, long hair, nude, lying side by side, mutual masturbation, shared vibrator, blushing, moaning, open mouth, hand holding, intertwined fingers, sweat, on bed, white sheets, soft lighting, bedroom, from above",
         "D_animagine": "2girls, yuri, vibrator, sex toy, blonde hair, black hair, long hair, nude, lying side by side, mutual masturbation, shared vibrator, blushing, moaning, open mouth, hand holding, intertwined fingers, sweat, on bed, white sheets, soft lighting, bedroom, from above, explicit",
         "F_sd15": "two nude girls lying side by side on a bed sharing a vibrator, one blonde and one black-haired, holding hands with intertwined fingers while moaning, both blushing and sweating, soft bedroom lighting, overhead view"
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P04_orgasm",
       "genre": "百合",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 2girls, yuri, orgasm, ahegao, rolling eyes, trembling, squirting, blonde hair, black hair, long hair, nude, cunnilingus, face between legs, arched back, grabbing hair, open mouth, tongue out, drooling, sweat, tears, on bed, messy sheets, soft lighting, bedroom",
         "C_pony": "rating_explicit, 2girls, yuri, orgasm, ahegao, rolling eyes, trembling, squirting, blonde hair, black hair, long hair, nude, cunnilingus, face between legs, arched back, grabbing hair, open mouth, tongue out, drooling, sweat, tears, on bed, messy sheets, soft lighting, bedroom",
         "D_animagine": "2girls, yuri, orgasm, ahegao, rolling eyes, trembling, squirting, blonde hair, black hair, long hair, nude, cunnilingus, face between legs, arched back, grabbing hair, open mouth, tongue out, drooling, sweat, tears, on bed, messy sheets, soft lighting, bedroom, explicit",
         "F_sd15": "a blonde girl reaching orgasm with rolling eyes and ahegao expression while the black-haired girl performs cunnilingus between her legs, back arched violently, grabbing the other girl's hair, drooling and trembling, messy bed sheets, soft bedroom lighting"
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P04_pregnant",
       "genre": "百合",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 2girls, yuri, pregnant, pregnant belly, large belly, blonde hair, black hair, long hair, nude, standing embrace, belly touching, gentle kiss, blushing, happy tears, smiling, hand on belly, soft lighting, bedroom, window, morning light, curtains, tender atmosphere",
         "C_pony": "rating_explicit, 2girls, yuri, pregnant, pregnant belly, large belly, blonde hair, black hair, long hair, nude, standing embrace, belly touching, gentle kiss, blushing, happy tears, smiling, hand on belly, soft lighting, bedroom, window, morning light, curtains, tender atmosphere",
         "D_animagine": "2girls, yuri, pregnant, pregnant belly, large belly, blonde hair, black hair, long hair, nude, standing embrace, belly touching, gentle kiss, blushing, happy tears, smiling, hand on belly, soft lighting, bedroom, window, morning light, curtains, tender atmosphere, explicit",
         "F_sd15": "two nude girls in a tender embrace, the blonde girl visibly pregnant with a large belly, the black-haired girl gently touching her belly while kissing her, both shedding happy tears, soft morning light through bedroom curtains"
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P04_lactation",
       "genre": "百合",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 2girls, yuri, lactation, breast milk, breastfeeding, sucking breast, blonde hair, black hair, long hair, nude, large breasts, milk dripping, lying on side, cradling, blushing, closed eyes, peaceful expression, sweat, on bed, white sheets, warm lighting, bedroom, intimate",
         "C_pony": "rating_explicit, 2girls, yuri, lactation, breast milk, breastfeeding, sucking breast, blonde hair, black hair, long hair, nude, large breasts, milk dripping, lying on side, cradling, blushing, closed eyes, peaceful expression, sweat, on bed, white sheets, warm lighting, bedroom",
         "D_animagine": "2girls, yuri, lactation, breast milk, breastfeeding, sucking breast, blonde hair, black hair, long hair, nude, large breasts, milk dripping, lying on side, cradling, blushing, closed eyes, peaceful expression, sweat, on bed, white sheets, warm lighting, bedroom, intimate, explicit",
         "F_sd15": "two nude girls on a bed, the black-haired girl nursing from the blonde girl's breast with milk dripping, lying on their sides in a cradling position, both blushing with peaceful closed eyes, warm intimate bedroom lighting"
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P04_birth",
       "genre": "百合",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 2girls, yuri, birth, giving birth, labor, pregnant, crowning, blonde hair, black hair, long hair, nude, spread legs, lying on back, hand holding, screaming, crying, tears, sweat, straining, hospital bed, medical setting, bright overhead light, from between legs",
         "C_pony": "rating_explicit, 2girls, yuri, birth, giving birth, labor, pregnant, crowning, blonde hair, black hair, long hair, nude, spread legs, lying on back, hand holding, screaming, crying, tears, sweat, straining, hospital bed, medical setting, bright overhead light, from between legs",
         "D_animagine": "2girls, yuri, birth, giving birth, labor, pregnant, crowning, blonde hair, black hair, long hair, nude, spread legs, lying on back, hand holding, screaming, crying, tears, sweat, straining, hospital bed, medical setting, bright overhead light, from between legs, explicit",
         "F_sd15": "a blonde pregnant girl giving birth on a hospital bed with legs spread wide, the black-haired girl holding her hand supportively, screaming and crying with tears and sweat, straining during labor, bright medical overhead lighting"
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P05_ex",
@@ -572,79 +603,86 @@
     {
       "id": "P05_sex",
       "genre": "おねショタ",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1boy, 1girl, sex, vaginal, cowgirl position, girl on top, mature female, large breasts, red hair, wavy hair, seductive, bouncing breasts, riding, straddling, boy lying on back, moaning, open mouth, blushing, sweat, hand on chest, bedroom, on bed, dim lighting, from below",
         "C_pony": "rating_explicit, 1boy, 1girl, sex, vaginal, cowgirl position, girl on top, mature female, large breasts, red hair, wavy hair, seductive, bouncing breasts, riding, straddling, boy lying on back, moaning, open mouth, blushing, sweat, hand on chest, bedroom, on bed, dim lighting, from below",
         "D_animagine": "1boy, 1girl, sex, vaginal, cowgirl position, girl on top, mature female, large breasts, red hair, wavy hair, seductive, bouncing breasts, riding, straddling, boy lying on back, moaning, open mouth, blushing, sweat, hand on chest, bedroom, on bed, dim lighting, from below, explicit",
         "F_sd15": "a mature woman with wavy red hair riding on top in cowgirl position, large bouncing breasts, seductive expression while moaning, straddling a boy lying on his back, sweating and blushing, dim bedroom lighting, viewed from below"
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P05_penis",
       "genre": "おねショタ",
-      "type": "penis",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1boy, 1girl, penis, erection, paizuri, breast sandwich, mature female, large breasts, red hair, wavy hair, seductive smile, looking up at viewer, tongue out, licking tip, kneeling, between breasts, sweat, saliva, blushing, pov, bedroom, dim lighting",
         "C_pony": "rating_explicit, 1boy, 1girl, penis, erection, paizuri, breast sandwich, mature female, large breasts, red hair, wavy hair, seductive smile, looking up at viewer, tongue out, licking tip, kneeling, between breasts, sweat, saliva, blushing, pov, bedroom, dim lighting",
         "D_animagine": "1boy, 1girl, penis, erection, paizuri, breast sandwich, mature female, large breasts, red hair, wavy hair, seductive smile, looking up at viewer, tongue out, licking tip, kneeling, between breasts, sweat, saliva, blushing, pov, bedroom, dim lighting, explicit",
         "F_sd15": "a mature woman with wavy red hair giving paizuri with her large breasts, looking up seductively with tongue out licking the tip, kneeling between the viewer's legs, saliva and sweat glistening, dim bedroom lighting, point of view"
-      }
+      },
+      "subtype": "penis"
     },
     {
       "id": "P05_toy",
       "genre": "おねショタ",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, solo, mature female, large breasts, red hair, wavy hair, vibrator, sex toy, insertion, spread legs, sitting on chair, leaning back, moaning, open mouth, blushing, sweat, half-closed eyes, seductive, hand between legs, bedroom, dim lighting, from front",
         "C_pony": "rating_explicit, 1girl, solo, mature female, large breasts, red hair, wavy hair, vibrator, sex toy, insertion, spread legs, sitting on chair, leaning back, moaning, open mouth, blushing, sweat, half-closed eyes, seductive, hand between legs, bedroom, dim lighting, from front",
         "D_animagine": "1girl, solo, mature female, large breasts, red hair, wavy hair, vibrator, sex toy, insertion, spread legs, sitting on chair, leaning back, moaning, open mouth, blushing, sweat, half-closed eyes, seductive, hand between legs, bedroom, dim lighting, from front, explicit",
         "F_sd15": "a mature woman with wavy red hair sitting on a chair using a vibrator between her spread legs, leaning back and moaning with half-closed seductive eyes, large breasts heaving, sweating and blushing, dim bedroom lighting"
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P05_orgasm",
       "genre": "おねショタ",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1boy, 1girl, orgasm, ahegao, rolling eyes, trembling, squirting, mature female, large breasts, red hair, wavy hair, sex, vaginal, cowgirl position, girl on top, arched back, tongue out, drooling, open mouth, sweat, tears, clenching, on bed, dim lighting, bedroom, from below",
         "C_pony": "rating_explicit, 1boy, 1girl, orgasm, ahegao, rolling eyes, trembling, squirting, mature female, large breasts, red hair, wavy hair, sex, vaginal, cowgirl position, girl on top, arched back, tongue out, drooling, open mouth, sweat, tears, clenching, on bed, dim lighting, bedroom, from below",
         "D_animagine": "1boy, 1girl, orgasm, ahegao, rolling eyes, trembling, squirting, mature female, large breasts, red hair, wavy hair, sex, vaginal, cowgirl position, girl on top, arched back, tongue out, drooling, open mouth, sweat, tears, clenching, on bed, dim lighting, bedroom, from below, explicit",
         "F_sd15": "a mature woman with wavy red hair reaching climax while riding on top, eyes rolling back in ahegao expression, back arched violently, tongue out and drooling, large breasts bouncing, trembling and squirting, dim bedroom lighting, viewed from below"
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P05_pregnant",
       "genre": "おねショタ",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, solo, mature female, pregnant, pregnant belly, large belly, large breasts, red hair, wavy hair, nude, standing, hand on belly, gentle smile, blushing, looking at viewer, sweat, swollen breasts, bedroom, window, morning light, curtains, full body, maternal expression",
         "C_pony": "rating_explicit, 1girl, solo, mature female, pregnant, pregnant belly, large belly, large breasts, red hair, wavy hair, nude, standing, hand on belly, gentle smile, blushing, looking at viewer, sweat, swollen breasts, bedroom, window, morning light, curtains, full body, maternal expression",
         "D_animagine": "1girl, solo, mature female, pregnant, pregnant belly, large belly, large breasts, red hair, wavy hair, nude, standing, hand on belly, gentle smile, blushing, looking at viewer, sweat, swollen breasts, bedroom, window, morning light, curtains, full body, maternal expression, explicit",
         "F_sd15": "a pregnant mature woman with wavy red hair standing nude by a bedroom window, large swollen belly and breasts, hand gently resting on her belly with a maternal smile, blushing, soft morning light through curtains, full body view"
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P05_lactation",
       "genre": "おねショタ",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, solo focus, mature female, lactation, breast milk, milk dripping, large breasts, swollen breasts, red hair, wavy hair, squeezing breast, milk spray, blushing, embarrassed expression, open mouth, panting, sweat, nude, sitting on bed, bedroom, warm lighting, close-up",
         "C_pony": "rating_explicit, 1girl, solo focus, mature female, lactation, breast milk, milk dripping, large breasts, swollen breasts, red hair, wavy hair, squeezing breast, milk spray, blushing, embarrassed expression, open mouth, panting, sweat, nude, sitting on bed, bedroom, warm lighting, close-up",
         "D_animagine": "1girl, solo focus, mature female, lactation, breast milk, milk dripping, large breasts, swollen breasts, red hair, wavy hair, squeezing breast, milk spray, blushing, embarrassed expression, open mouth, panting, sweat, nude, sitting on bed, bedroom, warm lighting, close-up, explicit",
         "F_sd15": "a mature woman with wavy red hair sitting nude on a bed, squeezing her large swollen breast with milk spraying out, dripping breast milk, blushing with an embarrassed panting expression, warm bedroom lighting, close-up view"
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P05_birth",
       "genre": "おねショタ",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, solo, mature female, birth, giving birth, labor, pregnant, crowning, large breasts, red hair, wavy hair, nude, spread legs, lying on back, screaming, crying, tears, sweat, straining, clenching fists, hospital bed, medical setting, bright overhead light, stirrups",
         "C_pony": "rating_explicit, 1girl, solo, mature female, birth, giving birth, labor, pregnant, crowning, large breasts, red hair, wavy hair, nude, spread legs, lying on back, screaming, crying, tears, sweat, straining, clenching fists, hospital bed, medical setting, bright overhead light, stirrups",
         "D_animagine": "1girl, solo, mature female, birth, giving birth, labor, pregnant, crowning, large breasts, red hair, wavy hair, nude, spread legs, lying on back, screaming, crying, tears, sweat, straining, clenching fists, hospital bed, medical setting, bright overhead light, stirrups, explicit",
         "F_sd15": "a mature woman with wavy red hair giving birth on a hospital bed, legs spread wide in stirrups, screaming and crying with tears streaming down, drenched in sweat, clenching her fists while straining, bright medical overhead lighting"
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P06_ex",
@@ -671,574 +709,626 @@
     {
       "id": "P06_sex",
       "genre": "NTR",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1boy, 1girl, sex, vaginal, from behind, doggystyle, married woman, wedding ring, brown hair, messy hair, tears, crying with pleasure, conflicted expression, biting pillow, large breasts, sweat, love bites, grabbing sheets, hotel bed, dim lighting, phone ringing on nightstand, guilt, betrayal",
         "C_pony": "rating_explicit, 1boy, 1girl, sex, vaginal, from behind, doggystyle, married woman, wedding ring, brown hair, messy hair, tears, crying with pleasure, conflicted expression, biting pillow, large breasts, sweat, love bites, grabbing sheets, hotel bed, dim lighting, phone ringing on nightstand",
         "D_animagine": "1boy, 1girl, sex, vaginal, from behind, doggystyle, married woman, wedding ring, brown hair, messy hair, tears, crying with pleasure, conflicted expression, biting pillow, large breasts, sweat, love bites, grabbing sheets, hotel bed, dim lighting, phone ringing on nightstand, guilt, betrayal, explicit",
         "F_sd15": "a married woman being taken from behind in doggystyle on a hotel bed, biting the pillow with tears of conflicted pleasure, wedding ring visible on her gripping hand, messy brown hair, love bites on her back, her phone ringing on the nightstand showing her husband's name, dim lighting"
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P06_penis",
       "genre": "NTR",
-      "type": "penis",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1boy, 1girl, penis, erection, fellatio, oral, married woman, wedding ring, brown hair, messy hair, tears, looking up at viewer, reluctant expression, guilt, hand on penis, kneeling, saliva, drooling, blushing, sweat, hotel room, dim lighting, close-up, wedding ring hand gripping shaft",
         "C_pony": "rating_explicit, 1boy, 1girl, penis, erection, fellatio, oral, married woman, wedding ring, brown hair, messy hair, tears, looking up at viewer, reluctant expression, guilt, hand on penis, kneeling, saliva, drooling, blushing, sweat, hotel room, dim lighting, close-up",
         "D_animagine": "1boy, 1girl, penis, erection, fellatio, oral, married woman, wedding ring, brown hair, messy hair, tears, looking up at viewer, reluctant expression, guilt, hand on penis, kneeling, saliva, drooling, blushing, sweat, hotel room, dim lighting, close-up, wedding ring hand gripping shaft, explicit",
         "F_sd15": "a married woman kneeling and performing fellatio, looking up with tearful reluctant eyes, her wedding ring visible on the hand gripping the shaft, messy brown hair, saliva dripping, guilty blushing expression, dim hotel room lighting, close-up view"
-      }
+      },
+      "subtype": "penis"
     },
     {
       "id": "P06_toy",
       "genre": "NTR",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, solo, married woman, wedding ring, vibrator, sex toy, remote controlled vibrator, brown hair, messy hair, tears, biting lip, trying to suppress moans, spread legs, sitting on couch, living room, husband sleeping in background, guilt, phone with lover message, dim lighting, trembling, sweat",
         "C_pony": "rating_explicit, 1girl, solo, married woman, wedding ring, vibrator, sex toy, remote controlled vibrator, brown hair, messy hair, tears, biting lip, trying to suppress moans, spread legs, sitting on couch, living room, guilt, dim lighting, trembling, sweat",
         "D_animagine": "1girl, solo, married woman, wedding ring, vibrator, sex toy, remote controlled vibrator, brown hair, messy hair, tears, biting lip, trying to suppress moans, spread legs, sitting on couch, living room, husband sleeping in background, guilt, phone with lover message, dim lighting, trembling, sweat, explicit",
         "F_sd15": "a married woman secretly using a remote-controlled vibrator on a living room couch, biting her lip to suppress moans, tears of guilt, wedding ring visible, messy brown hair, her husband sleeping in the background, a phone showing a message from her lover, trembling in dim lighting"
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P06_orgasm",
       "genre": "NTR",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1boy, 1girl, orgasm, ahegao, rolling eyes, trembling, squirting, married woman, wedding ring, brown hair, messy hair, sex, vaginal, missionary, peace sign, double peace sign, tongue out, drooling, crying, tears, sweat, mind break, heart-shaped pupils, love bites, hotel bed, dim lighting, betrayal, corruption",
         "C_pony": "rating_explicit, 1boy, 1girl, orgasm, ahegao, rolling eyes, trembling, squirting, married woman, wedding ring, brown hair, messy hair, sex, vaginal, missionary, peace sign, double peace sign, tongue out, drooling, crying, tears, sweat, mind break, heart-shaped pupils, love bites, hotel bed, dim lighting",
         "D_animagine": "1boy, 1girl, orgasm, ahegao, rolling eyes, trembling, squirting, married woman, wedding ring, brown hair, messy hair, sex, vaginal, missionary, peace sign, double peace sign, tongue out, drooling, crying, tears, sweat, mind break, heart-shaped pupils, love bites, hotel bed, dim lighting, betrayal, corruption, explicit",
         "F_sd15": "a married woman reaching a mind-breaking orgasm during sex with another man, rolling her eyes back in ahegao with tongue out and drooling, making a double peace sign, wedding ring visible, crying tears of pleasure, heart-shaped pupils, messy brown hair covered in love bites, dim hotel bed lighting"
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P06_pregnant",
       "genre": "NTR",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, solo, married woman, pregnant, pregnant belly, large belly, wedding ring, brown hair, messy hair, nude, hand on belly, conflicted expression, tears, crying, guilt, looking at wedding photo, standing in front of mirror, bedroom, dim lighting, uncertainty, dark atmosphere",
         "C_pony": "rating_explicit, 1girl, solo, married woman, pregnant, pregnant belly, large belly, wedding ring, brown hair, messy hair, nude, hand on belly, conflicted expression, tears, crying, guilt, looking at wedding photo, standing in front of mirror, bedroom, dim lighting",
         "D_animagine": "1girl, solo, married woman, pregnant, pregnant belly, large belly, wedding ring, brown hair, messy hair, nude, hand on belly, conflicted expression, tears, crying, guilt, looking at wedding photo, standing in front of mirror, bedroom, dim lighting, uncertainty, dark atmosphere, explicit",
         "F_sd15": "a nude married woman standing before a mirror, visibly pregnant with a large belly, wedding ring on her hand resting on her stomach, messy brown hair, crying with a conflicted guilty expression while looking at a wedding photo, dark dim bedroom atmosphere"
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P06_lactation",
       "genre": "NTR",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1boy, 1girl, lactation, breast milk, milk dripping, sucking breast, breastfeeding, married woman, wedding ring, brown hair, messy hair, large breasts, swollen breasts, lying on bed, blushing, conflicted expression, tears, guilt, moaning, sweat, hotel room, dim lighting, love bites, betrayal",
         "C_pony": "rating_explicit, 1boy, 1girl, lactation, breast milk, milk dripping, sucking breast, breastfeeding, married woman, wedding ring, brown hair, messy hair, large breasts, swollen breasts, lying on bed, blushing, conflicted expression, tears, guilt, moaning, sweat, hotel room, dim lighting, love bites",
         "D_animagine": "1boy, 1girl, lactation, breast milk, milk dripping, sucking breast, breastfeeding, married woman, wedding ring, brown hair, messy hair, large breasts, swollen breasts, lying on bed, blushing, conflicted expression, tears, guilt, moaning, sweat, hotel room, dim lighting, love bites, betrayal, explicit",
         "F_sd15": "a married woman on a hotel bed having her milk-filled breasts suckled by another man, breast milk dripping, wedding ring visible, messy brown hair, crying with a conflicted guilty expression while moaning, love bites on her neck, dim hotel room lighting"
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P06_birth",
       "genre": "NTR",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, solo, married woman, birth, giving birth, labor, pregnant, crowning, wedding ring, brown hair, messy hair, nude, spread legs, lying on back, screaming, crying, tears, sweat, straining, hospital bed, husband holding hand, guilt, anguish, bright overhead light, medical setting, dramatic",
         "C_pony": "rating_explicit, 1girl, solo, married woman, birth, giving birth, labor, pregnant, crowning, wedding ring, brown hair, messy hair, nude, spread legs, lying on back, screaming, crying, tears, sweat, straining, hospital bed, husband holding hand, guilt, anguish, bright overhead light, medical setting",
         "D_animagine": "1girl, solo, married woman, birth, giving birth, labor, pregnant, crowning, wedding ring, brown hair, messy hair, nude, spread legs, lying on back, screaming, crying, tears, sweat, straining, hospital bed, husband holding hand, guilt, anguish, bright overhead light, medical setting, dramatic, explicit",
         "F_sd15": "a married woman giving birth on a hospital bed, her unknowing husband holding her hand supportively, wedding ring visible, screaming in labor with tears of pain and guilt, messy brown hair drenched in sweat, legs spread in stirrups, bright medical lighting, anguished expression hiding her secret"
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P07_ex",
       "genre": "fantasy",
-      "type": "explicit_solo",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, armor removed, nude, medium breasts, navel, standing, looking at viewer, enchanted forest, glowing mushrooms, moonlight, volumetric lighting, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, armor removed, nude, medium breasts, navel, standing, looking at viewer, enchanted forest, glowing mushrooms, moonlight, volumetric lighting, full body, from front",
         "D_animagine": "1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, armor removed, nude, medium breasts, navel, standing, looking at viewer, enchanted forest, glowing mushrooms, moonlight, volumetric lighting, full body, from front, explicit",
         "F_sd15": "a beautiful elf girl with silver long hair, green eyes, and pointy ears, standing nude in an enchanted moonlit forest with glowing mushrooms, her fantasy armor removed and set aside, medium breasts, looking directly at the viewer, volumetric moonlight filtering through ancient trees, full body view from the front, fantasy art style"
-      }
+      },
+      "subtype": "explicit_solo"
     },
     {
       "id": "P07_se",
       "genre": "fantasy",
-      "type": "sensitive_clothed",
+      "type": "sensitive",
       "content": {
         "default": "nsfw, sensitive, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, cleavage, midriff, thigh gap, sitting, crossed legs, throne room, stone pillars, torchlight, warm lighting, cowboy shot, from below",
         "C_pony": "rating_questionable, score_9, score_8_up, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, cleavage, midriff, thigh gap, sitting, crossed legs, throne room, stone pillars, torchlight, warm lighting, cowboy shot, from below",
         "D_animagine": "1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, cleavage, midriff, thigh gap, sitting, crossed legs, throne room, stone pillars, torchlight, warm lighting, cowboy shot, from below, sensitive",
         "F_sd15": "a regal elf woman with silver long hair, green eyes, and pointy ears, wearing revealing fantasy armor showing cleavage and midriff, sitting with crossed legs on a stone throne in an ancient throne room, stone pillars and torchlight casting warm light, viewed from slightly below at cowboy shot"
-      }
+      },
+      "subtype": "sensitive_clothed"
     },
     {
       "id": "P07_sex",
       "genre": "fantasy",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, 1boy, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, armor aside, sex, vaginal, missionary, lying on back, spread legs, on altar, ancient ruins, vine overgrowth, magical glow, blue particles, sweat, blush, open mouth, pov, from above",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, 1boy, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, armor aside, sex, vaginal, missionary, lying on back, spread legs, on altar, ancient ruins, vine overgrowth, magical glow, blue particles, sweat, blush, open mouth, pov, from above",
         "D_animagine": "1girl, 1boy, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, armor aside, sex, vaginal, missionary, lying on back, spread legs, on altar, ancient ruins, vine overgrowth, magical glow, blue particles, sweat, blush, open mouth, pov, from above, explicit",
         "F_sd15": "a silver-haired elf girl with green eyes and pointy ears lying on her back on a stone altar in ancient overgrown ruins, having sex in missionary position with a man, legs spread, fantasy armor set aside, magical blue particles floating in the air, vines covering the ruins, sweating and blushing with mouth open, point of view from above"
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P07_penis",
       "genre": "fantasy",
-      "type": "penis_visible",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, 1boy, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, handjob, penis, erection, kneeling, forest clearing, fairy lights, night sky, starry sky, blush, looking at penis, close-up, from side",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, 1boy, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, handjob, penis, erection, kneeling, forest clearing, fairy lights, night sky, starry sky, blush, looking at penis, close-up, from side",
         "D_animagine": "1girl, 1boy, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, handjob, penis, erection, kneeling, forest clearing, fairy lights, night sky, starry sky, blush, looking at penis, close-up, from side, explicit",
         "F_sd15": "a silver-haired elf girl with green eyes and pointy ears kneeling in a moonlit forest clearing, giving a handjob, erect penis visible, fairy lights glowing softly in the night sky with stars, she is blushing and looking at the penis, close-up side view, fantasy atmosphere"
-      }
+      },
+      "subtype": "penis_visible"
     },
     {
       "id": "P07_toy",
       "genre": "fantasy",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, nude, dildo, crystal dildo, insertion, vaginal object insertion, sitting, spread legs, enchanted spring, glowing water, crystal formations, magical aura, blush, half-closed eyes, steam, medium shot, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, nude, dildo, crystal dildo, insertion, vaginal object insertion, sitting, spread legs, enchanted spring, glowing water, crystal formations, magical aura, blush, half-closed eyes, steam, medium shot, from front",
         "D_animagine": "1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, nude, dildo, crystal dildo, insertion, vaginal object insertion, sitting, spread legs, enchanted spring, glowing water, crystal formations, magical aura, blush, half-closed eyes, steam, medium shot, from front, explicit",
         "F_sd15": "a nude elf girl with silver long hair, green eyes, and pointy ears, sitting at the edge of an enchanted glowing spring, using a crystal dildo for vaginal insertion, legs spread, crystal formations and magical aura surrounding the spring, blushing with half-closed eyes, steam rising from the water, medium shot from the front, fantasy setting"
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P07_orgasm",
       "genre": "fantasy",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, nude, orgasm, ahegao, trembling, arched back, clenched hands, pussy juice, magic circle, glowing runes, levitating, wind, hair floating, bright magical light, dramatic lighting, full body, from below",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, nude, orgasm, ahegao, trembling, arched back, clenched hands, pussy juice, magic circle, glowing runes, levitating, wind, hair floating, bright magical light, dramatic lighting, full body, from below",
         "D_animagine": "1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, nude, orgasm, ahegao, trembling, arched back, clenched hands, pussy juice, magic circle, glowing runes, levitating, wind, hair floating, bright magical light, dramatic lighting, full body, from below, explicit",
         "F_sd15": "a nude elf girl with silver long hair and green eyes reaching a powerful magical orgasm, back arched and body trembling, levitating above a glowing magic circle with ancient runes, her hair floating in magical wind, ahegao expression, hands clenched, bright magical light erupting around her, dramatic lighting from below, full body view, fantasy supernatural climax"
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P07_pregnant",
       "genre": "fantasy",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, pregnant, large belly, nude, hand on belly, sitting, tree of life, glowing tree, sacred grove, flower petals, soft light, serene expression, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, elf, pointy ears, green eyes, silver hair, long hair, pregnant, large belly, nude, hand on belly, sitting, tree of life, glowing tree, sacred grove, flower petals, soft light, serene expression, full body, from front",
         "D_animagine": "1girl, elf, pointy ears, green eyes, silver hair, long hair, pregnant, large belly, nude, hand on belly, sitting, tree of life, glowing tree, sacred grove, flower petals, soft light, serene expression, full body, from front, explicit",
         "F_sd15": "a pregnant nude elf woman with silver long hair, green eyes, and pointy ears, sitting peacefully beneath a massive glowing tree of life in a sacred grove, large belly with her hand resting on it, flower petals drifting in soft light, serene maternal expression, full body view from the front, ethereal fantasy atmosphere"
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P07_lactation",
       "genre": "fantasy",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, lactation, breast milk, large breasts, dripping, nude, sitting, hands on breasts, enchanted garden, moonflowers, bioluminescent plants, moon, soft glow, embarrassed, blush, upper body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, elf, pointy ears, green eyes, silver hair, long hair, lactation, breast milk, large breasts, dripping, nude, sitting, hands on breasts, enchanted garden, moonflowers, bioluminescent plants, moon, soft glow, embarrassed, blush, upper body, from front",
         "D_animagine": "1girl, elf, pointy ears, green eyes, silver hair, long hair, lactation, breast milk, large breasts, dripping, nude, sitting, hands on breasts, enchanted garden, moonflowers, bioluminescent plants, moon, soft glow, embarrassed, blush, upper body, from front, explicit",
         "F_sd15": "a nude elf woman with silver long hair and green eyes sitting in an enchanted garden at night, large breasts with breast milk dripping and lactating, hands on her breasts, surrounded by bioluminescent moonflowers and glowing plants, soft moonlight glow, embarrassed blushing expression, upper body view from the front, fantasy setting"
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P07_birth",
       "genre": "fantasy",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, giving birth, crowning, spread legs, lying on back, nude, sweat, tears, screaming, sacred spring, water birth, glowing water, ancient stone, midwife, nature spirits, ethereal light, dramatic, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, elf, pointy ears, green eyes, silver hair, long hair, giving birth, crowning, spread legs, lying on back, nude, sweat, tears, screaming, sacred spring, water birth, glowing water, ancient stone, midwife, nature spirits, ethereal light, dramatic, full body, from front",
         "D_animagine": "1girl, elf, pointy ears, green eyes, silver hair, long hair, giving birth, crowning, spread legs, lying on back, nude, sweat, tears, screaming, sacred spring, water birth, glowing water, ancient stone, midwife, nature spirits, ethereal light, dramatic, full body, from front, explicit",
         "F_sd15": "a silver-haired elf woman with green eyes giving birth in a sacred spring, lying on her back on ancient stone with legs spread, water glowing with ethereal light, sweating and crying out, nature spirits and a midwife attending, dramatic ethereal lighting, full body view from the front, intense emotional fantasy birth scene"
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P08_ex",
       "genre": "ryoujoku",
-      "type": "explicit_solo",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, restrained, chains, nude, exposed breasts, dungeon, stone wall, dim lighting, candles, scared expression, tears, standing, arms above head, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, black hair, white dress, torn clothes, restrained, chains, nude, exposed breasts, dungeon, stone wall, dim lighting, candles, scared expression, tears, standing, arms above head, full body, from front",
         "D_animagine": "1girl, black hair, white dress, torn clothes, restrained, chains, nude, exposed breasts, dungeon, stone wall, dim lighting, candles, scared expression, tears, standing, arms above head, full body, from front, explicit",
         "F_sd15": "a girl with black hair in a torn white dress chained in a dark dungeon, arms restrained above her head, breasts exposed through torn fabric, stone walls lit by dim candlelight, tears on her face with a scared expression, full body view from the front, dark oppressive atmosphere"
-      }
+      },
+      "subtype": "explicit_solo"
     },
     {
       "id": "P08_se",
       "genre": "ryoujoku",
-      "type": "sensitive_clothed",
+      "type": "sensitive",
       "content": {
         "default": "nsfw, sensitive, 1girl, black hair, white dress, restrained, rope, bondage, bound wrists, kneeling, dungeon, prison cell, iron bars, wet floor, torn stockings, cleavage, frightened, looking away, dim light, cowboy shot, from above",
         "C_pony": "rating_questionable, score_9, score_8_up, 1girl, black hair, white dress, restrained, rope, bondage, bound wrists, kneeling, dungeon, prison cell, iron bars, wet floor, torn stockings, cleavage, frightened, looking away, dim light, cowboy shot, from above",
         "D_animagine": "1girl, black hair, white dress, restrained, rope, bondage, bound wrists, kneeling, dungeon, prison cell, iron bars, wet floor, torn stockings, cleavage, frightened, looking away, dim light, cowboy shot, from above, sensitive",
         "F_sd15": "a black-haired girl in a dirty white dress kneeling in a dungeon prison cell, wrists bound with rope, torn stockings showing cleavage through disheveled dress, iron bars and wet stone floor, frightened expression looking away, dim oppressive lighting, cowboy shot from above"
-      }
+      },
+      "subtype": "sensitive_clothed"
     },
     {
       "id": "P08_sex",
       "genre": "ryoujoku",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, 1boy, black hair, white dress, torn clothes, restrained, chains, sex, vaginal, rape, forced, crying, tears, lying on back, stone floor, dungeon, torchlight, dark atmosphere, sweat, bruises, open mouth, screaming, pov, from above",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, 1boy, black hair, white dress, torn clothes, restrained, chains, sex, vaginal, rape, forced, crying, tears, lying on back, stone floor, dungeon, torchlight, dark atmosphere, sweat, bruises, open mouth, screaming, pov, from above",
         "D_animagine": "1girl, 1boy, black hair, white dress, torn clothes, restrained, chains, sex, vaginal, rape, forced, crying, tears, lying on back, stone floor, dungeon, torchlight, dark atmosphere, sweat, bruises, open mouth, screaming, pov, from above, explicit",
         "F_sd15": "a black-haired girl in a torn white dress being forced down on a dungeon stone floor, chained and restrained, vaginal penetration, crying with tears streaming and mouth open screaming, bruises on skin, sweat, dim torchlight in the dark dungeon atmosphere, point of view from above, dark violent scene"
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P08_penis",
       "genre": "ryoujoku",
-      "type": "penis_visible",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, 1boy, black hair, white dress, torn clothes, restrained, collar, leash, kneeling, fellatio, penis, oral, forced oral, tears, mascara tears, dungeon, stone wall, shackles, dim candlelight, saliva, close-up, from side",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, 1boy, black hair, white dress, torn clothes, restrained, collar, leash, kneeling, fellatio, penis, oral, forced oral, tears, mascara tears, dungeon, stone wall, shackles, dim candlelight, saliva, close-up, from side",
         "D_animagine": "1girl, 1boy, black hair, white dress, torn clothes, restrained, collar, leash, kneeling, fellatio, penis, oral, forced oral, tears, mascara tears, dungeon, stone wall, shackles, dim candlelight, saliva, close-up, from side, explicit",
         "F_sd15": "a black-haired girl in torn white dress forced to kneel in a dungeon, wearing a collar and leash, performing forced oral on an erect penis, tears and mascara running down her face, stone walls with shackles, dim candlelight, saliva dripping, close-up side view, dark oppressive setting"
-      }
+      },
+      "subtype": "penis_visible"
     },
     {
       "id": "P08_toy",
       "genre": "ryoujoku",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, restrained, spread eagle, vibrator, vibrator on nipple, dildo, vaginal object insertion, forced, blindfold, ball gag, dungeon, wooden frame, chains, dim light, sweat, trembling, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, black hair, white dress, torn clothes, restrained, spread eagle, vibrator, vibrator on nipple, dildo, vaginal object insertion, forced, blindfold, ball gag, dungeon, wooden frame, chains, dim light, sweat, trembling, full body, from front",
         "D_animagine": "1girl, black hair, white dress, torn clothes, restrained, spread eagle, vibrator, vibrator on nipple, dildo, vaginal object insertion, forced, blindfold, ball gag, dungeon, wooden frame, chains, dim light, sweat, trembling, full body, from front, explicit",
         "F_sd15": "a black-haired girl in torn white dress restrained in spread eagle position on a wooden frame in a dungeon, blindfolded and gagged with a ball gag, vibrator on nipple and dildo inserted, chained, sweating and trembling, dim oppressive lighting, full body view from the front, torture scene"
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P08_orgasm",
       "genre": "ryoujoku",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, restrained, chains, orgasm, forced orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, sweat, dungeon, stone pillar, chained to pillar, torchlight, red candle wax, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, black hair, white dress, torn clothes, restrained, chains, orgasm, forced orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, sweat, dungeon, stone pillar, chained to pillar, torchlight, red candle wax, full body, from front",
         "D_animagine": "1girl, black hair, white dress, torn clothes, restrained, chains, orgasm, forced orgasm, ahegao, rolling eyes, tongue out, trembling, squirting, pussy juice, sweat, dungeon, stone pillar, chained to pillar, torchlight, red candle wax, full body, from front, explicit",
         "F_sd15": "a black-haired girl in torn white dress chained to a stone pillar in a dungeon, experiencing a forced orgasm, eyes rolling back and tongue out in ahegao, body trembling and squirting, sweat covering her body, red candle wax on skin, torchlight flickering in the dark dungeon, full body view from the front"
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P08_pregnant",
       "genre": "ryoujoku",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, pregnant, large belly, restrained, chains, collar, nude, sitting, stone floor, dungeon, iron bars, crying, hopeless expression, dirty, bruises, dim light, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, black hair, white dress, torn clothes, pregnant, large belly, restrained, chains, collar, nude, sitting, stone floor, dungeon, iron bars, crying, hopeless expression, dirty, bruises, dim light, full body, from front",
         "D_animagine": "1girl, black hair, white dress, torn clothes, pregnant, large belly, restrained, chains, collar, nude, sitting, stone floor, dungeon, iron bars, crying, hopeless expression, dirty, bruises, dim light, full body, from front, explicit",
         "F_sd15": "a pregnant black-haired girl in torn and dirty white dress sitting on a dungeon stone floor, large belly visible, chained with a collar around her neck, crying with a hopeless expression, bruises on her body, iron bars and dim oppressive light, full body view from the front, dark captivity scene"
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P08_lactation",
       "genre": "ryoujoku",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, restrained, stocks, lactation, breast milk, milking, large breasts, breast squeeze, forced, nude, dungeon, wooden stocks, bucket, dim light, humiliation, crying, blush, upper body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, black hair, white dress, torn clothes, restrained, stocks, lactation, breast milk, milking, large breasts, breast squeeze, forced, nude, dungeon, wooden stocks, bucket, dim light, humiliation, crying, blush, upper body, from front",
         "D_animagine": "1girl, black hair, white dress, torn clothes, restrained, stocks, lactation, breast milk, milking, large breasts, breast squeeze, forced, nude, dungeon, wooden stocks, bucket, dim light, humiliation, crying, blush, upper body, from front, explicit",
         "F_sd15": "a black-haired girl locked in wooden stocks in a dark dungeon, large breasts being squeezed and milked, breast milk dripping into a bucket below, torn white dress, crying from humiliation with a deep blush, dim oppressive lighting, upper body view from the front, degrading captivity scene"
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P08_birth",
       "genre": "ryoujoku",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, giving birth, crowning, spread legs, restrained, chains, lying on back, nude, screaming, tears, sweat, dungeon, straw bed, stone floor, single candle, dark, painful expression, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, black hair, white dress, torn clothes, giving birth, crowning, spread legs, restrained, chains, lying on back, nude, screaming, tears, sweat, dungeon, straw bed, stone floor, single candle, dark, painful expression, full body, from front",
         "D_animagine": "1girl, black hair, white dress, torn clothes, giving birth, crowning, spread legs, restrained, chains, lying on back, nude, screaming, tears, sweat, dungeon, straw bed, stone floor, single candle, dark, painful expression, full body, from front, explicit",
         "F_sd15": "a black-haired girl giving birth while chained in a dark dungeon, lying on a straw bed on stone floor, legs spread with crowning visible, torn white dress, screaming in pain with tears and sweat, lit only by a single candle, restrained and alone, full body view from the front, dark desperate scene"
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P09_ex",
       "genre": "futanari",
-      "type": "explicit_solo",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, penis, erection, testicles, medium breasts, standing, confident smile, gym, locker room, fluorescent lighting, mirror reflection, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, penis, erection, testicles, medium breasts, standing, confident smile, gym, locker room, fluorescent lighting, mirror reflection, full body, from front",
         "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, penis, erection, testicles, medium breasts, standing, confident smile, gym, locker room, fluorescent lighting, mirror reflection, full body, from front, explicit",
         "F_sd15": "a futanari girl with short pink hair and an athletic toned body with visible abs, standing nude in a gym locker room, erect penis and testicles visible, medium breasts, confident smile, fluorescent lighting with mirror reflection behind her, full body view from the front"
-      }
+      },
+      "subtype": "explicit_solo"
     },
     {
       "id": "P09_se",
       "genre": "futanari",
-      "type": "sensitive_clothed",
+      "type": "sensitive",
       "content": {
         "default": "nsfw, sensitive, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, sports bra, bike shorts, bulge, midriff, sweat, stretching, arms up, outdoor track, sunset, golden hour lighting, lens flare, cowboy shot, from side",
         "C_pony": "rating_questionable, score_9, score_8_up, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, sports bra, bike shorts, bulge, midriff, sweat, stretching, arms up, outdoor track, sunset, golden hour lighting, lens flare, cowboy shot, from side",
         "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, abs, sports bra, bike shorts, bulge, midriff, sweat, stretching, arms up, outdoor track, sunset, golden hour lighting, lens flare, cowboy shot, from side, sensitive",
         "F_sd15": "a futanari girl with short pink hair and athletic toned body with abs, wearing a sports bra and tight bike shorts with a visible bulge, stretching with arms up showing her midriff, sweaty after exercise on an outdoor track at sunset, golden hour lighting with lens flare, cowboy shot from the side"
-      }
+      },
+      "subtype": "sensitive_clothed"
     },
     {
       "id": "P09_sex",
       "genre": "futanari",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 2girls, futanari, pink hair, short hair, athletic build, toned body, abs, futanari on female, sex, vaginal, penis, penetration, girl on top, straddling, bedroom, messy bed, morning light, window, sweat, blush, moaning, medium shot, from side",
         "C_pony": "rating_explicit, score_9, score_8_up, 2girls, futanari, pink hair, short hair, athletic build, toned body, abs, futanari on female, sex, vaginal, penis, penetration, girl on top, straddling, bedroom, messy bed, morning light, window, sweat, blush, moaning, medium shot, from side",
         "D_animagine": "2girls, futanari, pink hair, short hair, athletic build, toned body, abs, futanari on female, sex, vaginal, penis, penetration, girl on top, straddling, bedroom, messy bed, morning light, window, sweat, blush, moaning, medium shot, from side, explicit",
         "F_sd15": "a futanari girl with short pink hair and athletic toned body on top, penetrating another girl vaginally while straddling her on a messy bed, morning sunlight streaming through a window, both sweating and blushing, moaning expressions, medium shot from the side, intimate bedroom scene"
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P09_penis",
       "genre": "futanari",
-      "type": "penis_visible",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, penis, large penis, erection, precum, lifted skirt, no panties, school uniform, hallway, after hours, window light, embarrassed, blushing, looking away, cowboy shot, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, penis, large penis, erection, precum, lifted skirt, no panties, school uniform, hallway, after hours, window light, embarrassed, blushing, looking away, cowboy shot, from front",
         "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, abs, penis, large penis, erection, precum, lifted skirt, no panties, school uniform, hallway, after hours, window light, embarrassed, blushing, looking away, cowboy shot, from front, explicit",
         "F_sd15": "a futanari girl with short pink hair and athletic build wearing a school uniform, lifting her skirt to reveal a large erect penis with precum, no panties, standing in a school hallway after hours, embarrassed and blushing while looking away, window light casting long shadows, cowboy shot from the front"
-      }
+      },
+      "subtype": "penis_visible"
     },
     {
       "id": "P09_toy",
       "genre": "futanari",
-      "type": "toy",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, vibrator, cock ring, vibrator on penis, masturbation, lying on bed, spread legs, penis, erection, bedroom, neon lights, purple ambient light, sweat, panting, blush, medium shot, from above",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, vibrator, cock ring, vibrator on penis, masturbation, lying on bed, spread legs, penis, erection, bedroom, neon lights, purple ambient light, sweat, panting, blush, medium shot, from above",
         "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, vibrator, cock ring, vibrator on penis, masturbation, lying on bed, spread legs, penis, erection, bedroom, neon lights, purple ambient light, sweat, panting, blush, medium shot, from above, explicit",
         "F_sd15": "a nude futanari girl with short pink hair and athletic toned body with abs, lying on a bed using a vibrator on her erect penis with a cock ring, legs spread, sweating and panting with a blush, modern bedroom with neon purple ambient lighting, medium shot from above, intimate solo scene"
-      }
+      },
+      "subtype": "toy"
     },
     {
       "id": "P09_orgasm",
       "genre": "futanari",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, orgasm, ejaculation, cumshot, cum, penis, arched back, trembling, clenched teeth, squeezing breasts, standing, bathroom, shower, water droplets, steam, tile wall, bright lighting, full body, from side",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, orgasm, ejaculation, cumshot, cum, penis, arched back, trembling, clenched teeth, squeezing breasts, standing, bathroom, shower, water droplets, steam, tile wall, bright lighting, full body, from side",
         "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, abs, orgasm, ejaculation, cumshot, cum, penis, arched back, trembling, clenched teeth, squeezing breasts, standing, bathroom, shower, water droplets, steam, tile wall, bright lighting, full body, from side, explicit",
         "F_sd15": "a futanari girl with short pink hair and athletic toned body reaching orgasm in a steamy shower, back arched and trembling, ejaculating from her penis, clenching teeth and squeezing her breasts, water droplets and steam around her, bright bathroom lighting on tile walls, full body side view, intense climax scene"
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P09_pregnant",
       "genre": "futanari",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, pregnant, large belly, nude, penis, flaccid, hand on belly, standing, profile, bedroom, natural light, curtains, soft lighting, gentle smile, maternal, full body, from side",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, futanari, pink hair, short hair, athletic build, toned body, pregnant, large belly, nude, penis, flaccid, hand on belly, standing, profile, bedroom, natural light, curtains, soft lighting, gentle smile, maternal, full body, from side",
         "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, pregnant, large belly, nude, penis, flaccid, hand on belly, standing, profile, bedroom, natural light, curtains, soft lighting, gentle smile, maternal, full body, from side, explicit",
         "F_sd15": "a pregnant futanari woman with short pink hair and toned athletic body, standing nude in profile showing her large belly, flaccid penis visible, hand gently resting on her belly with a gentle maternal smile, bedroom with natural light filtering through curtains, soft warm lighting, full body side view, tender intimate moment"
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P09_lactation",
       "genre": "futanari",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, lactation, breast milk, large breasts, dripping, nude, penis, semi-erect, sitting, couch, living room, warm lighting, table lamp, relaxed, half-closed eyes, upper body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, lactation, breast milk, large breasts, dripping, nude, penis, semi-erect, sitting, couch, living room, warm lighting, table lamp, relaxed, half-closed eyes, upper body, from front",
         "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, abs, lactation, breast milk, large breasts, dripping, nude, penis, semi-erect, sitting, couch, living room, warm lighting, table lamp, relaxed, half-closed eyes, upper body, from front, explicit",
         "F_sd15": "a nude futanari woman with short pink hair and athletic body sitting on a couch, large breasts lactating with breast milk dripping, semi-erect penis visible, toned abs, relaxed expression with half-closed eyes, warm living room with table lamp lighting, upper body view from the front, casual intimate scene"
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P09_birth",
       "genre": "futanari",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, giving birth, crowning, spread legs, lying on back, nude, penis, flaccid, sweat, tears, screaming, hospital bed, delivery room, medical equipment, overhead light, clinical, dramatic, full body, from front",
         "C_pony": "rating_explicit, score_9, score_8_up, 1girl, futanari, pink hair, short hair, athletic build, toned body, giving birth, crowning, spread legs, lying on back, nude, penis, flaccid, sweat, tears, screaming, hospital bed, delivery room, medical equipment, overhead light, clinical, dramatic, full body, from front",
         "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, giving birth, crowning, spread legs, lying on back, nude, penis, flaccid, sweat, tears, screaming, hospital bed, delivery room, medical equipment, overhead light, clinical, dramatic, full body, from front, explicit",
         "F_sd15": "a futanari woman with short pink hair and athletic body giving birth in a hospital delivery room, lying on a hospital bed with legs spread, crowning visible, flaccid penis resting on her thigh, screaming in pain with sweat and tears, medical equipment and bright overhead clinical lighting, dramatic full body view from the front, intense birth scene"
-      }
+      },
+      "subtype": "birth"
     },
     {
       "id": "P10_ex",
       "genre": "monster girl (lamia)",
-      "type": "explicit solo",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, nude, large breasts, navel, spread legs, snake lower body, coiled tail, looking at viewer, blush, sweat, cave interior, glowing crystals, dramatic lighting, from below, detailed skin, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, nude, large breasts, navel, spread legs, snake lower body, coiled tail, looking at viewer, blush, sweat, cave interior, glowing crystals, dramatic lighting, from below, detailed skin, solo",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, nude, large breasts, navel, spread legs, snake lower body, coiled tail, looking at viewer, blush, sweat, cave interior, glowing crystals, dramatic lighting, from below, detailed skin, solo, explicit",
         "F_sd15": "a nude lamia monster girl with purple long hair and yellow slit eyes, snake tail with iridescent scales, fangs visible, large breasts exposed, sitting with her coiled serpentine lower body spread open in a crystal cave, glowing crystals casting dramatic light from below, blushing and sweating, looking directly at the viewer, highly detailed anime illustration"
-      }
+      },
+      "subtype": "explicit solo"
     },
     {
       "id": "P10_se",
       "genre": "monster girl (lamia)",
-      "type": "sensitive clothed",
+      "type": "sensitive",
       "content": {
         "default": "nsfw, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, bikini armor, cleavage, midriff, snake lower body, coiled tail, sitting, looking at viewer, smile, ancient ruins, overgrown vines, sunset, golden hour lighting, full body, solo",
         "C_pony": "rating_questionable, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, bikini armor, cleavage, midriff, snake lower body, coiled tail, sitting, looking at viewer, smile, ancient ruins, overgrown vines, sunset, golden hour lighting, full body, solo",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, bikini armor, cleavage, midriff, snake lower body, coiled tail, sitting, looking at viewer, smile, ancient ruins, overgrown vines, sunset, golden hour lighting, full body, solo, sensitive",
         "F_sd15": "a lamia monster girl wearing ornate bikini armor, purple long hair flowing, yellow slit eyes and small fangs, iridescent scales on her serpentine lower body, coiled tail resting on ancient stone ruins covered in overgrown vines, golden hour sunset lighting, smiling warmly at the viewer, full body shot, detailed anime illustration"
-      }
+      },
+      "subtype": "sensitive clothed"
     },
     {
       "id": "P10_sex",
       "genre": "monster girl (lamia)",
-      "type": "sex (lamia coiling)",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, sex, 1boy, hetero, girl on top, coiled around partner, snake tail wrapped around legs, nude, large breasts, open mouth, ahegao, blush, sweat, pelvic curtain removed, dimly lit dungeon, torchlight, warm lighting, dutch angle, solo focus",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, sex, 1boy, hetero, girl on top, coiled around partner, snake tail wrapped around legs, nude, large breasts, open mouth, ahegao, blush, sweat, dimly lit dungeon, torchlight, warm lighting, dutch angle, solo focus",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, sex, 1boy, hetero, girl on top, coiled around partner, snake tail wrapped around legs, nude, large breasts, open mouth, ahegao, blush, sweat, dimly lit dungeon, torchlight, warm lighting, dutch angle, solo focus, explicit",
         "F_sd15": "a lamia monster girl with purple hair and yellow slit eyes having sex on top, her long serpentine tail coiled tightly around her male partner's legs, nude with large breasts, mouth open in ecstasy with ahegao expression, fangs visible, blushing and sweating, in a dimly lit stone dungeon with warm torchlight, dutch angle composition, detailed anime illustration"
-      }
+      },
+      "subtype": "sex (lamia coiling)"
     },
     {
       "id": "P10_penis",
       "genre": "monster girl (lamia)",
-      "type": "penis visible",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, 1boy, hetero, penis, handjob, tail handjob, snake tail coiled around penis, nude, large breasts, looking at viewer, tongue out, forked tongue, blush, naughty face, dark cave, bioluminescent mushrooms, blue ambient lighting, upper body, close-up",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, 1boy, hetero, penis, handjob, tail handjob, snake tail coiled around penis, nude, large breasts, looking at viewer, tongue out, forked tongue, blush, naughty face, dark cave, bioluminescent mushrooms, blue ambient lighting, upper body, close-up",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, 1boy, hetero, penis, handjob, tail handjob, snake tail coiled around penis, nude, large breasts, looking at viewer, tongue out, forked tongue, blush, naughty face, dark cave, bioluminescent mushrooms, blue ambient lighting, upper body, close-up, explicit",
         "F_sd15": "a lamia monster girl with purple hair and yellow slit eyes giving a handjob with her snake tail coiled around the penis, forked tongue sticking out with a naughty expression, nude with large breasts, fangs showing, blushing, in a dark cave illuminated by blue bioluminescent mushrooms, upper body close-up composition, detailed anime illustration"
-      }
+      },
+      "subtype": "penis visible"
     },
     {
       "id": "P10_toy",
       "genre": "monster girl (lamia)",
-      "type": "toy use",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, sex toy, vibrator, dildo, tail holding toy, snake tail wrapped around vibrator, nude, large breasts, spread legs, pussy, blush, heavy breathing, open mouth, trembling, underground hot spring, steam, warm lighting, from front, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, sex toy, vibrator, dildo, tail holding toy, snake tail wrapped around vibrator, nude, large breasts, spread legs, pussy, blush, heavy breathing, open mouth, trembling, underground hot spring, steam, warm lighting, from front, solo",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, sex toy, vibrator, dildo, tail holding toy, snake tail wrapped around vibrator, nude, large breasts, spread legs, pussy, blush, heavy breathing, open mouth, trembling, underground hot spring, steam, warm lighting, from front, solo, explicit",
         "F_sd15": "a lamia monster girl using a vibrator held by her coiled snake tail, purple long hair and yellow slit eyes, nude with large breasts, legs spread revealing her pussy, blushing with mouth open and trembling from pleasure, in an underground hot spring with rising steam and warm ambient lighting, front view composition, detailed anime illustration"
-      }
+      },
+      "subtype": "toy use"
     },
     {
       "id": "P10_orgasm",
       "genre": "monster girl (lamia)",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, orgasm, cumming, pussy juice, squirting, back arched, head tilted back, ahegao, rolling eyes, open mouth, drooling, trembling, snake tail thrashing, scales bristling, nude, large breasts, erect nipples, sweat, moonlit forest clearing, blue moonlight, rim lighting, from side, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, orgasm, cumming, pussy juice, squirting, back arched, head tilted back, ahegao, rolling eyes, open mouth, drooling, trembling, snake tail thrashing, scales bristling, nude, large breasts, erect nipples, sweat, moonlit forest clearing, blue moonlight, rim lighting, from side, solo",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, orgasm, cumming, pussy juice, squirting, back arched, head tilted back, ahegao, rolling eyes, open mouth, drooling, trembling, snake tail thrashing, scales bristling, nude, large breasts, erect nipples, sweat, moonlit forest clearing, blue moonlight, rim lighting, from side, solo, explicit",
         "F_sd15": "a lamia monster girl reaching orgasm, back arched with head tilted back, ahegao expression with rolling eyes and drooling, purple hair wild and disheveled, yellow slit eyes unfocused, snake tail thrashing violently with scales bristling, nude body trembling and covered in sweat, squirting pussy juice, in a moonlit forest clearing bathed in blue moonlight with rim lighting, side view, detailed anime illustration"
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P10_pregnant",
       "genre": "monster girl (lamia)",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, pregnant, large belly, swollen belly, belly rub, hand on belly, nude, large breasts, swollen breasts, dark areolae, maternal smile, content expression, snake tail curled protectively, scales glowing faintly, nest of soft fabrics, underground den, warm candlelight, soft lighting, full body, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, pregnant, large belly, swollen belly, belly rub, hand on belly, nude, large breasts, swollen breasts, dark areolae, maternal smile, content expression, snake tail curled protectively, scales glowing faintly, nest of soft fabrics, underground den, warm candlelight, soft lighting, full body, solo",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, pregnant, large belly, swollen belly, belly rub, hand on belly, nude, large breasts, swollen breasts, dark areolae, maternal smile, content expression, snake tail curled protectively, scales glowing faintly, nest of soft fabrics, underground den, warm candlelight, soft lighting, full body, solo, explicit",
         "F_sd15": "a pregnant lamia monster girl with a large swollen belly, rubbing her belly with a maternal smile, purple long hair and yellow slit eyes, nude with swollen breasts and dark areolae, her snake tail curled protectively around herself with faintly glowing scales, resting in an underground den on a nest of soft fabrics, warm candlelight illumination, full body shot, detailed anime illustration"
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P10_lactation",
       "genre": "monster girl (lamia)",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, lactation, breast milk, milk dripping, squeezing breast, large breasts, swollen breasts, puffy nipples, nude, blush, half-closed eyes, pleasured expression, snake tail relaxed, coiled loosely, mossy grotto, waterfall, natural light, dappled sunlight, upper body, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, lactation, breast milk, milk dripping, squeezing breast, large breasts, swollen breasts, puffy nipples, nude, blush, half-closed eyes, pleasured expression, snake tail relaxed, coiled loosely, mossy grotto, waterfall, natural light, dappled sunlight, upper body, solo",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, lactation, breast milk, milk dripping, squeezing breast, large breasts, swollen breasts, puffy nipples, nude, blush, half-closed eyes, pleasured expression, snake tail relaxed, coiled loosely, mossy grotto, waterfall, natural light, dappled sunlight, upper body, solo, explicit",
         "F_sd15": "a lamia monster girl squeezing her swollen breast with milk dripping from puffy nipples, purple long hair and yellow slit eyes half-closed in pleasure, blushing with fangs slightly visible, her snake tail relaxed and loosely coiled, in a mossy grotto with a waterfall and dappled natural sunlight, upper body composition, detailed anime illustration"
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P10_birth",
       "genre": "monster girl (lamia)",
-      "type": "birth (egg-laying)",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, egg laying, oviposition, large eggs, pushing, straining, open mouth, screaming, tears, sweat, trembling, spread legs, snake tail coiled tightly, scales flushed red, nude, large breasts, nest of straw, underground chamber, dim torchlight, dramatic shadows, from front, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, egg laying, oviposition, large eggs, pushing, straining, open mouth, screaming, tears, sweat, trembling, spread legs, snake tail coiled tightly, scales flushed red, nude, large breasts, nest of straw, underground chamber, dim torchlight, dramatic shadows, from front, solo",
         "D_animagine": "monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, fangs, egg laying, oviposition, large eggs, pushing, straining, open mouth, screaming, tears, sweat, trembling, spread legs, snake tail coiled tightly, scales flushed red, nude, large breasts, nest of straw, underground chamber, dim torchlight, dramatic shadows, from front, solo, explicit",
         "F_sd15": "a lamia monster girl laying eggs in a straw nest, straining and pushing with mouth open screaming, tears and sweat on her face, purple hair disheveled, yellow slit eyes wide, large translucent eggs visible between her spread legs, snake tail coiled tightly with scales flushed red, nude with large breasts, in a dim underground chamber lit by torchlight casting dramatic shadows, front view, detailed anime illustration"
-      }
+      },
+      "subtype": "birth (egg-laying)"
     },
     {
       "id": "P11_ex",
       "genre": "generic character (school uniform)",
-      "type": "explicit solo",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, long hair, grey hair, green eyes, red bowtie, nude, school uniform removed, clothes pull, shirt lift, skirt around ankles, large breasts, navel, pussy, embarrassed, blush, covering crotch, looking away, classroom, after school, golden hour, window light, soft shadows, full body, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, nude, school uniform removed, clothes pull, shirt lift, skirt around ankles, large breasts, navel, pussy, embarrassed, blush, covering crotch, looking away, classroom, after school, golden hour, window light, soft shadows, full body, solo",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, nude, school uniform removed, clothes pull, shirt lift, skirt around ankles, large breasts, navel, pussy, embarrassed, blush, covering crotch, looking away, classroom, after school, golden hour, window light, soft shadows, full body, solo, explicit",
         "F_sd15": "a shy girl with long grey hair and green eyes undressing from her school uniform in an empty classroom after school, red bowtie still on, shirt pulled up and skirt around her ankles, covering herself with one hand, blushing and looking away embarrassed, large breasts and navel exposed, golden hour sunlight streaming through the window casting soft shadows, full body shot, detailed anime illustration"
-      }
+      },
+      "subtype": "explicit solo"
     },
     {
       "id": "P11_se",
       "genre": "generic character (school uniform)",
-      "type": "sensitive clothed (safe standing portrait)",
+      "type": "sensitive",
       "content": {
         "default": "1girl, long hair, grey hair, green eyes, red bowtie, school uniform, white shirt, pleated skirt, standing, hair blowing, gentle smile, looking at viewer, grass field, blue sky, white clouds, wind, cherry blossoms, natural lighting, soft focus background, full body, solo",
         "C_pony": "rating_questionable, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, school uniform, white shirt, pleated skirt, standing, hair blowing, gentle smile, looking at viewer, grass field, blue sky, white clouds, wind, cherry blossoms, natural lighting, soft focus background, full body, solo",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, school uniform, white shirt, pleated skirt, standing, hair blowing, gentle smile, looking at viewer, grass field, blue sky, white clouds, wind, cherry blossoms, natural lighting, soft focus background, full body, solo, safe",
         "F_sd15": "a beautiful girl with long grey hair and green eyes wearing a school uniform with a red bowtie, white shirt and pleated skirt, standing in a grass field under a blue sky with white clouds, wind blowing her hair and cherry blossom petals, gentle smile looking at the viewer, natural lighting with soft focus background, full body shot, detailed anime illustration"
-      }
+      },
+      "subtype": "sensitive clothed (safe standing portrait)"
     },
     {
       "id": "P11_sex",
       "genre": "generic character (school uniform)",
-      "type": "sex",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, long hair, grey hair, green eyes, red bowtie, sex, 1boy, hetero, missionary, lying on back, legs spread, vaginal, penis in pussy, school uniform, shirt open, bra pulled down, skirt lifted, large breasts, blush, moaning, open mouth, tears of pleasure, sweat, messy hair, school infirmary, bed, white sheets, curtain, afternoon light, from above, solo focus",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, sex, 1boy, hetero, missionary, lying on back, legs spread, vaginal, penis in pussy, school uniform, shirt open, bra pulled down, skirt lifted, large breasts, blush, moaning, open mouth, tears of pleasure, sweat, messy hair, school infirmary, bed, white sheets, curtain, afternoon light, from above, solo focus",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, sex, 1boy, hetero, missionary, lying on back, legs spread, vaginal, penis in pussy, school uniform, shirt open, bra pulled down, skirt lifted, large breasts, blush, moaning, open mouth, tears of pleasure, sweat, messy hair, school infirmary, bed, white sheets, curtain, afternoon light, from above, solo focus, explicit",
         "F_sd15": "a girl with long grey hair and green eyes in a disheveled school uniform having sex in missionary position on a school infirmary bed, red bowtie still on, shirt open and bra pulled down exposing large breasts, skirt lifted, lying on her back with legs spread, moaning with mouth open and tears of pleasure, sweating with messy hair on white sheets, afternoon light through curtains, viewed from above, detailed anime illustration"
-      }
+      },
+      "subtype": "sex"
     },
     {
       "id": "P11_penis",
       "genre": "generic character (school uniform)",
-      "type": "penis visible",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, long hair, grey hair, green eyes, red bowtie, 1boy, hetero, penis, fellatio, oral, licking penis, tongue out, saliva, looking up at viewer, on knees, school uniform, blush, teary eyes, reluctant expression, school rooftop, chain-link fence, blue sky, afternoon sunlight, from above, upper body, solo focus",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, 1boy, hetero, penis, fellatio, oral, licking penis, tongue out, saliva, looking up at viewer, on knees, school uniform, blush, teary eyes, reluctant expression, school rooftop, chain-link fence, blue sky, afternoon sunlight, from above, upper body, solo focus",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, 1boy, hetero, penis, fellatio, oral, licking penis, tongue out, saliva, looking up at viewer, on knees, school uniform, blush, teary eyes, reluctant expression, school rooftop, chain-link fence, blue sky, afternoon sunlight, from above, upper body, solo focus, explicit",
         "F_sd15": "a girl with long grey hair and green eyes in a school uniform kneeling on a school rooftop, performing fellatio and licking a penis with tongue out and saliva dripping, looking up at the viewer with blushing teary eyes and a reluctant expression, red bowtie visible, chain-link fence and blue sky in background, afternoon sunlight, viewed from above, upper body focus, detailed anime illustration"
-      }
+      },
+      "subtype": "penis visible"
     },
     {
       "id": "P11_toy",
       "genre": "generic character (school uniform)",
-      "type": "toy use",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, long hair, grey hair, green eyes, red bowtie, sex toy, vibrator, vibrator on clit, masturbation, school uniform, shirt unbuttoned, no bra, skirt lifted, panties aside, pussy, spread legs, sitting on chair, blush, biting lip, suppressed moan, half-closed eyes, classroom, empty desks, dusk, orange sky through window, low angle, full body, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, sex toy, vibrator, vibrator on clit, masturbation, school uniform, shirt unbuttoned, no bra, skirt lifted, panties aside, pussy, spread legs, sitting on chair, blush, biting lip, suppressed moan, half-closed eyes, classroom, empty desks, dusk, orange sky through window, low angle, full body, solo",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, sex toy, vibrator, vibrator on clit, masturbation, school uniform, shirt unbuttoned, no bra, skirt lifted, panties aside, pussy, spread legs, sitting on chair, blush, biting lip, suppressed moan, half-closed eyes, classroom, empty desks, dusk, orange sky through window, low angle, full body, solo, explicit",
         "F_sd15": "a girl with long grey hair and green eyes sitting on a classroom chair using a vibrator on herself, school uniform shirt unbuttoned with no bra, skirt lifted and panties pulled aside, legs spread, biting her lip trying to suppress a moan with half-closed eyes and deep blush, red bowtie still on, empty classroom at dusk with orange sky visible through the window, low angle full body shot, detailed anime illustration"
-      }
+      },
+      "subtype": "toy use"
     },
     {
       "id": "P11_orgasm",
       "genre": "generic character (school uniform)",
-      "type": "orgasm",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, long hair, grey hair, green eyes, red bowtie, orgasm, cumming, squirting, pussy juice, back arched, head back, ahegao, rolling eyes, tongue out, drooling, trembling, spread legs, nude, large breasts, erect nipples, sweat, clenched fists, gripping sheets, bed, bedroom, night, lamp light, warm glow, from side, full body, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, orgasm, cumming, squirting, pussy juice, back arched, head back, ahegao, rolling eyes, tongue out, drooling, trembling, spread legs, nude, large breasts, erect nipples, sweat, clenched fists, gripping sheets, bed, bedroom, night, lamp light, warm glow, from side, full body, solo",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, orgasm, cumming, squirting, pussy juice, back arched, head back, ahegao, rolling eyes, tongue out, drooling, trembling, spread legs, nude, large breasts, erect nipples, sweat, clenched fists, gripping sheets, bed, bedroom, night, lamp light, warm glow, from side, full body, solo, explicit",
         "F_sd15": "a nude girl with long grey hair and green eyes reaching intense orgasm on a bed, back arched with head thrown back, ahegao expression with rolling eyes and tongue out drooling, trembling body with erect nipples and covered in sweat, squirting pussy juice, fists clenching the bed sheets, red bowtie still on, bedroom at night lit by a warm lamp glow, side view full body, detailed anime illustration"
-      }
+      },
+      "subtype": "orgasm"
     },
     {
       "id": "P11_pregnant",
       "genre": "generic character (school uniform)",
-      "type": "pregnant",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, long hair, grey hair, green eyes, red bowtie, pregnant, large belly, swollen belly, hand on belly, nude, large breasts, swollen breasts, dark areolae, linea nigra, gentle smile, looking down at belly, sitting on bed, loose cardigan, open front, bedroom, morning light, curtain, soft warm lighting, three-quarter view, full body, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, pregnant, large belly, swollen belly, hand on belly, nude, large breasts, swollen breasts, dark areolae, linea nigra, gentle smile, looking down at belly, sitting on bed, loose cardigan, open front, bedroom, morning light, curtain, soft warm lighting, three-quarter view, full body, solo",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, pregnant, large belly, swollen belly, hand on belly, nude, large breasts, swollen breasts, dark areolae, linea nigra, gentle smile, looking down at belly, sitting on bed, loose cardigan, open front, bedroom, morning light, curtain, soft warm lighting, three-quarter view, full body, solo, explicit",
         "F_sd15": "a pregnant girl with long grey hair and green eyes sitting on a bed, large swollen belly with linea nigra, wearing only an open loose cardigan and red bowtie, hand resting on her belly with a gentle smile looking down, swollen breasts with dark areolae visible, morning sunlight streaming through curtains in a cozy bedroom, soft warm lighting, three-quarter view full body, detailed anime illustration"
-      }
+      },
+      "subtype": "pregnant"
     },
     {
       "id": "P11_lactation",
       "genre": "generic character (school uniform)",
-      "type": "lactation",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, long hair, grey hair, green eyes, red bowtie, lactation, breast milk, milk dripping, squeezing breast, leaking milk, large breasts, swollen breasts, puffy nipples, wet shirt, school uniform, white shirt, see-through, no bra, blush, surprised expression, hand on breast, locker room, tiled wall, fluorescent lighting, upper body, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, lactation, breast milk, milk dripping, squeezing breast, leaking milk, large breasts, swollen breasts, puffy nipples, wet shirt, school uniform, white shirt, see-through, no bra, blush, surprised expression, hand on breast, locker room, tiled wall, fluorescent lighting, upper body, solo",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, lactation, breast milk, milk dripping, squeezing breast, leaking milk, large breasts, swollen breasts, puffy nipples, wet shirt, school uniform, white shirt, see-through, no bra, blush, surprised expression, hand on breast, locker room, tiled wall, fluorescent lighting, upper body, solo, explicit",
         "F_sd15": "a girl with long grey hair and green eyes in a school locker room, breast milk leaking through her white school uniform shirt making it see-through, no bra underneath, squeezing one swollen breast with a surprised blushing expression, puffy nipples visible through the wet fabric, red bowtie on, tiled wall and fluorescent lighting in background, upper body shot, detailed anime illustration"
-      }
+      },
+      "subtype": "lactation"
     },
     {
       "id": "P11_birth",
       "genre": "generic character (school uniform)",
-      "type": "birth",
+      "type": "explicit",
       "content": {
         "default": "nsfw, explicit, 1girl, long hair, grey hair, green eyes, red bowtie, childbirth, giving birth, crowning, pushing, straining, spread legs, lying on back, screaming, open mouth, tears, sweat, clenched teeth, gripping handrails, hospital gown, hospital bed, delivery room, medical equipment, overhead light, bright lighting, from front, full body, solo",
         "C_pony": "rating_explicit, score_9, score_8_up, source_anime, 1girl, long hair, grey hair, green eyes, red bowtie, childbirth, giving birth, crowning, pushing, straining, spread legs, lying on back, screaming, open mouth, tears, sweat, clenched teeth, gripping handrails, hospital gown, hospital bed, delivery room, medical equipment, overhead light, bright lighting, from front, full body, solo",
         "D_animagine": "1girl, long hair, grey hair, green eyes, red bowtie, childbirth, giving birth, crowning, pushing, straining, spread legs, lying on back, screaming, open mouth, tears, sweat, clenched teeth, gripping handrails, hospital gown, hospital bed, delivery room, medical equipment, overhead light, bright lighting, from front, full body, solo, explicit",
         "F_sd15": "a girl with long grey hair and green eyes giving birth in a hospital delivery room, lying on her back in a hospital gown with legs spread wide on stirrups, screaming and straining with tears and sweat, clenched teeth and gripping the bed handrails, baby crowning visible, red bowtie still in her hair, bright overhead medical lighting and equipment visible, front view full body, detailed anime illustration"
-      }
+      },
+      "subtype": "birth"
     }
   ]
 }
