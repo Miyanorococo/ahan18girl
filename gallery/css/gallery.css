@@ -169,6 +169,13 @@ body {
   min-width: 200px;
 }
 
+.filter-count {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  align-self: center;
+}
+
 .filter-bar select {
   min-width: 140px;
 }
@@ -240,7 +247,61 @@ body {
 .card-count {
   font-size: 0.8rem;
   color: var(--text-secondary);
-  margin-top: 2px;
+}
+
+.card-bottom {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.card-rating-badge {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: var(--radius-badge);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+}
+
+.card-rating-badge.complete {
+  background: rgba(76, 175, 80, 0.15);
+  color: #68d391;
+}
+
+.card-fav-badge {
+  font-size: 0.65rem;
+  color: var(--accent);
+}
+
+/* === Pagination === */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 16px 0;
+}
+
+.pagination button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  padding: 8px 20px;
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+
+.pagination button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
+.pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.page-info {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
 /* === Badges === */

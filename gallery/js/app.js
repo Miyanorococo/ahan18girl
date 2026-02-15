@@ -12,9 +12,13 @@ document.addEventListener('alpine:init', () => {
     loading: false,
 
     // Filters
-    filters: { search: '', model: '', pipeline: '' },
+    filters: { search: '', model: '', pipeline: '', ratingStatus: '' },
     availableModels: [],
     availablePipelines: [],
+
+    // Pagination
+    page: 1,
+    pageSize: 40,
 
     // Blind mode
     blindMode: false,
@@ -255,7 +259,58 @@ document.addEventListener('alpine:init', () => {
         result = result.filter((exp) => exp.pipeline === this.filters.pipeline);
       }
 
+      // Rating status filter
+      if (this.filters.ratingStatus === 'unrated') {
+        result = result.filter((exp) => this._getExpRatedCount(exp) === 0);
+      } else if (this.filters.ratingStatus === 'partial') {
+        result = result.filter((exp) => {
+          const rated = this._getExpRatedCount(exp);
+          return rated > 0 && rated < (exp.image_count || 0);
+        });
+      } else if (this.filters.ratingStatus === 'rated') {
+        result = result.filter((exp) => {
+          const rated = this._getExpRatedCount(exp);
+          return rated > 0 && rated >= (exp.image_count || 0);
+        });
+      } else if (this.filters.ratingStatus === 'favorited') {
+        result = result.filter((exp) => this._getExpFavCount(exp) > 0);
+      }
+
       this.filteredExperiments = result;
+      this.page = 1; // reset to first page on filter change
+    },
+
+    /** Get rated image count for an experiment (estimate from ratings keys) */
+    _getExpRatedCount(exp) {
+      if (!exp?.id) return 0;
+      let count = 0;
+      for (const key of Object.keys(this.ratings.images || {})) {
+        if (key.includes(exp.id)) {
+          const entry = this.ratings.images[key];
+          if (entry?.scores && Object.values(entry.scores).some(v => v > 0)) count++;
+        }
+      }
+      return count;
+    },
+
+    /** Get favorited image count for an experiment */
+    _getExpFavCount(exp) {
+      if (!exp?.id) return 0;
+      let count = 0;
+      for (const key of Object.keys(this.ratings.images || {})) {
+        if (key.includes(exp.id) && this.ratings.images[key]?.favorited) count++;
+      }
+      return count;
+    },
+
+    /** Get paginated slice of filteredExperiments */
+    get paginatedExperiments() {
+      const start = (this.page - 1) * this.pageSize;
+      return this.filteredExperiments.slice(start, start + this.pageSize);
+    },
+
+    get totalPages() {
+      return Math.ceil(this.filteredExperiments.length / this.pageSize);
     },
 
     // --- Ratings (v2 multi-axis) ---

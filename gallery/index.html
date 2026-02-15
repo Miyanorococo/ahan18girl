@@ -45,12 +45,20 @@
             <option :value="p" x-text="p"></option>
           </template>
         </select>
+        <select x-model="filters.ratingStatus" @change="filterExperiments()">
+          <option value="">All Status</option>
+          <option value="unrated">Unrated</option>
+          <option value="partial">Partially Rated</option>
+          <option value="rated">Fully Rated</option>
+          <option value="favorited">Has Favorites</option>
+        </select>
+        <span class="filter-count" x-text="filteredExperiments.length + ' / ' + experiments.length"></span>
       </div>
 
       <div x-show="loading" class="loading-spinner">Loading...</div>
 
       <div class="card-grid" x-show="!loading">
-        <template x-for="exp in filteredExperiments" :key="exp.id">
+        <template x-for="exp in paginatedExperiments" :key="exp.id">
           <div class="experiment-card" @click="openExperiment(exp.id)">
             <div class="card-thumb" x-show="exp.thumbnail">
               <img :src="exp.thumbnail" :alt="exp.prompt_summary" loading="lazy">
@@ -62,10 +70,24 @@
                 <span class="badge pipeline" x-text="exp.pipeline" x-show="exp.pipeline"></span>
               </div>
               <div class="card-date" x-text="exp.date"></div>
-              <div class="card-count" x-text="(exp.image_count || 0) + ' images'"></div>
+              <div class="card-bottom">
+                <span class="card-count" x-text="(exp.image_count || 0) + ' images'"></span>
+                <span class="card-rating-badge" x-show="_getExpRatedCount(exp) > 0"
+                      :class="{'complete': _getExpRatedCount(exp) >= (exp.image_count || 0)}"
+                      x-text="_getExpRatedCount(exp) + '/' + (exp.image_count || 0) + ' rated'"></span>
+                <span class="card-fav-badge" x-show="_getExpFavCount(exp) > 0"
+                      x-text="'&#9829; ' + _getExpFavCount(exp)"></span>
+              </div>
             </div>
           </div>
         </template>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" x-show="totalPages > 1">
+        <button @click="page = Math.max(1, page - 1)" :disabled="page <= 1">&larr; Prev</button>
+        <span class="page-info" x-text="page + ' / ' + totalPages"></span>
+        <button @click="page = Math.min(totalPages, page + 1)" :disabled="page >= totalPages">Next &rarr;</button>
       </div>
 
       <div x-show="!loading && filteredExperiments.length === 0" class="empty-state">No experiments found</div>
@@ -510,7 +532,13 @@
   <div x-show="lightbox.open" x-cloak class="lightbox"
        @keydown.escape.window="closeLightbox()"
        @keydown.arrow-left.window="lightboxPrev()"
-       @keydown.arrow-right.window="lightboxNext()">
+       @keydown.arrow-right.window="lightboxNext()"
+       @keydown.1.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 1)"
+       @keydown.2.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 2)"
+       @keydown.3.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 3)"
+       @keydown.4.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 4)"
+       @keydown.5.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 5)"
+       @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) toggleFavorite(lightbox.currentImage)"
     <div class="lightbox-backdrop" @click="closeLightbox()"></div>
     <div class="lightbox-body">
       <div class="lightbox-content">
