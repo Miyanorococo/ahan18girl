@@ -521,12 +521,10 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
                     total_images += len(seeds)
                     continue
 
-                # Upload metadata once (before image generation)
-                if not dry_run:
-                    _upload_metadata(S3_BUCKET, experiment_id, metadata)
-
+                # Generate all seeds for this prompt, then upload as a batch
                 local_dir = Path(OUTPUT_DIR) / experiment_id
                 local_dir.mkdir(parents=True, exist_ok=True)
+                images = []  # [(img_name, img_data), ...]
 
                 for seed in seeds:
                     img_name = f"{prompt_id}_seed{seed}.png"
@@ -549,7 +547,6 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
                     try:
                         pid = queue_prompt(workflow)
                         result = wait_for_completion(pid)
-                        # Extract output image
                         img_data = None
                         outputs = result.get("outputs", {})
                         for node_id, node_output in outputs.items():
@@ -563,15 +560,22 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
                                 break
 
                         if img_data:
-                            # Save locally immediately
+                            # Save locally immediately (survives ComfyUI crash)
                             (local_dir / img_name).write_bytes(img_data)
-
-                            # Upload to S3 immediately (1 image at a time)
-                            _upload_single_image(S3_BUCKET, experiment_id, img_name, img_data)
+                            images.append((img_name, img_data))
                             total_images += 1
 
                     except Exception as e:
                         log.error("  FAILED: %s seed=%d: %s", prompt_id, seed, e)
+
+                # Upload complete prompt set to S3 (metadata + all images as batch)
+                if images:
+                    try:
+                        upload_to_s3(S3_BUCKET, experiment_id, images, metadata)
+                    except Exception as e:
+                        log.error("  S3 upload failed for %s: %s", experiment_id, e)
+                    with open(local_dir / "metadata.json", "w") as f:
+                        json.dump(metadata, f, ensure_ascii=False, indent=2)
 
     log.info("=== Done: %d models, %d images ===", total_models, total_images)
 
