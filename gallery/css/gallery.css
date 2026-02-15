@@ -1666,6 +1666,39 @@ body {
   font-weight: 500;
 }
 
+/* === Compact model cards === */
+.dash-model-cards { margin-bottom: 24px; }
+.dash-model-cards h3 { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; }
+.dash-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.dash-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dash-card.verdict-adopt { border-color: rgba(76,175,80,0.4); }
+.dash-card.verdict-reject { border-color: rgba(244,67,54,0.3); opacity: 0.6; }
+.dc-header { display: flex; align-items: center; gap: 6px; }
+.dc-rank { font-size: 0.75rem; color: var(--text-muted); min-width: 18px; }
+.dc-name { font-weight: 600; font-size: 0.82rem; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dc-avg { font-weight: 700; font-size: 0.9rem; }
+.dc-avg.high { color: #81c784; }
+.dc-avg.low { color: #e57373; }
+.dc-tiers { display: flex; gap: 8px; align-items: center; font-size: 0.75rem; color: var(--text-muted); }
+.dc-tier b { margin-left: 2px; }
+.dc-star { color: #ffd700; }
+.dc-heart { color: #e94560; }
+.dc-bad { color: #f44336; }
+.dc-imgs { margin-left: auto; font-size: 0.7rem; }
+.dc-verdict { display: flex; gap: 4px; }
+
 .dash-score {
   font-variant-numeric: tabular-nums;
 }

@@ -557,120 +557,35 @@
           </div>
         </div>
 
-        <!-- Ranking table -->
-        <div class="dash-table-wrap">
-          <h3>ランキング</h3>
-          <table class="dash-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>モデル</th>
-                <th>★</th>
-                <th>♥</th>
-                <th>👎</th>
-                <th>Avg</th>
-                <th>画像数</th>
-                <th>判定</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template x-for="(stat, idx) in dashboard.modelStats" :key="'ds-' + stat.model">
-                <tr class="dash-row-clickable" @click="dashboard._expandedModel = dashboard._expandedModel === stat.model ? null : stat.model">
-                  <td x-text="idx + 1"></td>
-                  <td class="dash-model-name">
-                    <span x-text="displayModelName(stat.model)"></span>
-                    <span class="dash-expand-icon" x-text="dashboard._expandedModel === stat.model ? '&#9660;' : '&#9654;'"></span>
-                  </td>
-                  <td class="dash-score dash-score-high" x-text="stat.tiers?.star || 0"></td>
-                  <td class="dash-score" style="color:#e94560" x-text="stat.tiers?.heart || 0"></td>
-                  <td class="dash-score dash-score-low" x-text="stat.tiers?.bad || 0"></td>
-                  <td class="dash-score" :class="{'dash-score-high': stat.overallAvg >= 3, 'dash-score-low': stat.overallAvg < 0}"
-                      x-text="stat.ratedCount > 0 ? stat.overallAvg.toFixed(1) : '—'"></td>
-                  <td>
-                    <span x-text="stat.ratedCount + '/' + stat.imageCount"></span>
-                    <div class="mini-progress">
-                      <div class="mini-progress-bar" :style="'width:' + (stat.imageCount > 0 ? stat.ratedCount / stat.imageCount * 100 : 0) + '%'"></div>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="verdict-btns">
-                      <button class="verdict-btn" :class="{'verdict-adopt active': stat.verdict === 'adopt'}"
-                              @click.stop="setDashboardVerdict(stat.model, 'adopt')">A</button>
-                      <button class="verdict-btn" :class="{'verdict-consider active': stat.verdict === 'consider'}"
-                              @click.stop="setDashboardVerdict(stat.model, 'consider')">C</button>
-                      <button class="verdict-btn" :class="{'verdict-reject active': stat.verdict === 'reject'}"
-                              @click.stop="setDashboardVerdict(stat.model, 'reject')">R</button>
-                    </div>
-                  </td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Model Summary Card (expanded from ranking click) -->
-        <div class="model-summary" x-show="dashboard._expandedModel" x-cloak>
-          <template x-if="dashboard._expandedModel">
-            <div class="model-summary-inner" x-data="{
-              get s() { return dashboard.modelStats.find(s => s.model === dashboard._expandedModel) },
-              get hm() { return dashboard.heatmap?.rows?.find(r => r.model === dashboard._expandedModel) }
-            }">
-              <div class="ms-header">
-                <h3 x-text="displayModelName(s?.model)"></h3>
-                <span class="ms-score" x-text="'★ ' + (s?.overallAvg?.toFixed(1) || '—')"></span>
-                <button class="ms-close" @click="dashboard._expandedModel = null">&times;</button>
-              </div>
-              <div class="ms-grid">
-                <!-- Axis breakdown -->
-                <div class="ms-section">
-                  <div class="ms-section-title">評価内訳</div>
-                  <div class="ms-axis-row">
-                    <span class="ms-axis-label">★ Best</span>
-                    <div class="ms-axis-bar-wrap">
-                      <div class="ms-axis-bar" :style="'width:' + (s.tiers?.total ? (s.tiers.star / s.tiers.total * 100) : 0) + '%'" style="background:#ffd700"></div>
-                    </div>
-                    <span class="ms-axis-val" x-text="s.tiers?.star || 0"></span>
-                  </div>
-                  <div class="ms-axis-row">
-                    <span class="ms-axis-label">♥ Like</span>
-                    <div class="ms-axis-bar-wrap">
-                      <div class="ms-axis-bar" :style="'width:' + (s.tiers?.total ? (s.tiers.heart / s.tiers.total * 100) : 0) + '%'" style="background:#e94560"></div>
-                    </div>
-                    <span class="ms-axis-val" x-text="s.tiers?.heart || 0"></span>
-                  </div>
-                  <div class="ms-axis-row">
-                    <span class="ms-axis-label">👎 Bad</span>
-                    <div class="ms-axis-bar-wrap">
-                      <div class="ms-axis-bar" :style="'width:' + (s.tiers?.total ? (s.tiers.bad / s.tiers.total * 100) : 0) + '%'" style="background:#f44336"></div>
-                    </div>
-                    <span class="ms-axis-val" x-text="s.tiers?.bad || 0"></span>
-                  </div>
+        <!-- Compact model cards -->
+        <div class="dash-model-cards">
+          <h3>モデル比較</h3>
+          <div class="dash-cards-grid">
+            <template x-for="(stat, idx) in dashboard.modelStats" :key="'ds-' + stat.model">
+              <div class="dash-card" :class="{'verdict-adopt': stat.verdict === 'adopt', 'verdict-reject': stat.verdict === 'reject'}">
+                <div class="dc-header">
+                  <span class="dc-rank" x-text="idx + 1"></span>
+                  <span class="dc-name" x-text="displayModelName(stat.model)"></span>
+                  <span class="dc-avg" :class="{'high': stat.overallAvg >= 3, 'low': stat.overallAvg < 0}"
+                        x-text="stat.ratedCount > 0 ? stat.overallAvg.toFixed(1) : '—'"></span>
                 </div>
-                <!-- Genre performance -->
-                <div class="ms-section" x-show="hm">
-                  <div class="ms-section-title">ジャンル別</div>
-                  <template x-for="(cell, ci) in (hm?.cells || [])" :key="'ms-g-' + ci">
-                    <div class="ms-axis-row" x-show="cell.score !== null">
-                      <span class="ms-axis-label" x-text="dashboard.heatmap?.genres?.[ci]"></span>
-                      <div class="ms-axis-bar-wrap">
-                        <div class="ms-axis-bar" :style="'width:' + ((cell.score || 0) / 5 * 100) + '%'"
-                             :class="{'heat-5': cell.score >= 4.5, 'heat-4': cell.score >= 3.5}"></div>
-                      </div>
-                      <span class="ms-axis-val" x-text="cell.score?.toFixed(1)"></span>
-                      <span class="ms-axis-fav" x-show="cell.favCount" x-text="'♥' + cell.favCount"></span>
-                    </div>
-                  </template>
+                <div class="dc-tiers">
+                  <span class="dc-tier dc-star">★<b x-text="stat.tiers?.star || 0"></b></span>
+                  <span class="dc-tier dc-heart">♥<b x-text="stat.tiers?.heart || 0"></b></span>
+                  <span class="dc-tier dc-bad">👎<b x-text="stat.tiers?.bad || 0"></b></span>
+                  <span class="dc-imgs" x-text="stat.imageCount + '枚'"></span>
                 </div>
-                <!-- Quick stats -->
-                <div class="ms-section">
-                  <div class="ms-section-title">統計</div>
-                  <div class="ms-stat-row"><span>評価済み</span><span x-text="(s?.ratedCount || 0) + ' / ' + (s?.imageCount || 0)"></span></div>
-                  <div class="ms-stat-row"><span>コメント数</span><span x-text="s?.commentedCount || 0"></span></div>
-                  <div class="ms-stat-row"><span>Experiments</span><span x-text="s?.experiments || 0"></span></div>
+                <div class="dc-verdict">
+                  <button class="verdict-btn" :class="{'verdict-adopt active': stat.verdict === 'adopt'}"
+                          @click.stop="setDashboardVerdict(stat.model, 'adopt')">A</button>
+                  <button class="verdict-btn" :class="{'verdict-consider active': stat.verdict === 'consider'}"
+                          @click.stop="setDashboardVerdict(stat.model, 'consider')">C</button>
+                  <button class="verdict-btn" :class="{'verdict-reject active': stat.verdict === 'reject'}"
+                          @click.stop="setDashboardVerdict(stat.model, 'reject')">R</button>
                 </div>
               </div>
-            </div>
-          </template>
+            </template>
+          </div>
         </div>
 
         <!-- Model comments (inline editable) -->
