@@ -374,6 +374,15 @@ document.addEventListener('alpine:init', () => {
       const key = this._ratingKey(img);
       if (!key) return;
 
+      // Flush any pending comment before potential auto-advance (prevents data loss)
+      if (this.evalPanel._commentTimer) {
+        clearTimeout(this.evalPanel._commentTimer);
+        this.evalPanel._commentTimer = null;
+        if (this.lightbox.currentImage && this.evalPanel.commentDraft !== this.getImageComment(this.lightbox.currentImage)) {
+          this.setImageComment(this.lightbox.currentImage, this.evalPanel.commentDraft);
+        }
+      }
+
       if (!this.ratings.images[key]) {
         this.ratings.images[key] = { scores: {}, comment: '', updated_at: '' };
       }
@@ -389,9 +398,12 @@ document.addEventListener('alpine:init', () => {
 
       this._persistRatings();
 
-      // Auto-advance in lightbox after scoring
+      // Auto-advance in lightbox after scoring (skip if user is typing a comment)
       if (this.autoAdvance && this.lightbox.open) {
-        setTimeout(() => this.lightboxNext(), 300);
+        const active = document.activeElement;
+        if (!active || !active.matches('textarea, input[type="text"]')) {
+          setTimeout(() => this.lightboxNext(), 300);
+        }
       }
     },
 
@@ -454,17 +466,37 @@ document.addEventListener('alpine:init', () => {
     },
 
     _buildBlindMap() {
-      const models = [...new Set(this.experiments.map(e => e.model).filter(Boolean))];
-      // Shuffle
-      for (let i = models.length - 1; i > 0; i--) {
+      // Restore persisted mapping if model set hasn't changed
+      const models = [...new Set(this.experiments.map(e => e.model).filter(Boolean))].sort();
+      try {
+        const stored = JSON.parse(localStorage.getItem('gallery_blind_map') || 'null');
+        if (stored && stored._models) {
+          const storedModels = [...stored._models].sort();
+          if (JSON.stringify(storedModels) === JSON.stringify(models)) {
+            this._blindMap = stored.map;
+            this._blindOrder = stored._models;
+            return;
+          }
+        }
+      } catch {}
+
+      // New shuffle needed (first time or model set changed)
+      const shuffled = [...models];
+      for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [models[i], models[j]] = [models[j], models[i]];
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
       this._blindMap = {};
-      models.forEach((name, i) => {
+      shuffled.forEach((name, i) => {
         this._blindMap[name] = this._blindLabel(i);
       });
-      this._blindOrder = models;
+      this._blindOrder = shuffled;
+
+      // Persist for consistency across reloads
+      localStorage.setItem('gallery_blind_map', JSON.stringify({
+        map: this._blindMap,
+        _models: shuffled,
+      }));
     },
 
     _blindLabel(index) {
@@ -483,6 +515,7 @@ document.addEventListener('alpine:init', () => {
     revealBlindMode() {
       this.blindMode = false;
       localStorage.setItem('gallery_blind_mode', 'false');
+      localStorage.removeItem('gallery_blind_map'); // clear so next blind session re-shuffles
     },
 
     // --- Selection ---

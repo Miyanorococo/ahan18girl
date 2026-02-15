@@ -204,7 +204,10 @@ function lightboxMixin() {
         this._favSaving = false;
 
         if (this.autoAdvance && this.lightbox.open) {
-          setTimeout(() => this.lightboxNext(), 300);
+          const active = document.activeElement;
+          if (!active || !active.matches('textarea, input[type="text"]')) {
+            setTimeout(() => this.lightboxNext(), 300);
+          }
         }
       }
     },

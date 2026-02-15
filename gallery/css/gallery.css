@@ -959,6 +959,14 @@ body {
   margin-bottom: 20px;
 }
 
+.mg-load-progress {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
 .mg-view-toggle {
   display: flex;
   gap: 4px;

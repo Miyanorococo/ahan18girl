@@ -295,6 +295,8 @@
         </div>
 
         <div x-show="modelGrid.loading" class="loading-spinner">Loading...</div>
+        <div class="mg-load-progress" x-show="!modelGrid.loading && modelGrid._loadedCount > 0 && modelGrid._loadedCount < modelGrid._totalCount"
+             x-text="modelGrid._loadedCount + ' / ' + modelGrid._totalCount + ' models loaded'"></div>
 
         <!-- Seed selector bar -->
         <div class="mg-seed-bar" x-show="!modelGrid.loading && modelGrid.viewMode === 'single' && modelGrid.allSeeds.length > 0">

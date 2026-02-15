@@ -68,61 +68,64 @@ function modelGridMixin() {
       this.modelGrid.modelCards = [];
       this.modelGrid.allSeeds = [];
       this.modelGrid.selectedSeed = null;
+      this.modelGrid._loadedCount = 0;
+      this.modelGrid._totalCount = group.experiments.length;
 
-      try {
-        // Load all experiments in parallel, using cache where available
-        const details = await Promise.all(
-          group.experiments.map((exp) => this._loadExperimentCached(exp.id))
-        );
+      const seedSet = new Set();
 
-        const seedSet = new Set();
-        const cards = [];
+      // Progressive loading: show each card as it arrives
+      const loadOne = async (exp) => {
+        const detail = await this._loadExperimentCached(exp.id);
+        if (!detail) return;
 
-        for (let i = 0; i < group.experiments.length; i++) {
-          const exp = group.experiments[i];
-          const detail = details[i];
-          if (!detail) continue;
+        const images = (detail.images || []).map((img, idx) => ({
+          ...img,
+          _index: idx,
+          _seed: this._extractSeed(img.name),
+        }));
 
-          const images = (detail.images || []).map((img, idx) => ({
-            ...img,
-            _index: idx,
-            _seed: this._extractSeed(img.name),
-          }));
-
-          // Build a seed -> image lookup for fast access
-          const seedMap = {};
-          for (const img of images) {
-            if (img._seed) {
-              seedSet.add(img._seed);
-              seedMap[img._seed] = img;
-            }
+        const seedMap = {};
+        for (const img of images) {
+          if (img._seed) {
+            seedSet.add(img._seed);
+            seedMap[img._seed] = img;
           }
-
-          cards.push({
-            model: exp.model,
-            experiment: exp,
-            detail,
-            images,
-            seedMap,
-            seeds: images.map((img) => img._seed).filter(Boolean),
-          });
         }
 
-        // Sort seeds numerically
+        const card = {
+          model: exp.model,
+          experiment: exp,
+          detail,
+          images,
+          seedMap,
+          seeds: images.map((img) => img._seed).filter(Boolean),
+        };
+
+        // Insert card and update seeds reactively
+        this.modelGrid.modelCards = [...this.modelGrid.modelCards, card];
         this.modelGrid.allSeeds = [...seedSet].sort(
           (a, b) => parseInt(a, 10) - parseInt(b, 10)
         );
-        this.modelGrid.modelCards = cards;
+        this.modelGrid._loadedCount++;
 
-        // Auto-select first seed if available
-        if (this.modelGrid.allSeeds.length > 0) {
+        // Auto-select first seed once available
+        if (!this.modelGrid.selectedSeed && this.modelGrid.allSeeds.length > 0) {
           this.modelGrid.selectedSeed = this.modelGrid.allSeeds[0];
         }
+
+        // Hide spinner after first card loads
+        if (this.modelGrid._loadedCount === 1) {
+          this.modelGrid.loading = false;
+        }
+      };
+
+      // Fire all loads in parallel, each updates UI on completion
+      try {
+        await Promise.all(group.experiments.map(exp => loadOne(exp)));
       } catch (e) {
         console.error('Failed to load model group:', e);
-      } finally {
-        this.modelGrid.loading = false;
       }
+      this.modelGrid.loading = false;
     },
 
     /**
