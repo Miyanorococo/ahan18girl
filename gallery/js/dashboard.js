@@ -220,18 +220,17 @@ function dashboardMixin() {
       const genreList = [...genres].sort();
       const models = Object.keys(heatData).sort();
 
-      const rows = models.map(model => ({
-        model,
-        displayName: this.displayModelName(model),
-        cells: genreList.map(genre => {
+      const rows = models.map(model => {
+        const cells = genreList.map(genre => {
           const d = heatData[model]?.[genre];
           if (!d) return { score: null, count: 0 };
-          return {
-            score: Math.round(d.sum / d.count * 10) / 10,
-            count: d.count,
-          };
-        }),
-      }));
+          return { score: Math.round(d.sum / d.count * 10) / 10, count: d.count };
+        });
+        const scored = cells.filter(c => c.score !== null);
+        const avg = scored.length > 0 ? Math.round(scored.reduce((s, c) => s + c.score, 0) / scored.length * 10) / 10 : null;
+        return { model, displayName: this.displayModelName(model), cells, avg };
+      });
+      rows.sort((a, b) => (b.avg || 0) - (a.avg || 0));
 
       this.dashboard.heatmap = { genres: genreList, rows };
     },

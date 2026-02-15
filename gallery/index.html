@@ -515,6 +515,7 @@
               <thead>
                 <tr>
                   <th>Model</th>
+                  <th>Avg</th>
                   <template x-for="genre in dashboard.heatmap?.genres || []" :key="'hg-' + genre">
                     <th x-text="genre"></th>
                   </template>
@@ -524,6 +525,9 @@
                 <template x-for="row in dashboard.heatmap?.rows || []" :key="'hr-' + row.model">
                   <tr>
                     <td class="heatmap-model" x-text="row.displayName"></td>
+                    <td class="heatmap-cell heatmap-avg"
+                        :class="{'heat-5': row.avg >= 4.5, 'heat-4': row.avg >= 3.5, 'heat-3': row.avg >= 2.5}"
+                        x-text="row.avg?.toFixed(1) || '—'"></td>
                     <template x-for="(cell, ci) in row.cells" :key="'hc-' + row.model + '-' + ci">
                       <td class="heatmap-cell"
                           :class="{
@@ -535,7 +539,6 @@
                             'heat-none': cell.score === null
                           }">
                         <span x-show="cell.score !== null" x-text="cell.score?.toFixed(1)"></span>
-                        <span class="heatmap-sub" x-show="cell.favCount > 0" x-text="'♥' + cell.favCount"></span>
                       </td>
                     </template>
                   </tr>
