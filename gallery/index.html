@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery</title>
+  <link rel="stylesheet" href="/gallery/css/gallery.css">
+</head>
+<body x-data="gallery" x-init="init()">
+  <!-- Navigation bar -->
+  <nav class="navbar">
+    <div class="nav-brand" @click="navigate('experiments')">Gallery</div>
+    <div class="nav-links">
+      <a :class="{'active': route === 'experiments' || route === 'experiment'}" @click.prevent="navigate('experiments')">Experiments</a>
+      <a :class="{'active': route === 'productions' || route === 'production'}" @click.prevent="navigate('productions')">Productions</a>
+      <a :class="{'active': route === 'compare'}" @click.prevent="navigate('compare')">Compare</a>
+      <a :class="{'active': route === 'model-grid'}" @click.prevent="navigate('model-grid')">Grid</a>
+      <a :class="{'active': route === 'dashboard'}" @click.prevent="navigate('dashboard')">Dashboard</a>
+    </div>
+    <div class="nav-actions">
+      <button class="blind-toggle" :class="{'active': blindMode}" @click="toggleBlindMode()">
+        <span x-text="blindMode ? '&#128064;' : '&#128065;'"></span>
+        <span x-text="blindMode ? 'Blind ON' : 'Blind'"></span>
+      </button>
+      <button x-show="blindMode" class="reveal-btn" @click="revealBlindMode()">Reveal</button>
+    </div>
+  </nav>
+
+  <!-- Main content area -->
+  <main class="content" :class="{'content-wide': route === 'model-grid' || route === 'dashboard'}">
+
+    <!-- Experiments list view -->
+    <div x-show="route === 'experiments'" x-cloak>
+      <div class="filter-bar">
+        <input type="text" x-model="filters.search" @input.debounce.300ms="filterExperiments()" placeholder="Search prompts..." class="search-input">
+        <select x-model="filters.model" @change="filterExperiments()">
+          <option value="">All Models</option>
+          <template x-for="m in availableModels" :key="m">
+            <option :value="m" x-text="m"></option>
+          </template>
+        </select>
+        <select x-model="filters.pipeline" @change="filterExperiments()">
+          <option value="">All Pipelines</option>
+          <template x-for="p in availablePipelines" :key="p">
+            <option :value="p" x-text="p"></option>
+          </template>
+        </select>
+      </div>
+
+      <div x-show="loading" class="loading-spinner">Loading...</div>
+
+      <div class="card-grid" x-show="!loading">
+        <template x-for="exp in filteredExperiments" :key="exp.id">
+          <div class="experiment-card" @click="openExperiment(exp.id)">
+            <div class="card-thumb" x-show="exp.thumbnail">
+              <img :src="exp.thumbnail" :alt="exp.prompt_summary" loading="lazy">
+            </div>
+            <div class="card-info">
+              <div class="card-title" x-text="exp.prompt_summary || exp.id"></div>
+              <div class="card-meta">
+                <span class="badge model" x-text="displayModelName(exp.model)" x-show="exp.model"></span>
+                <span class="badge pipeline" x-text="exp.pipeline" x-show="exp.pipeline"></span>
+              </div>
+              <div class="card-date" x-text="exp.date"></div>
+              <div class="card-count" x-text="(exp.image_count || 0) + ' images'"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="!loading && filteredExperiments.length === 0" class="empty-state">No experiments found</div>
+    </div>
+
+    <!-- Experiment detail view -->
+    <div x-show="route === 'experiment'" x-cloak>
+      <div class="detail-header">
+        <button class="back-btn" @click="navigate('experiments')">&larr; Back</button>
+        <h2 x-text="currentExperiment?.prompt_summary || currentExperiment?.id"></h2>
+        <button class="compare-btn" @click="addToCompare(currentExperiment?.id)">Add to Compare</button>
+      </div>
+
+      <div class="detail-layout">
+        <!-- Sticky sidebar: metadata always visible while scrolling images -->
+        <aside class="metadata-sidebar" x-show="currentExperiment?.metadata">
+          <div class="sidebar-section">
+            <div class="sidebar-label">Model</div>
+            <div class="sidebar-value" x-text="currentExperiment?.metadata?.model?.checkpoint || '—'"></div>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-label">Pipeline</div>
+            <div class="sidebar-value" x-text="currentExperiment?.metadata?.pipeline || '—'"></div>
+          </div>
+          <div class="sidebar-params">
+            <div class="sidebar-label">Parameters</div>
+            <div class="param-grid">
+              <div class="param-item">
+                <span class="param-key">Steps</span>
+                <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.steps || '—'"></span>
+              </div>
+              <div class="param-item">
+                <span class="param-key">CFG</span>
+                <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.cfg_scale || '—'"></span>
+              </div>
+              <div class="param-item">
+                <span class="param-key">Sampler</span>
+                <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.sampler || '—'"></span>
+              </div>
+              <div class="param-item" x-show="currentExperiment?.metadata?.parameters?.scheduler">
+                <span class="param-key">Scheduler</span>
+                <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.scheduler"></span>
+              </div>
+              <div class="param-item" x-show="currentExperiment?.metadata?.parameters?.denoise">
+                <span class="param-key">Denoise</span>
+                <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.denoise"></span>
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-label">Prompt</div>
+            <div class="sidebar-prompt" x-text="currentExperiment?.metadata?.prompt?.positive || '—'"></div>
+          </div>
+          <div class="sidebar-section" x-show="currentExperiment?.metadata?.prompt?.negative">
+            <div class="sidebar-label">Negative</div>
+            <div class="sidebar-prompt negative" x-text="currentExperiment?.metadata?.prompt?.negative"></div>
+          </div>
+          <div class="sidebar-section" x-show="currentExperiment?.metadata?.seeds">
+            <div class="sidebar-label">Seeds</div>
+            <div class="sidebar-value seed-list" x-text="(currentExperiment?.metadata?.seeds || []).join(', ')"></div>
+          </div>
+          <div class="sidebar-stats">
+            <span x-text="(currentExperiment?.image_count || 0) + ' images'"></span>
+          </div>
+        </aside>
+
+        <!-- Main area: image grid -->
+        <div class="detail-main">
+          <div class="image-grid">
+            <template x-for="(img, idx) in currentExperiment?.images || []" :key="img.full_url || img.name">
+              <div class="image-item" :class="{'selected': isSelected(img)}">
+                <img :src="img.thumb_url" :alt="img.name" loading="lazy" @click="openLightbox(idx)">
+                <div class="image-overlay">
+                  <div class="star-rating" @click.stop>
+                    <template x-for="star in [1,2,3,4,5]" :key="star">
+                      <span class="star"
+                            :class="{'filled': getImageRating(img) >= star}"
+                            @click="setImageRating(img, star)">&#9733;</span>
+                    </template>
+                  </div>
+                  <label class="select-check" @click.stop>
+                    <input type="checkbox" :checked="isSelected(img)" @change="toggleSelect(img)">
+                  </label>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selection actions -->
+      <div class="selection-bar" x-show="selectedImages.length > 0" x-cloak>
+        <span x-text="selectedImages.length + ' selected'"></span>
+        <button @click="selectToProduction()">Copy to Production</button>
+      </div>
+    </div>
+
+    <!-- Compare mode view -->
+    <div x-show="route === 'compare'" x-cloak>
+      <div class="compare-header">
+        <h2>Compare Experiments</h2>
+        <div class="compare-selectors">
+          <select x-model="compareLeft" @change="loadCompareExperiment('left')">
+            <option value="">Select left...</option>
+            <template x-for="exp in experiments" :key="'cl-' + exp.id">
+              <option :value="exp.id" x-text="exp.prompt_summary || exp.id"></option>
+            </template>
+          </select>
+          <select x-model="compareRight" @change="loadCompareExperiment('right')">
+            <option value="">Select right...</option>
+            <template x-for="exp in experiments" :key="'cr-' + exp.id">
+              <option :value="exp.id" x-text="exp.prompt_summary || exp.id"></option>
+            </template>
+          </select>
+        </div>
+      </div>
+      <div class="compare-panels">
+        <div class="compare-panel" id="compare-left">
+          <template x-for="img in compareLeftImages" :key="'cl-' + img.thumb_url">
+            <div class="compare-image">
+              <img :src="img.thumb_url" loading="lazy" @click="openLightbox(img._index, 'left')">
+            </div>
+          </template>
+          <div x-show="compareLeft && compareLeftImages.length === 0" class="empty-state">No images</div>
+        </div>
+        <div class="compare-panel" id="compare-right">
+          <template x-for="img in compareRightImages" :key="'cr-' + img.thumb_url">
+            <div class="compare-image">
+              <img :src="img.thumb_url" loading="lazy" @click="openLightbox(img._index, 'right')">
+            </div>
+          </template>
+          <div x-show="compareRight && compareRightImages.length === 0" class="empty-state">No images</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Productions view -->
+    <div x-show="route === 'productions' || route === 'production'" x-cloak>
+      <h2>Productions</h2>
+      <div x-show="loading" class="loading-spinner">Loading...</div>
+      <div class="card-grid" x-show="!loading">
+        <template x-for="prod in productions" :key="prod.id">
+          <div class="experiment-card" @click="openProduction(prod.id)">
+            <div class="card-info">
+              <div class="card-title" x-text="prod.id"></div>
+              <div class="card-meta">
+                <span class="badge" x-text="'Raw: ' + (prod.raw_count || 0)"></span>
+                <span class="badge" x-text="'Selected: ' + (prod.selected_count || 0)"></span>
+                <span class="badge" x-text="'Final: ' + (prod.final_count || 0)"></span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+      <div x-show="!loading && productions.length === 0" class="empty-state">No productions found</div>
+    </div>
+
+    <!-- Model Grid view -->
+    <div x-show="route === 'model-grid'" x-cloak>
+      <!-- Group selector (shown when no group is selected) -->
+      <div x-show="!modelGrid.selectedGroup">
+        <h2>Model Grid</h2>
+        <p class="mg-subtitle">同一プロンプトを複数モデルで比較</p>
+
+        <div x-show="modelGrid.groups.length === 0" class="empty-state">
+          比較可能なプロンプトグループがありません（2モデル以上必要）
+        </div>
+
+        <div class="card-grid">
+          <template x-for="group in modelGrid.groups" :key="group.key">
+            <div class="experiment-card" @click="selectModelGroup(group)">
+              <div class="card-info">
+                <div class="card-title" x-text="group.prompt"></div>
+                <div class="card-meta">
+                  <template x-for="m in group.models" :key="'mg-' + group.key + '-' + m">
+                    <span class="badge model" x-text="displayModelName(m)"></span>
+                  </template>
+                </div>
+                <div class="card-count" x-text="group.models.length + ' models / ' + group.experiments.length + ' experiments'"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Grid comparison (shown when a group is selected) -->
+      <div x-show="modelGrid.selectedGroup">
+        <div class="detail-header">
+          <button class="back-btn" @click="modelGrid.selectedGroup = null">&larr; Back</button>
+          <h2 x-text="modelGrid.selectedGroup?.prompt"></h2>
+          <div class="mg-view-toggle">
+            <button :class="{'active': modelGrid.viewMode === 'single'}" @click="modelGrid.viewMode = 'single'">Single Seed</button>
+            <button :class="{'active': modelGrid.viewMode === 'all'}" @click="modelGrid.viewMode = 'all'">All Seeds</button>
+          </div>
+        </div>
+
+        <div x-show="modelGrid.loading" class="loading-spinner">Loading...</div>
+
+        <!-- Seed selector bar -->
+        <div class="mg-seed-bar" x-show="!modelGrid.loading && modelGrid.viewMode === 'single' && modelGrid.allSeeds.length > 0">
+          <span class="mg-seed-label">Seed:</span>
+          <div class="mg-seed-list">
+            <template x-for="seed in modelGrid.allSeeds" :key="'seed-' + seed">
+              <button class="mg-seed-btn"
+                      :class="{'active': modelGrid.selectedSeed === seed}"
+                      @click="selectSeed(seed)"
+                      x-text="seed"></button>
+            </template>
+          </div>
+        </div>
+
+        <!-- N-model CSS grid -->
+        <div class="mg-grid" x-show="!modelGrid.loading">
+          <template x-for="card in modelGrid.modelCards" :key="'mc-' + card.model">
+            <div class="mg-card">
+              <!-- Model header -->
+              <div class="mg-card-header">
+                <span class="mg-model-name" x-text="displayModelName(card.model)"></span>
+                <span class="mg-image-count" x-text="card.images.length + ' imgs'"></span>
+              </div>
+
+              <!-- Single seed view -->
+              <template x-if="modelGrid.viewMode === 'single'">
+                <div class="mg-card-body">
+                  <template x-if="getCardImage(card)">
+                    <div>
+                      <div class="mg-image-wrap"
+                           @click="openLightbox(getCardImage(card)._index, 'model-grid', card.images, card.detail)">
+                        <img :src="getCardImage(card).thumb_url" :alt="getCardImage(card).name" loading="lazy">
+                      </div>
+                      <!-- Score display -->
+                      <div class="mg-scores" x-show="getImageRating(getCardImage(card)) > 0">
+                        <template x-for="axis in RATING_AXES" :key="'mgs-' + card.model + '-' + axis.key">
+                          <div class="mg-score-item" x-show="getImageScore(getCardImage(card), axis.key) > 0">
+                            <span class="mg-score-label" x-text="axis.short"></span>
+                            <span class="mg-score-value" x-text="getImageScore(getCardImage(card), axis.key)"></span>
+                          </div>
+                        </template>
+                      </div>
+                      <!-- Comment -->
+                      <div class="mg-comment" x-show="getImageComment(getCardImage(card))"
+                           x-text="getImageComment(getCardImage(card))"></div>
+                    </div>
+                  </template>
+                  <template x-if="!getCardImage(card)">
+                    <div class="mg-no-image">No image for this seed</div>
+                  </template>
+
+                  <!-- Model verdict & comment -->
+                  <div class="mg-model-info">
+                    <div class="mg-verdict" x-show="getModelData(card.model).verdict">
+                      <span class="badge" :class="{
+                        'verdict-adopt': getModelData(card.model).verdict === 'adopt',
+                        'verdict-hold': getModelData(card.model).verdict === 'hold',
+                        'verdict-reject': getModelData(card.model).verdict === 'reject'
+                      }" x-text="getModelData(card.model).verdict"></span>
+                    </div>
+                    <div class="mg-model-comment" x-show="getModelData(card.model).comment"
+                         x-text="getModelData(card.model).comment"></div>
+                  </div>
+                </div>
+              </template>
+
+              <!-- All seeds view -->
+              <template x-if="modelGrid.viewMode === 'all'">
+                <div class="mg-card-body mg-all-seeds">
+                  <template x-for="(img, idx) in getCardImages(card)" :key="'mga-' + card.model + '-' + idx">
+                    <div class="mg-mini-image"
+                         @click="openLightbox(img._index, 'model-grid', card.images, card.detail)">
+                      <img :src="img.thumb_url" :alt="img.name" loading="lazy">
+                      <div class="mg-mini-seed" x-show="img._seed" x-text="img._seed"></div>
+                      <div class="mg-mini-rating" x-show="getImageRating(img) > 0">
+                        <span class="star filled">&#9733;</span>
+                        <span x-text="getImageAvgScore(img)"></span>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard view -->
+    <div x-show="route === 'dashboard'" x-cloak>
+      <div class="dash-header">
+        <h2>Dashboard</h2>
+        <div class="dash-actions">
+          <button class="back-btn" @click="exportMarkdown()">Export MD</button>
+          <button class="back-btn" @click="exportJSON()">Export JSON</button>
+        </div>
+      </div>
+
+      <div x-show="dashboard.loading" class="loading-spinner">Loading...</div>
+
+      <div x-show="!dashboard.loading && dashboard.modelStats.length === 0" class="empty-state">
+        評価データがありません。実験画像を評価してください。
+      </div>
+
+      <div x-show="!dashboard.loading && dashboard.modelStats.length > 0">
+        <!-- Charts -->
+        <div class="dash-charts">
+          <div class="dash-chart-box">
+            <h3>軸別スコア比較</h3>
+            <canvas id="radar-chart"></canvas>
+          </div>
+          <div class="dash-chart-box">
+            <h3>総合スコア</h3>
+            <canvas id="bar-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Ranking table -->
+        <div class="dash-table-wrap">
+          <h3>ランキング</h3>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>モデル</th>
+                <template x-for="axis in RATING_AXES" :key="'dth-' + axis.key">
+                  <th x-text="axis.short"></th>
+                </template>
+                <th>画像数</th>
+                <th>判定</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="(stat, idx) in dashboard.modelStats" :key="'ds-' + stat.model">
+                <tr>
+                  <td x-text="idx + 1"></td>
+                  <td class="dash-model-name" x-text="displayModelName(stat.model)"></td>
+                  <template x-for="axis in RATING_AXES" :key="'dsv-' + stat.model + '-' + axis.key">
+                    <td class="dash-score"
+                        :class="{'dash-score-high': stat.avgScores[axis.key] >= 4, 'dash-score-low': stat.avgScores[axis.key] !== null && stat.avgScores[axis.key] < 3}"
+                        x-text="stat.avgScores[axis.key] != null ? stat.avgScores[axis.key].toFixed(1) : '—'"></td>
+                  </template>
+                  <td x-text="stat.imageCount"></td>
+                  <td>
+                    <span class="badge" x-show="stat.verdict"
+                          :class="{
+                            'verdict-adopt': stat.verdict === 'adopt',
+                            'verdict-hold': stat.verdict === 'hold',
+                            'verdict-reject': stat.verdict === 'reject'
+                          }"
+                          x-text="stat.verdict"></span>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Model comments -->
+        <div class="dash-comments">
+          <h3>モデルコメント</h3>
+          <template x-for="stat in dashboard.modelStats" :key="'dc-' + stat.model">
+            <div class="dash-comment-item" x-show="stat.comment">
+              <span class="dash-comment-model" x-text="displayModelName(stat.model)"></span>
+              <span class="dash-comment-text" x-text="stat.comment"></span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Lightbox overlay -->
+  <div x-show="lightbox.open" x-cloak class="lightbox"
+       @keydown.escape.window="closeLightbox()"
+       @keydown.arrow-left.window="lightboxPrev()"
+       @keydown.arrow-right.window="lightboxNext()">
+    <div class="lightbox-backdrop" @click="closeLightbox()"></div>
+    <div class="lightbox-body">
+      <div class="lightbox-content">
+        <img :src="lightbox.currentImage?.full_url" :alt="lightbox.currentImage?.name">
+        <div class="lightbox-controls">
+          <button @click="lightboxPrev()">&larr;</button>
+          <span x-text="(lightbox.index + 1) + ' / ' + lightbox.images.length"></span>
+          <button @click="lightboxNext()">&rarr;</button>
+        </div>
+      </div>
+      <!-- Evaluation panel: 5-axis rating + comment -->
+      <div class="eval-panel" :class="{'collapsed': !evalPanel.expanded}">
+        <div class="eval-panel-toggle" @click="evalPanel.expanded = !evalPanel.expanded">
+          <span class="eval-panel-title">Evaluation</span>
+          <span class="eval-toggle-icon" x-text="evalPanel.expanded ? '&#9660;' : '&#9650;'"></span>
+        </div>
+        <div class="eval-panel-body" x-show="evalPanel.expanded" x-cloak>
+          <!-- 5-axis star ratings -->
+          <template x-for="axis in RATING_AXES" :key="'eval-' + axis.key">
+            <div class="eval-axis">
+              <span class="eval-axis-label" x-text="axis.label"></span>
+              <div class="star-rating">
+                <template x-for="star in [1,2,3,4,5]" :key="'eval-' + axis.key + '-' + star">
+                  <span class="star"
+                        :class="{'filled': getImageScore(lightbox.currentImage, axis.key) >= star}"
+                        @click="setImageScore(lightbox.currentImage, axis.key, star)">&#9733;</span>
+                </template>
+              </div>
+            </div>
+          </template>
+          <!-- Comment textarea -->
+          <div class="eval-comment">
+            <textarea class="eval-comment-input"
+                      placeholder="Comment..."
+                      rows="3"
+                      :value="evalPanel.commentDraft"
+                      @input="onCommentInput($event.target.value)"
+                      @keydown.stop></textarea>
+          </div>
+        </div>
+      </div>
+      <!-- Save to training data -->
+      <div class="lb-save-section">
+        <template x-if="!savePanel.open">
+          <button class="save-btn" @click="openSavePanel()" :class="{'saved': savePanel.saved}">&#9829; Save</button>
+        </template>
+        <template x-if="savePanel.open">
+          <div class="save-panel">
+            <div class="save-panel-title">Save to Training Data</div>
+            <div class="save-labels">
+              <template x-for="label in getAllSaveLabels()" :key="'sl-' + label">
+                <button class="save-label-btn" :class="{'selected': isSaveLabelSelected(label)}"
+                        @click="toggleSaveLabel(label)" x-text="label"></button>
+              </template>
+            </div>
+            <div class="save-custom-row">
+              <input type="text" class="save-custom-input" x-model="savePanel.customLabelInput"
+                     @keydown.enter="addCustomLabel()" @keydown.stop placeholder="Custom label...">
+              <button class="save-custom-add" @click="addCustomLabel()">+</button>
+            </div>
+            <div class="save-panel-actions">
+              <button class="btn-primary" @click="executeSave()"
+                      :disabled="savePanel.selectedLabels.length === 0 || savePanel.saving">
+                <span x-show="!savePanel.saving && !savePanel.saved">Save</span>
+                <span x-show="savePanel.saving">Saving...</span>
+                <span x-show="savePanel.saved">Saved &#10003;</span>
+              </button>
+              <button class="btn-ghost" @click="closeSavePanel()">Cancel</button>
+            </div>
+          </div>
+        </template>
+      </div>
+      <!-- Lightbox metadata panel -->
+      <div class="lightbox-meta" x-show="lightbox.sourceExperiment?.metadata || currentExperiment?.metadata">
+        <div class="lb-meta-item">
+          <span class="lb-meta-label">Model</span>
+          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.model?.checkpoint || '—'"></span>
+        </div>
+        <div class="lb-meta-item">
+          <span class="lb-meta-label">Pipeline</span>
+          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.pipeline || '—'"></span>
+        </div>
+        <div class="lb-meta-divider"></div>
+        <div class="lb-meta-item">
+          <span class="lb-meta-label">Steps</span>
+          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.parameters?.steps || '—'"></span>
+        </div>
+        <div class="lb-meta-item">
+          <span class="lb-meta-label">CFG</span>
+          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.parameters?.cfg_scale || '—'"></span>
+        </div>
+        <div class="lb-meta-item">
+          <span class="lb-meta-label">Sampler</span>
+          <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.parameters?.sampler || '—'"></span>
+        </div>
+        <div class="lb-meta-divider"></div>
+        <div class="lb-meta-prompt">
+          <span class="lb-meta-label">Prompt</span>
+          <p x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.prompt?.positive || '—'"></p>
+        </div>
+        <div class="lb-meta-item" x-show="lightbox.currentImage?.name">
+          <span class="lb-meta-label">File</span>
+          <span x-text="lightbox.currentImage?.name"></span>
+        </div>
+      </div>
+      <button class="lightbox-close" @click="closeLightbox()">&times;</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="/gallery/js/utils.js"></script>
+  <script src="/gallery/js/api.js"></script>
+  <script src="/gallery/js/lightbox.js"></script>
+  <script src="/gallery/js/compare.js"></script>
+  <script src="/gallery/js/model-grid.js"></script>
+  <script src="/gallery/js/dashboard.js"></script>
+  <script src="/gallery/js/app.js"></script>
+</body>
+</html>

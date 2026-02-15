@@ -1,0 +1,116 @@
+import logging
+import re
+from datetime import datetime, timezone
+
+logger = logging.getLogger(__name__)
+
+INDEX_KEY = "gallery/experiments/index.json"
+
+
+def _extract_info_from_id(experiment_id):
+    """Extract model name and date from experiment ID like '20260216_wai-nsfw-v16/basename'."""
+    parts = experiment_id.split("/")
+    dir_part = parts[0]  # e.g. '20260216_wai-nsfw-v16'
+    m = re.match(r"^(\d{8})_(.+)$", dir_part)
+    if m:
+        date_str = m.group(1)
+        model = m.group(2)
+        date = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
+        return model, date
+    return dir_part, None
+
+
+def _build_entry(s3_client, experiment_id, metadata):
+    """Build an index entry for a single experiment."""
+    model, date = _extract_info_from_id(experiment_id)
+
+    # Count images in thumb dir
+    prefix = f"gallery/experiments/{experiment_id}/thumb/"
+    thumbs = s3_client.list_objects(prefix)
+    image_count = len(thumbs)
+
+    thumbnail = ""
+    if thumbs:
+        first_thumb = sorted(thumbs)[0]
+        thumbnail = "/" + first_thumb
+
+    # model can be a string or dict like {"checkpoint": "wai-nsfw-v16"}
+    meta_model = metadata.get("model", model)
+    if isinstance(meta_model, dict):
+        meta_model = meta_model.get("checkpoint", model)
+
+    # Extract prompt summary from prompt if not explicitly set
+    prompt_summary = metadata.get("prompt_summary", "")
+    if not prompt_summary:
+        prompt = metadata.get("prompt", {})
+        if isinstance(prompt, dict):
+            positive = prompt.get("positive", "")
+        elif isinstance(prompt, str):
+            positive = prompt
+        else:
+            positive = ""
+        if positive:
+            words = positive.split(",")[:4]
+            prompt_summary = ", ".join(w.strip() for w in words if w.strip())[:80]
+
+    return {
+        "id": experiment_id,
+        "model": meta_model,
+        "pipeline": metadata.get("pipeline", "txt2img"),
+        "prompt_summary": prompt_summary,
+        "date": metadata.get("date", date or ""),
+        "image_count": image_count,
+        "thumbnail": thumbnail,
+        "created_at": metadata.get(
+            "created_at", datetime.now(timezone.utc).isoformat()
+        ),
+    }
+
+
+def build_index(s3_client):
+    """Scan all experiments and rebuild the full index."""
+    logger.info("Building full experiment index")
+    metadata_keys = s3_client.list_objects("gallery/experiments/")
+    metadata_keys = [k for k in metadata_keys if k.endswith("/metadata.json")]
+
+    entries = []
+    for key in metadata_keys:
+        # Extract experiment ID: gallery/experiments/{id}/metadata.json
+        # id may contain slashes, e.g. '20260216_wai-nsfw-v16/basename'
+        stripped = key[len("gallery/experiments/") : -len("/metadata.json")]
+        experiment_id = stripped
+        try:
+            metadata = s3_client.get_json(key)
+            entry = _build_entry(s3_client, experiment_id, metadata)
+            entries.append(entry)
+        except Exception:
+            logger.exception("Failed to process %s", key)
+
+    entries.sort(key=lambda e: e["created_at"], reverse=True)
+    s3_client.put_json(INDEX_KEY, entries)
+    logger.info("Index built with %d entries", len(entries))
+    return entries
+
+
+def update_index(s3_client, experiment_id, metadata):
+    """Add or update a single experiment in the index."""
+    index = s3_client.get_json(INDEX_KEY)
+    if not isinstance(index, list):
+        index = []
+
+    entry = _build_entry(s3_client, experiment_id, metadata)
+
+    # Replace existing entry or append
+    updated = False
+    for i, existing in enumerate(index):
+        if existing["id"] == experiment_id:
+            index[i] = entry
+            updated = True
+            break
+    if not updated:
+        index.append(entry)
+
+    index.sort(key=lambda e: e["created_at"], reverse=True)
+    s3_client.put_json(INDEX_KEY, index)
+    logger.info("Index updated for %s", experiment_id)
+    return entry
