@@ -5,37 +5,40 @@ set -euo pipefail
 # parallel-eval.sh - 13モデル比較画像をSpot並列生成
 #
 # 手順:
-#   1. 現在稼働中インスタンスからAMI作成
-#   2. AMIから4台のSpotワーカーを起動
-#   3. 各ワーカーが割り当てモデルでgenerate-eval.py実行
-#   4. 結果はS3に自動アップロード
-#   5. 完了後ワーカーは自動終了
+#   1. 現在稼働中インスタンスのEBSスナップショット作成
+#   2. スナップショットからワーカーごとにEBSボリューム作成
+#   3. ワーカーSpotインスタンス起動 → ボリュームアタッチ
+#   4. 各ワーカーが割り当てモデルでgenerate-eval.py実行
+#   5. 結果はS3に自動アップロード
+#   6. 完了後ワーカーは自動終了
 #
 # Usage:
-#   ./parallel-eval.sh                    # AMI作成→起動→生成
-#   ./parallel-eval.sh --skip-ami AMI_ID  # 既存AMI使用
-#   ./parallel-eval.sh --status           # 進捗確認
-#   ./parallel-eval.sh --cleanup          # 全ワーカー終了+AMI削除
+#   ./parallel-eval.sh                        # スナップショット→起動→生成
+#   ./parallel-eval.sh --skip-snapshot SNAP_ID # 既存スナップショット使用
+#   ./parallel-eval.sh --status               # 進捗確認
+#   ./parallel-eval.sh --cleanup              # 全ワーカー終了+リソース削除
 # =============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REGION="us-east-1"
-INSTANCE_TYPE="g5.xlarge"  # g6e.xlargeが取れなければg5にフォールバック
+FALLBACK_INSTANCE_TYPE="g5.xlarge"
 PREFERRED_INSTANCE_TYPE="g6e.xlarge"
 NUM_WORKERS=4
 S3_BUCKET="r18-anime-assets"
 STATE_FILE="/tmp/parallel-eval-state.json"
 
 # Load .env
-if [[ -f "${SCRIPT_DIR}/../.env" ]]; then
-    set -a; source "${SCRIPT_DIR}/../.env"; set +a
+if [[ -f "${REPO_ROOT}/.env" ]]; then
+    set -a; source "${REPO_ROOT}/.env"; set +a
 fi
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 err() { log "ERROR: $*" >&2; }
 
 # ワーカー割り当て（時間バランス済み）
-# SDXL ~10s/枚, SD1.5 ~5s/枚 → Worker4にSD1.5+SDXL2つで均等化
+# SDXL ~10s/枚(g5) ~3s/枚(g6e), SD1.5 ~5s/枚(g5)
+# Worker4にSD1.5+SDXL2つで均等化
 WORKER_MODELS=(
     "wai-nsfw-illustrious-v16,wai-nsfw-illustrious-v14,wai-nsfw-illustrious-v12"
     "wai-nsfw-illustrious-v11,wai-branch-rouwei,illustrij-v20"
@@ -45,8 +48,11 @@ WORKER_MODELS=(
 
 WORKER_NAMES=("wai-main" "wai-alt" "sdxl-other" "pony-sd15")
 
+# Spread across AZs to improve Spot availability
+WORKER_AZS=("us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d")
+
 # =============================================================================
-# Find source instance (the one currently running with our tag)
+# Find source instance
 # =============================================================================
 find_source_instance() {
     aws ec2 describe-instances --region "${REGION}" \
@@ -57,177 +63,287 @@ find_source_instance() {
 }
 
 # =============================================================================
-# Create AMI from running instance
+# Step 1: Upload scripts and prompts to S3 (avoids git clone dependency)
 # =============================================================================
-create_ami() {
-    local source_id="$1"
-    local ami_name="r18-anime-eval-$(date +%Y%m%d-%H%M)"
-
-    log "Creating AMI from ${source_id}..."
-    local ami_id
-    ami_id=$(aws ec2 create-image --region "${REGION}" \
-        --instance-id "${source_id}" \
-        --name "${ami_name}" \
-        --description "r18-anime eval: 13 models + ComfyUI + custom nodes" \
-        --no-reboot \
-        --query 'ImageId' --output text)
-
-    log "AMI: ${ami_id} (${ami_name})"
-    log "Waiting for AMI to become available (this takes a few minutes)..."
-
-    aws ec2 wait image-available --region "${REGION}" --image-ids "${ami_id}"
-    log "AMI ready: ${ami_id}"
-    echo "${ami_id}"
+upload_scripts_to_s3() {
+    log "Uploading scripts and prompts to S3..."
+    aws s3 cp "${REPO_ROOT}/scripts/generate-eval.py" \
+        "s3://${S3_BUCKET}/eval-scripts/generate-eval.py" --region "${REGION}"
+    aws s3 cp "${REPO_ROOT}/assets/templates/eval-prompts.json" \
+        "s3://${S3_BUCKET}/eval-scripts/eval-prompts.json" --region "${REGION}"
+    log "Scripts uploaded to s3://${S3_BUCKET}/eval-scripts/"
 }
 
 # =============================================================================
-# Launch a single Spot worker
+# Step 2: Create EBS snapshot from data volume
+# =============================================================================
+create_snapshot() {
+    local vol_id="${EBS_VOLUME_ID}"
+    local snap_name="r18-anime-eval-$(date +%Y%m%d-%H%M)"
+
+    log "Creating snapshot from data volume ${vol_id}..."
+    local snap_id
+    snap_id=$(aws ec2 create-snapshot --region "${REGION}" \
+        --volume-id "${vol_id}" \
+        --description "${snap_name}: 13 models + ComfyUI + custom nodes" \
+        --tag-specifications "ResourceType=snapshot,Tags=[{Key=Name,Value=${snap_name}},{Key=Purpose,Value=eval-batch}]" \
+        --query 'SnapshotId' --output text)
+
+    log "Snapshot: ${snap_id}"
+    log "Waiting for snapshot to complete (200GB, may take 5-15 min)..."
+
+    # Custom wait with longer timeout (max 30 min)
+    for i in $(seq 1 90); do
+        local state
+        state=$(aws ec2 describe-snapshots --region "${REGION}" \
+            --snapshot-ids "${snap_id}" \
+            --query 'Snapshots[0].State' --output text 2>/dev/null)
+        local progress
+        progress=$(aws ec2 describe-snapshots --region "${REGION}" \
+            --snapshot-ids "${snap_id}" \
+            --query 'Snapshots[0].Progress' --output text 2>/dev/null)
+        if [[ "${state}" == "completed" ]]; then
+            log "Snapshot ready: ${snap_id}"
+            echo "${snap_id}"
+            return 0
+        fi
+        log "  Snapshot progress: ${progress} (${state})"
+        sleep 20
+    done
+    err "Snapshot timed out after 30 minutes"
+    exit 1
+}
+
+# =============================================================================
+# Step 3: Create volume from snapshot in target AZ
+# =============================================================================
+create_volume_from_snapshot() {
+    local snap_id="$1"
+    local az="$2"
+    local worker_name="$3"
+
+    local vol_id
+    vol_id=$(aws ec2 create-volume --region "${REGION}" \
+        --availability-zone "${az}" \
+        --snapshot-id "${snap_id}" \
+        --volume-type gp3 \
+        --encrypted \
+        --tag-specifications "ResourceType=volume,Tags=[{Key=Name,Value=r18-eval-data-${worker_name}},{Key=Purpose,Value=eval-batch}]" \
+        --query 'VolumeId' --output text)
+
+    log "  Volume ${vol_id} created in ${az} from ${snap_id}"
+
+    # Wait for available
+    aws ec2 wait volume-available --region "${REGION}" --volume-ids "${vol_id}"
+    echo "${vol_id}"
+}
+
+# =============================================================================
+# Step 4: Launch a Spot worker and attach data volume
 # =============================================================================
 launch_worker() {
-    local ami_id="$1"
+    local snap_id="$1"
     local worker_idx="$2"
     local models="${WORKER_MODELS[$worker_idx]}"
     local name="${WORKER_NAMES[$worker_idx]}"
+    local az="${WORKER_AZS[$worker_idx]}"
 
-    # UserData script: mount data volume, start ComfyUI, run generate-eval.py, self-terminate
+    # Create data volume from snapshot
+    local data_vol_id
+    data_vol_id=$(create_volume_from_snapshot "${snap_id}" "${az}" "${name}")
+
+    # Get the subnet for this AZ
+    local subnet="${PRIVATE_SUBNET_ID}"
+
+    # Build UserData
+    # NOTE: Single-quoted heredoc prevents expansion, then we do string replacement
     local userdata
     userdata=$(cat <<'USERDATA_EOF'
 #!/bin/bash
-set -euo pipefail
 exec > /var/log/eval-worker.log 2>&1
 
 echo "=== Eval Worker Starting ==="
-echo "Models: __MODELS__"
 echo "Worker: __NAME__"
+echo "Models: __MODELS__"
+date -u
 
-# Data volume is already part of the AMI snapshot
-# Just ensure it's mounted
-if ! mountpoint -q /data; then
-    # Find the data volume device
+# --- Mount data volume ---
+# The data volume is attached as /dev/sdf (appears as /dev/nvme1n1 on nitro)
+echo "Waiting for data volume device..."
+for attempt in $(seq 1 30); do
     for dev in /dev/nvme1n1 /dev/xvdf /dev/sdf; do
-        if [[ -b "$dev" ]]; then
-            mount "$dev" /data 2>/dev/null && break
-            # Try partition
-            [[ -b "${dev}p1" ]] && mount "${dev}p1" /data 2>/dev/null && break
+        if [ -b "$dev" ]; then
+            echo "Found device: $dev"
+            mkdir -p /data
+            mount "$dev" /data 2>/dev/null && echo "Mounted $dev on /data" && break 2
         fi
     done
-fi
+    echo "  Waiting for device... ($attempt/30)"
+    sleep 10
+done
 
 if ! mountpoint -q /data; then
-    echo "ERROR: Could not mount /data"
-    shutdown -h now
+    echo "ERROR: Could not mount /data after 5 minutes"
+    # Try to self-terminate even on failure
+    TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300" 2>/dev/null || true)
+    INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null || true)
+    [ -n "$INSTANCE_ID" ] && aws ec2 terminate-instances --region __REGION__ --instance-ids "$INSTANCE_ID" 2>/dev/null || true
     exit 1
 fi
 
-echo "Data volume mounted at /data"
+# --- Install boto3 if missing ---
+if ! python3 -c "import boto3" 2>/dev/null; then
+    echo "Installing boto3..."
+    pip3 install boto3 2>/dev/null || true
+fi
+# Also install in ComfyUI venv
+if [ -d /data/ComfyUI/venv ]; then
+    /data/ComfyUI/venv/bin/pip install boto3 2>/dev/null || true
+fi
 
-# Start ComfyUI
+# --- Start ComfyUI ---
 cd /data/ComfyUI
 source venv/bin/activate
-
-# Start ComfyUI in background
-python main.py --listen 0.0.0.0 --port 8188 --disable-auto-launch &
+python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch &
 COMFYUI_PID=$!
 
-# Wait for ComfyUI to be ready
-for i in $(seq 1 60); do
-    if curl -s http://127.0.0.1:8188/system_stats >/dev/null 2>&1; then
-        echo "ComfyUI ready"
+echo "Waiting for ComfyUI..."
+COMFYUI_READY=false
+for i in $(seq 1 90); do
+    if curl -s http://127.0.0.1:8188/system_stats > /dev/null 2>&1; then
+        echo "ComfyUI ready after ${i}x5s"
+        COMFYUI_READY=true
         break
     fi
     sleep 5
 done
 
-# Clone the repo to get latest generate-eval.py and prompts
-cd /tmp
-if [[ -d r18_anime ]]; then rm -rf r18_anime; fi
-git clone --depth 1 https://github.com/Miyanorococo/ahan18girl.git r18_anime 2>/dev/null || true
+if [ "$COMFYUI_READY" != "true" ]; then
+    echo "ERROR: ComfyUI did not start within 7.5 minutes"
+    kill $COMFYUI_PID 2>/dev/null || true
+    TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300" 2>/dev/null || true)
+    INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null || true)
+    [ -n "$INSTANCE_ID" ] && aws ec2 terminate-instances --region __REGION__ --instance-ids "$INSTANCE_ID" 2>/dev/null || true
+    exit 1
+fi
 
-# Run generation
-cd /tmp/r18_anime
+# --- Download scripts from S3 (no git clone needed) ---
+mkdir -p /tmp/eval-work/scripts /tmp/eval-work/assets/templates
+aws s3 cp "s3://__S3_BUCKET__/eval-scripts/generate-eval.py" /tmp/eval-work/scripts/generate-eval.py --region __REGION__
+aws s3 cp "s3://__S3_BUCKET__/eval-scripts/eval-prompts.json" /tmp/eval-work/assets/templates/eval-prompts.json --region __REGION__
+
+# --- Run generation ---
+echo "Starting generation: __MODELS__"
+cd /tmp/eval-work
 COMFYUI_URL=http://127.0.0.1:8188 \
 S3_BUCKET=__S3_BUCKET__ \
-python3 scripts/generate-eval.py --models "__MODELS__"
+python3 scripts/generate-eval.py --models "__MODELS__" 2>&1 || {
+    echo "ERROR: generate-eval.py failed with exit code $?"
+}
 
 echo "=== Generation complete ==="
+date -u
 
-# Stop ComfyUI
+# --- Stop ComfyUI ---
 kill $COMFYUI_PID 2>/dev/null || true
 
-# Signal completion via S3
-aws s3 cp - "s3://__S3_BUCKET__/eval-status/__NAME__-done.txt" <<< "done $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+# --- Signal completion ---
+echo "done $(date -u +%Y-%m-%dT%H:%M:%SZ)" | aws s3 cp - "s3://__S3_BUCKET__/eval-status/__NAME__-done.txt" --region __REGION__
 
-# Self-terminate
+# --- Self-terminate (IMDSv2) ---
 echo "Self-terminating..."
-INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-aws ec2 terminate-instances --region __REGION__ --instance-ids "$INSTANCE_ID"
+TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300" 2>/dev/null || true)
+INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null || true)
+if [ -n "$INSTANCE_ID" ]; then
+    aws ec2 terminate-instances --region __REGION__ --instance-ids "$INSTANCE_ID"
+else
+    echo "WARNING: Could not get instance ID for self-termination"
+    shutdown -h now
+fi
 USERDATA_EOF
 )
 
     # Replace placeholders
     userdata="${userdata//__MODELS__/$models}"
+    userdata="${userdata//__MODELS__/$models}"
     userdata="${userdata//__NAME__/$name}"
     userdata="${userdata//__S3_BUCKET__/$S3_BUCKET}"
+    userdata="${userdata//__REGION__/$REGION}"
+    userdata="${userdata//__REGION__/$REGION}"
+    userdata="${userdata//__REGION__/$REGION}"
     userdata="${userdata//__REGION__/$REGION}"
 
     local encoded_userdata
     encoded_userdata=$(echo "$userdata" | base64)
 
-    # Try preferred instance type first, fallback to g5
+    # Launch instance — try g6e first, fallback to g5
     local actual_type="${PREFERRED_INSTANCE_TYPE}"
     local instance_id
-
-    # Get subnet and SG from .env
-    local subnet="${PRIVATE_SUBNET_ID:-${SUBNET_ID}}"
     local sg="${SG_ID}"
 
-    log "Launching worker-${worker_idx} (${name}): ${actual_type} spot..."
+    log "  Launching worker ${name} (${actual_type} spot, ${az})..."
 
     instance_id=$(aws ec2 run-instances --region "${REGION}" \
-        --image-id "${ami_id}" \
+        --image-id "${AMI_ID}" \
         --instance-type "${actual_type}" \
+        --placement "AvailabilityZone=${az}" \
         --subnet-id "${subnet}" \
         --security-group-ids "${sg}" \
-        --iam-instance-profile "Name=r18-anime-ec2-role" \
+        --iam-instance-profile "Name=r18-anime-instance-profile" \
         --instance-market-options '{"MarketType":"spot","SpotOptions":{"SpotInstanceType":"one-time"}}' \
         --user-data "${encoded_userdata}" \
         --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=r18-eval-${name}},{Key=Purpose,Value=eval-batch}]" \
         --query 'Instances[0].InstanceId' --output text 2>/dev/null) || true
 
     if [[ -z "${instance_id}" || "${instance_id}" == "None" ]]; then
-        log "  g6e spot unavailable, trying g5..."
-        actual_type="${INSTANCE_TYPE}"
+        log "    g6e spot unavailable in ${az}, trying g5..."
+        actual_type="${FALLBACK_INSTANCE_TYPE}"
         instance_id=$(aws ec2 run-instances --region "${REGION}" \
-            --image-id "${ami_id}" \
+            --image-id "${AMI_ID}" \
             --instance-type "${actual_type}" \
+            --placement "AvailabilityZone=${az}" \
             --subnet-id "${subnet}" \
             --security-group-ids "${sg}" \
-            --iam-instance-profile "Name=r18-anime-ec2-role" \
+            --iam-instance-profile "Name=r18-anime-instance-profile" \
             --instance-market-options '{"MarketType":"spot","SpotOptions":{"SpotInstanceType":"one-time"}}' \
             --user-data "${encoded_userdata}" \
             --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=r18-eval-${name}},{Key=Purpose,Value=eval-batch}]" \
             --query 'Instances[0].InstanceId' --output text)
     fi
 
-    log "  Worker ${name}: ${instance_id} (${actual_type})"
-    echo "${instance_id}"
+    if [[ -z "${instance_id}" || "${instance_id}" == "None" ]]; then
+        err "Failed to launch worker ${name}"
+        return 1
+    fi
+
+    # Wait for running
+    log "    Waiting for ${instance_id} to start..."
+    aws ec2 wait instance-running --region "${REGION}" --instance-ids "${instance_id}"
+
+    # Attach data volume
+    log "    Attaching data volume ${data_vol_id}..."
+    aws ec2 attach-volume --region "${REGION}" \
+        --volume-id "${data_vol_id}" \
+        --instance-id "${instance_id}" \
+        --device /dev/sdf >/dev/null
+
+    log "  Worker ${name}: ${instance_id} (${actual_type}, ${az})"
+    echo "${instance_id}:${data_vol_id}"
 }
 
 # =============================================================================
-# Check progress via S3
+# Check progress
 # =============================================================================
 check_progress() {
     log "=== Progress ==="
-    local total_expected=6435
-    local total_done=0
 
     for name in "${WORKER_NAMES[@]}"; do
         local done_marker
         done_marker=$(aws s3 ls "s3://${S3_BUCKET}/eval-status/${name}-done.txt" --region "${REGION}" 2>/dev/null || true)
         if [[ -n "$done_marker" ]]; then
-            log "  ${name}: ✅ DONE"
+            log "  ${name}: DONE"
         else
-            log "  ${name}: 🔄 running"
+            log "  ${name}: running"
         fi
     done
 
@@ -235,18 +351,18 @@ check_progress() {
     local image_count
     image_count=$(aws s3 ls "s3://${S3_BUCKET}/gallery/experiments/$(date +%Y%m%d)_" \
         --region "${REGION}" --recursive 2>/dev/null | grep -c "\.png$" || echo 0)
-    log "  Images in S3: ${image_count} / ${total_expected}"
+    log "  Images in S3: ${image_count} / 6435"
 
-    # Check running eval instances
+    # Running workers
     local running
     running=$(aws ec2 describe-instances --region "${REGION}" \
         --filters "Name=tag:Purpose,Values=eval-batch" \
                   "Name=instance-state-name,Values=running,pending" \
         --query 'Reservations[].Instances[].[InstanceId,InstanceType,Tags[?Key==`Name`].Value|[0]]' \
         --output text 2>/dev/null || true)
-    if [[ -n "$running" ]]; then
+    if [[ -n "$running" && "$running" != "None" ]]; then
         log "  Running workers:"
-        echo "$running" | while read -r id type tag; do
+        echo "$running" | while IFS=$'\t' read -r id type tag; do
             log "    ${tag}: ${id} (${type})"
         done
     else
@@ -255,7 +371,7 @@ check_progress() {
 }
 
 # =============================================================================
-# Cleanup: terminate workers + deregister AMI
+# Cleanup
 # =============================================================================
 cleanup() {
     log "=== Cleanup ==="
@@ -264,40 +380,45 @@ cleanup() {
     local worker_ids
     worker_ids=$(aws ec2 describe-instances --region "${REGION}" \
         --filters "Name=tag:Purpose,Values=eval-batch" \
-                  "Name=instance-state-name,Values=running,pending,stopping" \
+                  "Name=instance-state-name,Values=running,pending,stopping,stopped" \
         --query 'Reservations[].Instances[].InstanceId' --output text 2>/dev/null || true)
 
     if [[ -n "$worker_ids" && "$worker_ids" != "None" ]]; then
         log "Terminating workers: ${worker_ids}"
+        # shellcheck disable=SC2086
         aws ec2 terminate-instances --region "${REGION}" --instance-ids ${worker_ids} >/dev/null
-    else
-        log "No eval workers to terminate"
+        log "Waiting for termination..."
+        # shellcheck disable=SC2086
+        aws ec2 wait instance-terminated --region "${REGION}" --instance-ids ${worker_ids} 2>/dev/null || true
     fi
 
-    # Deregister AMI
-    local ami_ids
-    ami_ids=$(aws ec2 describe-images --region "${REGION}" --owners self \
-        --filters "Name=name,Values=r18-anime-eval-*" \
-        --query 'Images[].ImageId' --output text 2>/dev/null || true)
-
-    if [[ -n "$ami_ids" && "$ami_ids" != "None" ]]; then
-        for ami in ${ami_ids}; do
-            log "Deregistering AMI: ${ami}"
-            # Get snapshot IDs first
-            local snaps
-            snaps=$(aws ec2 describe-images --region "${REGION}" --image-ids "${ami}" \
-                --query 'Images[0].BlockDeviceMappings[].Ebs.SnapshotId' --output text 2>/dev/null || true)
-            aws ec2 deregister-image --region "${REGION}" --image-id "${ami}" 2>/dev/null || true
-            for snap in ${snaps}; do
-                [[ "$snap" == "None" ]] && continue
-                log "  Deleting snapshot: ${snap}"
-                aws ec2 delete-snapshot --region "${REGION}" --snapshot-id "${snap}" 2>/dev/null || true
-            done
+    # Delete eval data volumes
+    local eval_vols
+    eval_vols=$(aws ec2 describe-volumes --region "${REGION}" \
+        --filters "Name=tag:Purpose,Values=eval-batch" \
+        --query 'Volumes[].VolumeId' --output text 2>/dev/null || true)
+    if [[ -n "$eval_vols" && "$eval_vols" != "None" ]]; then
+        for vol in ${eval_vols}; do
+            log "  Deleting volume: ${vol}"
+            aws ec2 delete-volume --region "${REGION}" --volume-id "${vol}" 2>/dev/null || true
         done
     fi
 
-    # Clean up status markers
+    # Delete eval snapshots
+    local eval_snaps
+    eval_snaps=$(aws ec2 describe-snapshots --region "${REGION}" --owner-ids self \
+        --filters "Name=tag:Purpose,Values=eval-batch" \
+        --query 'Snapshots[].SnapshotId' --output text 2>/dev/null || true)
+    if [[ -n "$eval_snaps" && "$eval_snaps" != "None" ]]; then
+        for snap in ${eval_snaps}; do
+            log "  Deleting snapshot: ${snap}"
+            aws ec2 delete-snapshot --region "${REGION}" --snapshot-id "${snap}" 2>/dev/null || true
+        done
+    fi
+
+    # Clean up S3 status markers and scripts
     aws s3 rm "s3://${S3_BUCKET}/eval-status/" --recursive --region "${REGION}" 2>/dev/null || true
+    aws s3 rm "s3://${S3_BUCKET}/eval-scripts/" --recursive --region "${REGION}" 2>/dev/null || true
 
     log "Cleanup complete"
 }
@@ -306,21 +427,21 @@ cleanup() {
 # Main
 # =============================================================================
 main() {
-    local skip_ami=""
+    local skip_snapshot=""
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --skip-ami) skip_ami="$2"; shift 2 ;;
+            --skip-snapshot) skip_snapshot="$2"; shift 2 ;;
             --status) check_progress; exit 0 ;;
             --cleanup) cleanup; exit 0 ;;
             -h|--help)
-                echo "Usage: $0 [--skip-ami AMI_ID] [--status] [--cleanup]"
+                echo "Usage: $0 [--skip-snapshot SNAP_ID] [--status] [--cleanup]"
                 exit 0 ;;
             *) err "Unknown: $1"; exit 1 ;;
         esac
     done
 
-    # Step 1: Find source instance
+    # Step 0: Find source instance and get AMI
     local source_id
     source_id=$(find_source_instance)
     if [[ -z "$source_id" || "$source_id" == "None" ]]; then
@@ -329,52 +450,68 @@ main() {
     fi
     log "Source instance: ${source_id}"
 
-    # Step 2: Create AMI (or use existing)
-    local ami_id
-    if [[ -n "$skip_ami" ]]; then
-        ami_id="$skip_ami"
-        log "Using existing AMI: ${ami_id}"
+    # Get the AMI used by the source instance (reuse it for workers)
+    AMI_ID=$(aws ec2 describe-instances --region "${REGION}" \
+        --instance-ids "${source_id}" \
+        --query 'Reservations[0].Instances[0].ImageId' --output text)
+    log "Source AMI: ${AMI_ID}"
+
+    # Step 1: Upload scripts to S3
+    upload_scripts_to_s3
+
+    # Step 2: Create snapshot (or reuse)
+    local snap_id
+    if [[ -n "$skip_snapshot" ]]; then
+        snap_id="$skip_snapshot"
+        log "Using existing snapshot: ${snap_id}"
     else
-        ami_id=$(create_ami "${source_id}")
+        snap_id=$(create_snapshot)
     fi
 
     # Step 3: Launch workers
     log "Launching ${NUM_WORKERS} workers..."
-    local worker_ids=()
+    local worker_info=()
     for i in $(seq 0 $((NUM_WORKERS - 1))); do
-        local wid
-        wid=$(launch_worker "${ami_id}" "$i")
-        worker_ids+=("$wid")
+        local info
+        info=$(launch_worker "${snap_id}" "$i")
+        worker_info+=("$info")
     done
 
     # Save state
-    cat > "${STATE_FILE}" <<EOF
+    cat > "${STATE_FILE}" << STATEOF
 {
-    "ami_id": "${ami_id}",
+    "snapshot_id": "${snap_id}",
+    "ami_id": "${AMI_ID}",
+    "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
     "workers": [
-        $(for i in $(seq 0 $((NUM_WORKERS - 1))); do
-            echo "    {\"id\": \"${worker_ids[$i]}\", \"name\": \"${WORKER_NAMES[$i]}\", \"models\": \"${WORKER_MODELS[$i]}\"}"
-            [[ $i -lt $((NUM_WORKERS - 1)) ]] && echo ","
-        done)
-    ],
-    "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+$(for i in $(seq 0 $((NUM_WORKERS - 1))); do
+    local iid="${worker_info[$i]%%:*}"
+    local vid="${worker_info[$i]##*:}"
+    printf '        {"name": "%s", "instance_id": "%s", "volume_id": "%s", "models": "%s"}' \
+        "${WORKER_NAMES[$i]}" "$iid" "$vid" "${WORKER_MODELS[$i]}"
+    [[ $i -lt $((NUM_WORKERS - 1)) ]] && echo ","
+done)
+    ]
 }
-EOF
+STATEOF
 
     log ""
     log "============================================================"
     log "  Parallel eval started"
     log "============================================================"
-    log "  AMI:     ${ami_id}"
-    log "  Workers: ${NUM_WORKERS}"
+    log "  Snapshot: ${snap_id}"
+    log "  AMI:      ${AMI_ID}"
+    log "  Workers:  ${NUM_WORKERS}"
     for i in $(seq 0 $((NUM_WORKERS - 1))); do
-        log "    ${WORKER_NAMES[$i]}: ${worker_ids[$i]}"
+        local iid="${worker_info[$i]%%:*}"
+        log "    ${WORKER_NAMES[$i]}: ${iid} (${WORKER_AZS[$i]})"
         log "      models: ${WORKER_MODELS[$i]}"
     done
     log "------------------------------------------------------------"
     log "  Monitor:  $0 --status"
     log "  Cleanup:  $0 --cleanup"
     log "  Workers self-terminate on completion"
+    log "  Cost: ~\$5 (4x Spot × ~1.5h)"
     log "============================================================"
 }
 
