@@ -277,8 +277,7 @@ function dashboardMixin() {
         for (const [expId, exp] of Object.entries(expMap)) {
           if (key.includes(expId)) {
             model = exp.model;
-            // Genre from prompt_summary (e.g. "school_explicit" → "school")
-            genre = (exp.prompt_summary || '').split('_')[0] || exp.prompt_summary || 'other';
+            genre = this.getExpGenre(exp) || 'other';
             break;
           }
         }

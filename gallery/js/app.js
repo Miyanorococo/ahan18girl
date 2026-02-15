@@ -198,6 +198,8 @@ document.addEventListener('alpine:init', () => {
       try {
         const data = await GalleryAPI.getExperiment(id);
         this.currentExperiment = data;
+        // Re-infer genre now that full metadata (including prompt) is available
+        delete this._inferGenreCache[id];
         if (this.route !== 'experiment') {
           this.navigate('experiment', id);
           return;
@@ -473,11 +475,64 @@ document.addEventListener('alpine:init', () => {
       }
     },
 
-    /** Get effective genre for an experiment (user override > metadata > inferred) */
+    /** Get effective genre for an experiment (user override > metadata > auto-inferred) */
     getExpGenre(exp) {
       if (!exp) return '';
       const tags = this.getExpTags(exp.id);
-      return tags.genre || exp._userGenre || exp.genre || (exp.prompt_summary || '').split(/[-_]/)[0] || '';
+      if (tags.genre) return tags.genre;
+      if (exp._userGenre) return exp._userGenre;
+      if (exp.genre) return exp.genre;
+      // Auto-infer from prompt keywords
+      return this._inferGenre(exp);
+    },
+
+    /** Keyword-based genre inference from prompt text and summary */
+    _genreRules: [
+      { keywords: ['school uniform', 'sailor uniform', 'classroom', 'school'], genre: 'school' },
+      { keywords: ['cafe', 'coffee', 'restaurant'], genre: 'cafe' },
+      { keywords: ['lingerie', 'lace bra', 'garter', 'underwear'], genre: 'lingerie' },
+      { keywords: ['shower', 'bath', 'wet body', 'bathroom'], genre: 'shower' },
+      { keywords: ['nude', 'naked', 'bed', 'lying on bed', 'bedroom'], genre: 'nude' },
+      { keywords: ['beach', 'bikini', 'swimsuit', 'ocean', 'pool'], genre: 'beach' },
+      { keywords: ['maid', 'apron', 'maid outfit'], genre: 'maid' },
+      { keywords: ['nurse', 'hospital'], genre: 'nurse' },
+      { keywords: ['office', 'business suit', 'OL'], genre: 'office' },
+      { keywords: ['kimono', 'yukata', 'shrine', 'onsen'], genre: 'japanese' },
+      { keywords: ['fantasy', 'magic', 'elf', 'witch', 'dragon'], genre: 'fantasy' },
+      { keywords: ['outdoor', 'park', 'forest', 'garden', 'cherry blossom'], genre: 'outdoor' },
+      { keywords: ['night', 'bar', 'dress', 'evening'], genre: 'night' },
+      { keywords: ['gym', 'sports', 'exercise', 'cheerleader'], genre: 'sports' },
+      { keywords: ['housewife', 'kitchen', 'mature female', 'wedding ring'], genre: '人妻' },
+      { keywords: ['JK', 'high school', 'locker', 'after school'], genre: 'JK' },
+      { keywords: ['pregnant', 'belly'], genre: 'pregnant' },
+      { keywords: ['tentacle', 'monster'], genre: 'tentacle' },
+    ],
+
+    _inferGenreCache: {},
+
+    _inferGenre(exp) {
+      if (!exp?.id) return '';
+      if (this._inferGenreCache[exp.id]) return this._inferGenreCache[exp.id];
+
+      // Combine summary + prompt text for matching
+      const text = [
+        exp.prompt_summary || '',
+        exp.metadata?.prompt?.positive || '',
+      ].join(' ').toLowerCase();
+
+      if (!text.trim()) return '';
+
+      for (const rule of this._genreRules) {
+        if (rule.keywords.some(kw => text.includes(kw.toLowerCase()))) {
+          this._inferGenreCache[exp.id] = rule.genre;
+          return rule.genre;
+        }
+      }
+
+      // Fallback: first segment of prompt_summary
+      const fallback = (exp.prompt_summary || '').split(/[-_]/)[0];
+      this._inferGenreCache[exp.id] = fallback;
+      return fallback;
     },
 
     /** Get model-level data */

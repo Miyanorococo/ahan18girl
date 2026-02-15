@@ -136,14 +136,6 @@
           <template x-for="g in availableGenres" :key="'tg-' + g">
             <option :value="g" x-text="g"></option>
           </template>
-          <option value="school">school</option>
-          <option value="cafe">cafe</option>
-          <option value="nude">nude</option>
-          <option value="lingerie">lingerie</option>
-          <option value="shower">shower</option>
-          <option value="fantasy">fantasy</option>
-          <option value="outdoor">outdoor</option>
-          <option value="bedroom">bedroom</option>
         </select>
         <input type="text" class="tag-custom-input" placeholder="Custom genre..."
                @keydown.enter="setExpTag(currentExperiment?.id, 'genre', $event.target.value); $event.target.value=''"
