@@ -354,17 +354,16 @@ function dashboardMixin() {
         });
       }
 
-      // 4. Axis strengths — models with notably high scores in specific axes
+      // 4. Tier highlights — models with high ★ or ♥ ratios
       for (const stat of stats.slice(0, 5)) {
-        const axes = this.RATING_AXES;
-        for (const axis of axes) {
-          const score = stat.avgScores[axis.key];
-          if (score && score >= 4.5) {
-            insights.push({
-              type: 'strength',
-              text: `${stat.model}: ${axis.label} ${score.toFixed(1)} (優秀)`,
-            });
-          }
+        const t = stat.tiers;
+        if (!t || t.total === 0) continue;
+        const starRate = Math.round(t.star / t.total * 100);
+        if (starRate >= 40 && t.star >= 3) {
+          insights.push({
+            type: 'strength',
+            text: `★ ${stat.displayName}: ★率${starRate}% (${t.star}/${t.total}枚)`,
+          });
         }
       }
 
