@@ -587,13 +587,134 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
 
     log.info("=== Done: %d models, %d images ===", total_models, total_images)
 
-    # Auto-rebuild gallery index after generation
+    # Auto-score and rebuild gallery index after generation
     if total_images > 0 and not dry_run:
-        log.info("Rebuilding gallery index...")
+        log.info("Auto-scoring all experiments and rebuilding index...")
         try:
-            rebuild_gallery_index(S3_BUCKET)
+            score_all_experiments(S3_BUCKET)
         except Exception as e:
-            log.error("Gallery index rebuild failed: %s", e)
+            log.error("Auto-scoring/index rebuild failed: %s", e)
+            # Fallback: at least rebuild index without scores
+            try:
+                rebuild_gallery_index(S3_BUCKET)
+            except Exception:
+                pass
+
+
+def score_all_experiments(bucket, force=False):
+    """Score all unscored experiments using anime-aesthetic ONNX model.
+
+    Downloads thumbnails from S3, scores them locally, updates metadata.json.
+    """
+    import onnxruntime as ort
+    from concurrent.futures import ThreadPoolExecutor
+    from PIL import Image as PILImage
+    import io
+    import numpy as np
+
+    MODEL_URL = "https://huggingface.co/skytnt/anime-aesthetic/resolve/main/model.onnx"
+    MODEL_PATH = "/tmp/anime_aesthetic.onnx"
+    INPUT_SIZE = 768
+
+    s3 = boto3.client("s3")
+    prefix = f"{GALLERY_PREFIX}/"
+
+    # Download ONNX model if needed
+    if not os.path.exists(MODEL_PATH):
+        log.info("Downloading scoring model...")
+        import urllib.request
+        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+        log.info("Model downloaded: %s", MODEL_PATH)
+
+    sess = ort.InferenceSession(MODEL_PATH, providers=["CPUExecutionProvider"])
+    log.info("ONNX session loaded")
+
+    def preprocess(image_bytes):
+        img = PILImage.open(io.BytesIO(image_bytes)).convert("RGB")
+        w, h = img.size
+        r = min(INPUT_SIZE / w, INPUT_SIZE / h)
+        new_w, new_h = int(w * r), int(h * r)
+        img = img.resize((new_w, new_h), PILImage.LANCZOS)
+        padded = PILImage.new("RGB", (INPUT_SIZE, INPUT_SIZE), (0, 0, 0))
+        padded.paste(img, ((INPUT_SIZE - new_w) // 2, (INPUT_SIZE - new_h) // 2))
+        arr = np.array(padded, dtype=np.float32) / 255.0
+        arr = (arr - 0.5) / 0.5
+        return arr.transpose(2, 0, 1)[np.newaxis, ...]
+
+    # Scan all metadata.json
+    paginator = s3.get_paginator("list_objects_v2")
+    experiments = []
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        for obj in page.get("Contents", []):
+            key = obj["Key"]
+            if key.endswith("/metadata.json"):
+                exp_id = key[len(prefix):-len("/metadata.json")]
+                experiments.append((exp_id, key))
+
+    log.info("Found %d experiments", len(experiments))
+
+    scored = 0
+    skipped = 0
+    errors = 0
+
+    for i, (exp_id, meta_key) in enumerate(experiments):
+        try:
+            meta = json.loads(s3.get_object(Bucket=bucket, Key=meta_key)["Body"].read())
+        except Exception:
+            errors += 1
+            continue
+
+        if not force and meta.get("aesthetic_avg") is not None:
+            skipped += 1
+            continue
+
+        # List full images (prefer full/ over thumb/ for accuracy)
+        full_prefix = f"{prefix}{exp_id}/full/"
+        full_resp = s3.list_objects_v2(Bucket=bucket, Prefix=full_prefix, MaxKeys=20)
+        image_keys = [o["Key"] for o in full_resp.get("Contents", [])
+                      if o["Key"].lower().endswith((".png", ".jpg", ".jpeg", ".webp"))]
+
+        if not image_keys:
+            # Fallback to thumbnails
+            thumb_prefix = f"{prefix}{exp_id}/thumb/"
+            thumb_resp = s3.list_objects_v2(Bucket=bucket, Prefix=thumb_prefix, MaxKeys=20)
+            image_keys = [o["Key"] for o in thumb_resp.get("Contents", [])
+                          if o["Key"].lower().endswith((".png", ".jpg", ".jpeg", ".webp"))]
+
+        if not image_keys:
+            skipped += 1
+            continue
+
+        # Score images
+        scores = {}
+        for img_key in image_keys:
+            try:
+                img_data = s3.get_object(Bucket=bucket, Key=img_key)["Body"].read()
+                inp = preprocess(img_data)
+                score = float(sess.run(["score"], {"img": inp})[0][0][0])
+                name = img_key.rsplit("/", 1)[-1]
+                scores[name] = round(score, 4)
+            except Exception as e:
+                log.warning("  Failed to score %s: %s", img_key, e)
+
+        if scores:
+            avg = round(sum(scores.values()) / len(scores), 4)
+            meta["aesthetic_scores"] = scores
+            meta["aesthetic_avg"] = avg
+            s3.put_object(
+                Bucket=bucket, Key=meta_key,
+                Body=json.dumps(meta, ensure_ascii=False, indent=2).encode(),
+                ContentType="application/json",
+            )
+            scored += 1
+            if scored % 20 == 0 or scored <= 3:
+                log.info("  [%d/%d] %s avg=%.3f", scored, len(experiments) - skipped, exp_id[:50], avg)
+
+    log.info("Scoring complete: %d scored, %d skipped (already scored), %d errors", scored, skipped, errors)
+
+    # Rebuild index
+    log.info("Rebuilding index...")
+    rebuild_gallery_index(bucket)
 
 
 def main():
@@ -605,11 +726,17 @@ def main():
     parser.add_argument("--prompts-file", type=str, default=PROMPTS_FILE)
     parser.add_argument("--no-resume", action="store_true", help="Regenerate all, ignoring existing S3 images")
     parser.add_argument("--rebuild-index", action="store_true", help="Rebuild gallery index.json from S3 metadata")
+    parser.add_argument("--score-all", action="store_true", help="Score all unscored experiments with anime-aesthetic ONNX")
+    parser.add_argument("--force-score", action="store_true", help="Re-score all experiments (even already scored)")
     args = parser.parse_args()
 
     if args.status:
         ok = check_status()
         sys.exit(0 if ok else 1)
+
+    if args.score_all:
+        score_all_experiments(S3_BUCKET, force=args.force_score)
+        sys.exit(0)
 
     if args.rebuild_index:
         rebuild_gallery_index(S3_BUCKET)
