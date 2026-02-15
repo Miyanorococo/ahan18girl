@@ -262,6 +262,41 @@ def _make_thumbnail(img_data, max_width=300):
         return img_data
 
 
+def _upload_metadata(bucket, experiment_id, metadata):
+    """Upload experiment metadata to S3."""
+    if not boto3:
+        return
+    s3 = boto3.client("s3")
+    meta_key = f"{GALLERY_PREFIX}/{experiment_id}/metadata.json"
+    s3.put_object(
+        Bucket=bucket,
+        Key=meta_key,
+        Body=json.dumps(metadata, ensure_ascii=False, indent=2).encode(),
+        ContentType="application/json",
+    )
+
+
+def _upload_single_image(bucket, experiment_id, img_name, img_data):
+    """Upload a single image + thumbnail to S3 immediately."""
+    if not boto3:
+        return
+    s3 = boto3.client("s3")
+    base = f"{GALLERY_PREFIX}/{experiment_id}"
+
+    # Full-size image
+    full_key = f"{base}/full/{img_name}"
+    s3.put_object(Bucket=bucket, Key=full_key, Body=img_data, ContentType="image/png")
+
+    # Thumbnail (300px WebP)
+    thumb_name = img_name.rsplit(".", 1)[0] + ".webp"
+    thumb_key = f"{base}/thumb/{thumb_name}"
+    thumb_data = _make_thumbnail(img_data)
+    s3.put_object(
+        Bucket=bucket, Key=thumb_key, Body=thumb_data,
+        ContentType="image/webp" if thumb_data != img_data else "image/png",
+    )
+
+
 def upload_to_s3(bucket, experiment_id, images, metadata):
     """Upload images and metadata to S3 in gallery-compatible format."""
     if not boto3:
@@ -486,7 +521,13 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
                     total_images += len(seeds)
                     continue
 
-                images = []
+                # Upload metadata once (before image generation)
+                if not dry_run:
+                    _upload_metadata(S3_BUCKET, experiment_id, metadata)
+
+                local_dir = Path(OUTPUT_DIR) / experiment_id
+                local_dir.mkdir(parents=True, exist_ok=True)
+
                 for seed in seeds:
                     img_name = f"{prompt_id}_seed{seed}.png"
                     log.info("  Generating %s seed=%d ...", prompt_id, seed)
@@ -508,7 +549,8 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
                     try:
                         pid = queue_prompt(workflow)
                         result = wait_for_completion(pid)
-                        # Extract output images
+                        # Extract output image
+                        img_data = None
                         outputs = result.get("outputs", {})
                         for node_id, node_output in outputs.items():
                             for img_info in node_output.get("images", []):
@@ -516,28 +558,20 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
                                     img_info["filename"],
                                     img_info.get("subfolder", ""),
                                 )
-                                images.append((img_name, img_data))
-                                break  # Only take first image
-                            if images:
                                 break
-                        total_images += 1
+                            if img_data:
+                                break
+
+                        if img_data:
+                            # Save locally immediately
+                            (local_dir / img_name).write_bytes(img_data)
+
+                            # Upload to S3 immediately (1 image at a time)
+                            _upload_single_image(S3_BUCKET, experiment_id, img_name, img_data)
+                            total_images += 1
+
                     except Exception as e:
                         log.error("  FAILED: %s seed=%d: %s", prompt_id, seed, e)
-
-                # Upload to S3
-                if images:
-                    try:
-                        upload_to_s3(S3_BUCKET, experiment_id, images, metadata)
-                    except Exception as e:
-                        log.error("  S3 upload failed for %s: %s", experiment_id, e)
-
-                    # Also save locally
-                    local_dir = Path(OUTPUT_DIR) / experiment_id
-                    local_dir.mkdir(parents=True, exist_ok=True)
-                    for img_name, img_data in images:
-                        (local_dir / img_name).write_bytes(img_data)
-                    with open(local_dir / "metadata.json", "w") as f:
-                        json.dump(metadata, f, ensure_ascii=False, indent=2)
 
     log.info("=== Done: %d models, %d images ===", total_models, total_images)
 
