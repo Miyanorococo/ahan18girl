@@ -345,6 +345,7 @@
                 <div class="card-meta">
                   <span class="badge date" x-text="formatRunDate(group.runDate)"></span>
                   <span class="badge model" x-text="group.models.length + ' models'"></span>
+                  <span class="badge date" x-text="group.latestTime ? group.latestTime.slice(11,16) : ''" style="opacity:0.6"></span>
                 </div>
               </div>
             </div>
