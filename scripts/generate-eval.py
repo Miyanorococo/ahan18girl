@@ -243,6 +243,25 @@ def assemble_prompt(config, group_key, group, prompt_entry):
 # S3 upload
 # ---------------------------------------------------------------------------
 
+def _make_thumbnail(img_data, max_width=300):
+    """Resize image to thumbnail. Returns WebP bytes, or original if Pillow unavailable."""
+    try:
+        from PIL import Image
+        img = Image.open(io.BytesIO(img_data))
+        ratio = max_width / img.width
+        new_size = (max_width, int(img.height * ratio))
+        img = img.resize(new_size, Image.LANCZOS)
+        buf = io.BytesIO()
+        img.save(buf, format="WEBP", quality=80)
+        return buf.getvalue()
+    except ImportError:
+        log.warning("Pillow not available, uploading full-size thumbnail")
+        return img_data
+    except Exception as e:
+        log.warning("Thumbnail generation failed: %s", e)
+        return img_data
+
+
 def upload_to_s3(bucket, experiment_id, images, metadata):
     """Upload images and metadata to S3 in gallery-compatible format."""
     if not boto3:
@@ -261,15 +280,20 @@ def upload_to_s3(bucket, experiment_id, images, metadata):
         ContentType="application/json",
     )
 
-    # Upload images to full/ and create thumbnails in thumb/
+    # Upload images to full/ and create resized thumbnails in thumb/
     for img_name, img_data in images:
         full_key = f"{base}/full/{img_name}"
         s3.put_object(
             Bucket=bucket, Key=full_key, Body=img_data, ContentType="image/png"
         )
-        thumb_key = f"{base}/thumb/{img_name}"
+
+        # Generate thumbnail (300px wide WebP)
+        thumb_name = img_name.rsplit(".", 1)[0] + ".webp"
+        thumb_key = f"{base}/thumb/{thumb_name}"
+        thumb_data = _make_thumbnail(img_data)
         s3.put_object(
-            Bucket=bucket, Key=thumb_key, Body=img_data, ContentType="image/png"
+            Bucket=bucket, Key=thumb_key, Body=thumb_data,
+            ContentType="image/webp" if thumb_data != img_data else "image/png"
         )
 
     log.info("Uploaded %d images to %s", len(images), base)

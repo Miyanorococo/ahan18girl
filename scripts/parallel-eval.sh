@@ -51,11 +51,16 @@ WORKER_NAMES=("wai-main" "wai-alt" "sdxl-other" "pony-sd15")
 # Spread across AZs for Spot availability (both AZs have private subnets)
 WORKER_AZS=("us-east-1c" "us-east-1d" "us-east-1c" "us-east-1d")
 
-# AZ → Private Subnet mapping
-declare -A AZ_SUBNET_MAP=(
-    ["us-east-1c"]="subnet-0f157f0947d8bef8e"
-    ["us-east-1d"]="subnet-06614586de12d6e08"
-)
+# AZ → Private Subnet mapping (bash 3.2 compatible, no declare -A)
+SUBNET_C="subnet-0f157f0947d8bef8e"
+SUBNET_D="subnet-06614586de12d6e08"
+get_subnet_for_az() {
+    case "$1" in
+        us-east-1c) echo "${SUBNET_C}" ;;
+        us-east-1d) echo "${SUBNET_D}" ;;
+        *) echo "${PRIVATE_SUBNET_ID}" ;;
+    esac
+}
 
 # =============================================================================
 # Find source instance
@@ -159,7 +164,8 @@ launch_worker() {
     data_vol_id=$(create_volume_from_snapshot "${snap_id}" "${az}" "${name}")
 
     # Get the subnet for this AZ
-    local subnet="${AZ_SUBNET_MAP[$az]:-${PRIVATE_SUBNET_ID}}"
+    local subnet
+    subnet=$(get_subnet_for_az "${az}")
 
     # Build UserData
     # NOTE: Single-quoted heredoc prevents expansion, then we do string replacement
@@ -219,14 +225,18 @@ if ! mountpoint -q /data; then
     exit 1
 fi
 
-# --- Install boto3 if missing ---
+# --- Install boto3 and Pillow if missing ---
 if ! python3 -c "import boto3" 2>/dev/null; then
     echo "Installing boto3..."
     pip3 install boto3 2>/dev/null || true
 fi
+if ! python3 -c "from PIL import Image" 2>/dev/null; then
+    echo "Installing Pillow (for thumbnails)..."
+    pip3 install Pillow 2>/dev/null || true
+fi
 # Also install in ComfyUI venv
 if [ -d /data/ComfyUI/venv ]; then
-    /data/ComfyUI/venv/bin/pip install boto3 2>/dev/null || true
+    /data/ComfyUI/venv/bin/pip install boto3 Pillow 2>/dev/null || true
 fi
 
 # --- Start ComfyUI ---
