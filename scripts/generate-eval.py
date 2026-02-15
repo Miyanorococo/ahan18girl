@@ -656,59 +656,90 @@ def score_all_experiments(bucket, force=False):
     scored = 0
     skipped = 0
     errors = 0
+    import threading
+    lock = threading.Lock()
+    s3_local = threading.local()
 
-    for i, (exp_id, meta_key) in enumerate(experiments):
+    def get_s3():
+        if not hasattr(s3_local, "client"):
+            s3_local.client = boto3.client("s3")
+        return s3_local.client
+
+    def process_one(exp_id, meta_key):
+        nonlocal scored, skipped, errors
+        c = get_s3()
         try:
-            meta = json.loads(s3.get_object(Bucket=bucket, Key=meta_key)["Body"].read())
+            meta = json.loads(c.get_object(Bucket=bucket, Key=meta_key)["Body"].read())
         except Exception:
-            errors += 1
-            continue
+            with lock:
+                errors += 1
+            return
 
         if not force and meta.get("aesthetic_avg") is not None:
-            skipped += 1
-            continue
+            with lock:
+                skipped += 1
+            return
 
-        # List full images (prefer full/ over thumb/ for accuracy)
+        # List images (prefer full/ over thumb/)
         full_prefix = f"{prefix}{exp_id}/full/"
-        full_resp = s3.list_objects_v2(Bucket=bucket, Prefix=full_prefix, MaxKeys=20)
+        full_resp = c.list_objects_v2(Bucket=bucket, Prefix=full_prefix, MaxKeys=20)
         image_keys = [o["Key"] for o in full_resp.get("Contents", [])
                       if o["Key"].lower().endswith((".png", ".jpg", ".jpeg", ".webp"))]
-
         if not image_keys:
-            # Fallback to thumbnails
             thumb_prefix = f"{prefix}{exp_id}/thumb/"
-            thumb_resp = s3.list_objects_v2(Bucket=bucket, Prefix=thumb_prefix, MaxKeys=20)
+            thumb_resp = c.list_objects_v2(Bucket=bucket, Prefix=thumb_prefix, MaxKeys=20)
             image_keys = [o["Key"] for o in thumb_resp.get("Contents", [])
                           if o["Key"].lower().endswith((".png", ".jpg", ".jpeg", ".webp"))]
-
         if not image_keys:
-            skipped += 1
-            continue
+            with lock:
+                skipped += 1
+            return
 
-        # Score images
-        scores = {}
-        for img_key in image_keys:
+        # Download images in parallel (S3 is the bottleneck)
+        img_data_map = {}
+        def dl(key):
             try:
-                img_data = s3.get_object(Bucket=bucket, Key=img_key)["Body"].read()
+                data = get_s3().get_object(Bucket=bucket, Key=key)["Body"].read()
+                img_data_map[key] = data
+            except Exception:
+                pass
+
+        with ThreadPoolExecutor(max_workers=5) as dl_pool:
+            dl_pool.map(dl, image_keys)
+
+        # Score sequentially (ONNX session is not thread-safe)
+        scores = {}
+        for img_key, img_data in img_data_map.items():
+            try:
                 inp = preprocess(img_data)
-                score = float(sess.run(["score"], {"img": inp})[0][0][0])
+                with lock:
+                    score = float(sess.run(["score"], {"img": inp})[0][0][0])
                 name = img_key.rsplit("/", 1)[-1]
                 scores[name] = round(score, 4)
-            except Exception as e:
-                log.warning("  Failed to score %s: %s", img_key, e)
+            except Exception:
+                pass
 
         if scores:
             avg = round(sum(scores.values()) / len(scores), 4)
             meta["aesthetic_scores"] = scores
             meta["aesthetic_avg"] = avg
-            s3.put_object(
+            c.put_object(
                 Bucket=bucket, Key=meta_key,
                 Body=json.dumps(meta, ensure_ascii=False, indent=2).encode(),
                 ContentType="application/json",
             )
-            scored += 1
-            if scored % 20 == 0 or scored <= 3:
-                log.info("  [%d/%d] %s avg=%.3f", scored, len(experiments) - skipped, exp_id[:50], avg)
+            with lock:
+                scored += 1
+                if scored % 50 == 0 or scored <= 3:
+                    log.info("  [%d/%d] %s avg=%.3f", scored, len(experiments), exp_id[:50], avg)
+
+    # Process experiments with parallel S3 I/O, sequential ONNX inference
+    WORKERS = 8
+    log.info("Scoring with %d parallel workers...", WORKERS)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        futures = [pool.submit(process_one, exp_id, meta_key) for exp_id, meta_key in experiments]
+        for f in futures:
+            f.result()  # propagate exceptions
 
     log.info("Scoring complete: %d scored, %d skipped (already scored), %d errors", scored, skipped, errors)
 
