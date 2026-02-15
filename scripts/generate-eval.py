@@ -388,10 +388,10 @@ def rebuild_gallery_index(bucket):
                 "content_type": meta.get("type", ""),
                 "nsfw_level": meta.get("nsfw_level", ""),
                 "prompt_id": prompt_id,
-                "date": meta.get("date", ""),
+                "date": meta.get("date", "") or (meta.get("generated_at", "")[:10] if meta.get("generated_at") else ""),
                 "image_count": image_count,
                 "thumbnail": thumbnail,
-                "created_at": meta.get("created_at", ""),
+                "created_at": meta.get("created_at", "") or meta.get("generated_at", ""),
             }
             index.append(entry)
 

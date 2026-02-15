@@ -40,8 +40,6 @@ function dashboardMixin() {
      * per-axis average scores, and overall average.
      */
     _computeDashboardStats() {
-      const axes = this.RATING_AXES;
-
       // Count total images and experiments per model
       const modelImageCounts = {};
       for (const exp of this.experiments) {
@@ -62,26 +60,22 @@ function dashboardMixin() {
         }
       }
 
-      // Pre-compiled regex for extracting experiment ID from rating key paths
       const expPathRegex = /gallery\/experiments\/(.+?)\/(full|thumb)\//;
 
-      // Aggregate scores per model
-      const modelScores = {}; // model -> { [axis]: { sum, count } }
-      const modelRatedCount = {};
+      // Aggregate 4-tier ratings per model: ★(5) / ♥(2) / 👎(-1) / unrated
+      const modelTiers = {}; // model -> { star: N, heart: N, bad: N, total: N }
       const modelCommentCount = {};
 
       for (const [key, entry] of Object.entries(this.ratings.images || {})) {
         if (!entry?.scores) continue;
-        const hasScore = Object.values(entry.scores).some(v => v > 0);
-        if (!hasScore) continue;
+        const overall = entry.scores.overall;
+        if (overall === undefined || overall === null) continue;
 
-        // Extract experiment ID from path using regex (replaces O(n) includes() loop)
         let model = null;
         const pathMatch = key.match(expPathRegex);
         if (pathMatch) {
           model = expModelMap[pathMatch[1]];
         }
-        // Fallback to includes() for non-standard paths
         if (!model) {
           for (const [expId, expModel] of Object.entries(expModelMap)) {
             if (key.includes(expId)) {
@@ -92,63 +86,43 @@ function dashboardMixin() {
         }
         if (!model) continue;
 
-        if (!modelScores[model]) {
-          modelScores[model] = {};
-          modelRatedCount[model] = 0;
+        if (!modelTiers[model]) {
+          modelTiers[model] = { star: 0, heart: 0, bad: 0, total: 0 };
           modelCommentCount[model] = 0;
         }
-        modelRatedCount[model]++;
+        modelTiers[model].total++;
+        if (overall >= 5) modelTiers[model].star++;
+        else if (overall >= 2) modelTiers[model].heart++;
+        else if (overall < 0) modelTiers[model].bad++;
         if (entry.comment) modelCommentCount[model]++;
-
-        for (const axis of axes) {
-          const score = entry.scores[axis.key];
-          if (score && score > 0) {
-            if (!modelScores[model][axis.key]) {
-              modelScores[model][axis.key] = { sum: 0, count: 0 };
-            }
-            modelScores[model][axis.key].sum += score;
-            modelScores[model][axis.key].count += 1;
-          }
-        }
       }
 
       // Build stats array
       const stats = [];
       const allModels = [...new Set([
         ...Object.keys(modelImageCounts),
-        ...Object.keys(modelScores),
+        ...Object.keys(modelTiers),
       ])].sort();
 
       for (const model of allModels) {
         const counts = modelImageCounts[model] || { total: 0, experiments: 0 };
-        const scores = modelScores[model] || {};
-        const avgScores = {};
-        let totalScore = 0;
-        let totalAxes = 0;
-
-        for (const axis of axes) {
-          const data = scores[axis.key];
-          if (data && data.count > 0) {
-            const avg = Math.round(data.sum / data.count * 10) / 10;
-            avgScores[axis.key] = avg;
-            totalScore += avg;
-            totalAxes++;
-          } else {
-            avgScores[axis.key] = null;
-          }
-        }
-
+        const tiers = modelTiers[model] || { star: 0, heart: 0, bad: 0, total: 0 };
         const modelData = this.getModelData(model);
+
+        // Score: weighted average (★=5, ♥=2, 👎=-1)
+        const rated = tiers.star + tiers.heart + tiers.bad;
+        const weightedSum = tiers.star * 5 + tiers.heart * 2 + tiers.bad * -1;
+        const overallAvg = rated > 0 ? Math.round(weightedSum / rated * 10) / 10 : 0;
 
         stats.push({
           model,
           displayName: this.displayModelName(model),
           experiments: counts.experiments,
           imageCount: counts.total,
-          ratedCount: modelRatedCount[model] || 0,
+          ratedCount: rated,
           commentedCount: modelCommentCount[model] || 0,
-          avgScores,
-          overallAvg: totalAxes > 0 ? Math.round(totalScore / totalAxes * 10) / 10 : 0,
+          tiers,
+          overallAvg,
           comment: modelData.comment,
           verdict: modelData.verdict,
         });

@@ -88,12 +88,10 @@ def _build_entry(s3_client, experiment_id, metadata):
         "content_type": content_type,
         "nsfw_level": metadata.get("nsfw_level", ""),
         "prompt_id": prompt_id,
-        "date": metadata.get("date", date or ""),
+        "date": metadata.get("date", date or "") or (metadata.get("generated_at", "")[:10] if metadata.get("generated_at") else ""),
         "image_count": image_count,
         "thumbnail": thumbnail,
-        "created_at": metadata.get(
-            "created_at", datetime.now(timezone.utc).isoformat()
-        ),
+        "created_at": metadata.get("created_at", "") or metadata.get("generated_at", "") or datetime.now(timezone.utc).isoformat(),
     }
 
 

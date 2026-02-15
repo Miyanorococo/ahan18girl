@@ -96,7 +96,7 @@
                 <span class="badge model" x-text="displayModelName(exp.model)" x-show="exp.model"></span>
                 <span class="badge genre" x-text="getExpGenre(exp)" x-show="getExpGenre(exp)"></span>
               </div>
-              <div class="card-date" x-text="exp.date"></div>
+              <div class="card-date" x-text="formatDate(exp.created_at || exp.date)"></div>
               <div class="card-bottom">
                 <span class="card-count" x-text="(exp.image_count || 0) + ' images'"></span>
                 <span class="card-rating-badge" x-show="_getExpRatedCount(exp) > 0"
@@ -372,7 +372,7 @@
               <!-- Model header -->
               <div class="mg-card-header">
                 <span class="mg-model-name" x-text="displayModelName(card.model)"></span>
-                <span class="mg-image-count" x-text="card.images.length + ' imgs'"></span>
+                <span class="mg-image-count" x-text="formatDate(card.experiment.created_at)"></span>
               </div>
 
               <!-- Single seed view -->
@@ -555,9 +555,10 @@
               <tr>
                 <th>#</th>
                 <th>モデル</th>
-                <template x-for="axis in RATING_AXES" :key="'dth-' + axis.key">
-                  <th x-text="axis.short"></th>
-                </template>
+                <th>★</th>
+                <th>♥</th>
+                <th>👎</th>
+                <th>Avg</th>
                 <th>画像数</th>
                 <th>判定</th>
               </tr>
@@ -570,16 +571,11 @@
                     <span x-text="displayModelName(stat.model)"></span>
                     <span class="dash-expand-icon" x-text="dashboard._expandedModel === stat.model ? '&#9660;' : '&#9654;'"></span>
                   </td>
-                  <template x-for="axis in RATING_AXES" :key="'dsv-' + stat.model + '-' + axis.key">
-                    <td class="dash-score"
-                        :class="{
-                          'dash-score-high': stat.avgScores[axis.key] >= 4,
-                          'dash-score-low': stat.avgScores[axis.key] !== null && stat.avgScores[axis.key] < 3,
-                          'dash-score-dim': stat.ratedCount < 5
-                        }"
-                        :title="stat.ratedCount + ' images rated'"
-                        x-text="stat.avgScores[axis.key] != null ? stat.avgScores[axis.key].toFixed(1) : '—'"></td>
-                  </template>
+                  <td class="dash-score dash-score-high" x-text="stat.tiers?.star || 0"></td>
+                  <td class="dash-score" style="color:#e94560" x-text="stat.tiers?.heart || 0"></td>
+                  <td class="dash-score dash-score-low" x-text="stat.tiers?.bad || 0"></td>
+                  <td class="dash-score" :class="{'dash-score-high': stat.overallAvg >= 3, 'dash-score-low': stat.overallAvg < 0}"
+                      x-text="stat.ratedCount > 0 ? stat.overallAvg.toFixed(1) : '—'"></td>
                   <td>
                     <span x-text="stat.ratedCount + '/' + stat.imageCount"></span>
                     <div class="mini-progress">
@@ -941,8 +937,8 @@
        @keydown.arrow-left.window="lightboxPrev()"
        @keydown.arrow-right.window="lightboxNext()"
        @keydown.s.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 5)"
-       @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 3)"
-       @keydown.d.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 1)">
+       @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 2)"
+       @keydown.d.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, -1)">
     <div class="lightbox-backdrop" @click="closeLightbox()"></div>
     <div class="lightbox-body">
       <div class="lightbox-content">
@@ -959,15 +955,15 @@
       <!-- Quick 4-tier rating: ★ Best / ♥ Like / 👎 Bad -->
       <div class="lb-quick-rate">
         <button class="rate-btn rate-bad"
-                :class="{'active': getImageRating(lightbox.currentImage) === 1}"
-                @click="quickRate(lightbox.currentImage, 1)"
+                :class="{'active': getImageRating(lightbox.currentImage) === -1}"
+                @click="quickRate(lightbox.currentImage, -1)"
                 title="Bad (D key)">
           <span class="rate-icon">&#128078;</span>
           <span class="rate-label">Bad</span>
         </button>
         <button class="rate-btn rate-heart"
-                :class="{'active': getImageRating(lightbox.currentImage) === 3}"
-                @click="quickRate(lightbox.currentImage, 3)"
+                :class="{'active': getImageRating(lightbox.currentImage) === 2}"
+                @click="quickRate(lightbox.currentImage, 2)"
                 title="Like (F key)">
           <span class="rate-icon">&#9825;</span>
           <span class="rate-label">Like</span>

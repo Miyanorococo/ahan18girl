@@ -18,10 +18,15 @@ function formatDate(dateStr) {
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
+    // Show time if ISO format with time component
+    if (dateStr.includes('T')) {
+      return d.toLocaleString('ja-JP', {
+        month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit',
+      });
+    }
     return d.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
+      year: 'numeric', month: '2-digit', day: '2-digit',
     });
   } catch {
     return dateStr;

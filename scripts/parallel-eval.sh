@@ -284,12 +284,14 @@ USERDATA_EOF
         userdata_b64=$(base64 -b 0 < "${userdata_file}")
     fi
 
-    # Build BlockDeviceMapping JSON: root + data volume from snapshot
+    # Build BlockDeviceMapping JSON: override AMI's /dev/xvdf with newer snapshot
+    # The AMI already has /dev/xvdf (data volume). We override it with our snapshot.
+    # On Nitro instances, this appears as /dev/nvme1n1 (root is /dev/nvme0n1).
     local bdm_json
     bdm_json=$(cat << BDMEOF
 [
     {
-        "DeviceName": "/dev/sdf",
+        "DeviceName": "/dev/xvdf",
         "Ebs": {
             "SnapshotId": "${snap_id}",
             "VolumeSize": 200,

@@ -438,7 +438,7 @@ document.addEventListener('alpine:init', () => {
       this.setImageScore(img, 'overall', rating);
     },
 
-    /** Quick 4-tier rating: ★5 / ♥3 / 👎1 / toggle off if same */
+    /** Quick 4-tier rating: ★5 / ♥2 / 👎-1 / toggle off if same */
     quickRate(img, score) {
       if (!img) return;
       const current = this.getImageRating(img);
@@ -448,7 +448,7 @@ document.addEventListener('alpine:init', () => {
       // Also set favorited flag for ♥ and ★
       const key = this._ratingKey(img);
       if (key && this.ratings.images[key]) {
-        const shouldFav = newScore >= 3;
+        const shouldFav = newScore >= 2;
         if (this.ratings.images[key].favorited !== shouldFav) {
           this.ratings.images = {
             ...this.ratings.images,
