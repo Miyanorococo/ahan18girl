@@ -184,7 +184,7 @@ function lightboxMixin() {
       this.ratings.images[key].updated_at = new Date().toISOString();
       this._persistRatings();
 
-      // If newly favorited, save to training-data
+      // If newly favorited, save to training-data + auto-advance
       if (!wasFavorited) {
         this._favSaving = true;
         try {
@@ -202,6 +202,10 @@ function lightboxMixin() {
           console.error('Failed to save favorite to training:', e);
         }
         this._favSaving = false;
+
+        if (this.autoAdvance && this.lightbox.open) {
+          setTimeout(() => this.lightboxNext(), 300);
+        }
       }
     },
 

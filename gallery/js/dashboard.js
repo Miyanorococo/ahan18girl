@@ -13,6 +13,8 @@ function dashboardMixin() {
       modelStats: [],      // Per-model aggregated stats
       summary: null,       // Overall summary stats
       favorites: null,     // Favorites analysis
+      heatmap: null,       // model × genre score matrix
+      insights: [],        // Auto-detected patterns
       loading: false,
       chartReady: false,
     },
@@ -25,8 +27,9 @@ function dashboardMixin() {
       this.dashboard.loading = true;
       this._computeDashboardStats();
       this._computeFavoritesAnalysis();
+      this._computeHeatmap();
+      this._computeInsights();
       this.dashboard.loading = false;
-      // Render charts after DOM update
       this.$nextTick(() => this._renderCharts());
     },
 
@@ -240,6 +243,166 @@ function dashboardMixin() {
       if (!scores) return 0;
       const vals = Object.values(scores).filter(v => v > 0);
       return vals.length > 0 ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 10) / 10 : 0;
+    },
+
+    /**
+     * Build model × genre heatmap.
+     * Each cell = average overall score for that model+genre combo.
+     */
+    _computeHeatmap() {
+      // Map rating keys to experiment metadata
+      const expMap = {};
+      for (const exp of this.experiments) {
+        if (exp.id) expMap[exp.id] = exp;
+      }
+
+      // Accumulate scores: heatData[model][genre] = { sum, count, favCount }
+      const heatData = {};
+      const genres = new Set();
+
+      for (const [key, entry] of Object.entries(this.ratings.images || {})) {
+        if (!entry?.scores) continue;
+        const avg = this._avgOfScores(entry.scores);
+        if (avg === 0) continue;
+
+        let model = null, genre = null;
+        for (const [expId, exp] of Object.entries(expMap)) {
+          if (key.includes(expId)) {
+            model = exp.model;
+            // Genre from prompt_summary (e.g. "school_explicit" → "school")
+            genre = (exp.prompt_summary || '').split('_')[0] || exp.prompt_summary || 'other';
+            break;
+          }
+        }
+        if (!model || !genre) continue;
+
+        genres.add(genre);
+        if (!heatData[model]) heatData[model] = {};
+        if (!heatData[model][genre]) heatData[model][genre] = { sum: 0, count: 0, favCount: 0 };
+        heatData[model][genre].sum += avg;
+        heatData[model][genre].count++;
+        if (entry.favorited) heatData[model][genre].favCount++;
+      }
+
+      const genreList = [...genres].sort();
+      const models = Object.keys(heatData).sort();
+
+      // Build matrix rows
+      const rows = models.map(model => ({
+        model,
+        displayName: this.displayModelName(model),
+        cells: genreList.map(genre => {
+          const d = heatData[model]?.[genre];
+          if (!d) return { score: null, count: 0, favCount: 0 };
+          return {
+            score: Math.round(d.sum / d.count * 10) / 10,
+            count: d.count,
+            favCount: d.favCount,
+          };
+        }),
+      }));
+
+      this.dashboard.heatmap = { genres: genreList, rows };
+    },
+
+    /**
+     * Auto-detect patterns from ratings data.
+     */
+    _computeInsights() {
+      const insights = [];
+      const stats = this.dashboard.modelStats;
+      const hm = this.dashboard.heatmap;
+
+      if (stats.length < 2) {
+        this.dashboard.insights = [];
+        return;
+      }
+
+      // 1. Overall leader
+      const top = stats[0];
+      if (top && top.overallAvg > 0) {
+        const lead = stats.length > 1
+          ? (top.overallAvg - stats[1].overallAvg).toFixed(1)
+          : '0';
+        insights.push({
+          type: 'leader',
+          text: `${top.model} が総合トップ (${top.overallAvg.toFixed(1)})。2位との差: +${lead}`,
+        });
+      }
+
+      // 2. Genre specialists — find models that are #1 in specific genres
+      if (hm && hm.genres.length > 0) {
+        const genreWinners = {};
+        for (const genre of hm.genres) {
+          let best = null, bestScore = 0;
+          for (const row of hm.rows) {
+            const gIdx = hm.genres.indexOf(genre);
+            const cell = row.cells[gIdx];
+            if (cell && cell.score > bestScore) {
+              bestScore = cell.score;
+              best = row.model;
+            }
+          }
+          if (best) genreWinners[genre] = { model: best, score: bestScore };
+        }
+        // Group genres by winning model
+        const modelGenres = {};
+        for (const [genre, w] of Object.entries(genreWinners)) {
+          if (!modelGenres[w.model]) modelGenres[w.model] = [];
+          modelGenres[w.model].push(genre);
+        }
+        for (const [model, gens] of Object.entries(modelGenres)) {
+          if (gens.length >= 2) {
+            insights.push({
+              type: 'specialist',
+              text: `${model} は ${gens.join(', ')} で1位`,
+            });
+          }
+        }
+      }
+
+      // 3. Most favorited model
+      const favs = this.dashboard.favorites;
+      if (favs && favs.byModel.length > 0) {
+        const [topFavModel, topFavCount, topFavTotal] = favs.byModel[0];
+        const rate = topFavTotal > 0 ? Math.round(topFavCount / topFavTotal * 100) : 0;
+        insights.push({
+          type: 'favorite',
+          text: `♥ ${topFavModel} が最多お気に入り: ${topFavCount}枚 (${rate}%)`,
+        });
+      }
+
+      // 4. Axis strengths — models with notably high scores in specific axes
+      for (const stat of stats.slice(0, 5)) {
+        const axes = this.RATING_AXES;
+        for (const axis of axes) {
+          const score = stat.avgScores[axis.key];
+          if (score && score >= 4.5) {
+            insights.push({
+              type: 'strength',
+              text: `${stat.model}: ${axis.label} ${score.toFixed(1)} (優秀)`,
+            });
+          }
+        }
+      }
+
+      // 5. Consistency check — models with low variance across genres
+      if (hm && hm.genres.length >= 3) {
+        for (const row of hm.rows) {
+          const scores = row.cells.filter(c => c.score !== null).map(c => c.score);
+          if (scores.length < 3) continue;
+          const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+          const variance = scores.reduce((a, b) => a + (b - mean) ** 2, 0) / scores.length;
+          if (variance < 0.15 && mean >= 3.5) {
+            insights.push({
+              type: 'consistent',
+              text: `${row.model}: 全ジャンル安定 (平均${mean.toFixed(1)}, 分散${variance.toFixed(2)})`,
+            });
+          }
+        }
+      }
+
+      this.dashboard.insights = insights.slice(0, 10);
     },
 
     /**
@@ -470,6 +633,31 @@ function dashboardMixin() {
         if (s.comment) {
           lines.push('');
           lines.push(`> ${s.comment.replace(/\n/g, '\n> ')}`);
+        }
+        lines.push('');
+      }
+
+      // Insights
+      const ins = this.dashboard.insights;
+      if (ins && ins.length > 0) {
+        lines.push('## Insights');
+        lines.push('');
+        for (const i of ins) {
+          lines.push(`- ${i.text}`);
+        }
+        lines.push('');
+      }
+
+      // Heatmap
+      const hm = this.dashboard.heatmap;
+      if (hm && hm.genres.length > 0 && hm.rows.length > 0) {
+        lines.push('## Model × Genre Heatmap');
+        lines.push('');
+        lines.push('| Model | ' + hm.genres.join(' | ') + ' |');
+        lines.push('|-------|' + hm.genres.map(() => '---').join('|') + '|');
+        for (const row of hm.rows) {
+          const cells = row.cells.map(c => c.score != null ? c.score.toFixed(1) : '-');
+          lines.push(`| ${row.model} | ${cells.join(' | ')} |`);
         }
         lines.push('');
       }

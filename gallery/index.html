@@ -23,6 +23,11 @@
         <span x-text="blindMode ? 'Blind ON' : 'Blind'"></span>
       </button>
       <button x-show="blindMode" class="reveal-btn" @click="revealBlindMode()">Reveal</button>
+      <button class="blind-toggle" :class="{'active': autoAdvance}"
+              @click="autoAdvance = !autoAdvance; localStorage.setItem('gallery_auto_advance', autoAdvance)">
+        <span x-text="autoAdvance ? '&#9654;' : '&#9646;'"></span>
+        <span>Auto</span>
+      </button>
     </div>
   </nav>
 
@@ -404,6 +409,56 @@
           <div class="dash-chart-box">
             <h3>総合スコア</h3>
             <canvas id="bar-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Insights -->
+        <div class="dash-insights" x-show="dashboard.insights.length > 0">
+          <h3>Insights</h3>
+          <div class="insight-cards">
+            <template x-for="(ins, idx) in dashboard.insights" :key="'ins-' + idx">
+              <div class="insight-card" :class="'insight-' + ins.type">
+                <span x-text="ins.text"></span>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Heatmap: model × genre -->
+        <div class="dash-heatmap" x-show="dashboard.heatmap && dashboard.heatmap.genres.length > 0">
+          <h3>モデル × ジャンル ヒートマップ</h3>
+          <div class="heatmap-scroll">
+            <table class="heatmap-table">
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <template x-for="genre in dashboard.heatmap?.genres || []" :key="'hg-' + genre">
+                    <th x-text="genre"></th>
+                  </template>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="row in dashboard.heatmap?.rows || []" :key="'hr-' + row.model">
+                  <tr>
+                    <td class="heatmap-model" x-text="row.displayName"></td>
+                    <template x-for="(cell, ci) in row.cells" :key="'hc-' + row.model + '-' + ci">
+                      <td class="heatmap-cell"
+                          :class="{
+                            'heat-5': cell.score >= 4.5,
+                            'heat-4': cell.score >= 3.5 && cell.score < 4.5,
+                            'heat-3': cell.score >= 2.5 && cell.score < 3.5,
+                            'heat-2': cell.score >= 1.5 && cell.score < 2.5,
+                            'heat-1': cell.score > 0 && cell.score < 1.5,
+                            'heat-none': cell.score === null
+                          }">
+                        <span x-show="cell.score !== null" x-text="cell.score?.toFixed(1)"></span>
+                        <span class="heatmap-sub" x-show="cell.favCount > 0" x-text="'♥' + cell.favCount"></span>
+                      </td>
+                    </template>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
           </div>
         </div>
 

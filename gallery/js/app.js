@@ -20,6 +20,9 @@ document.addEventListener('alpine:init', () => {
     page: 1,
     pageSize: 40,
 
+    // Auto-advance: move to next image after rating/favoriting in lightbox
+    autoAdvance: true,
+
     // Blind mode
     blindMode: false,
     _blindMap: {},      // real model name -> masked name
@@ -67,8 +70,10 @@ document.addEventListener('alpine:init', () => {
         this._customLabels = [];
       }
 
-      // Load blind mode state
+      // Load blind mode and auto-advance state
       this.blindMode = localStorage.getItem('gallery_blind_mode') === 'true';
+      const storedAutoAdv = localStorage.getItem('gallery_auto_advance');
+      this.autoAdvance = storedAutoAdv === null ? true : storedAutoAdv === 'true';
 
       // Set up hash routing
       // Note: blind map is built after experiments load (needs model list)
@@ -383,6 +388,11 @@ document.addEventListener('alpine:init', () => {
       entry.updated_at = new Date().toISOString();
 
       this._persistRatings();
+
+      // Auto-advance in lightbox after scoring
+      if (this.autoAdvance && this.lightbox.open) {
+        setTimeout(() => this.lightboxNext(), 300);
+      }
     },
 
     /** Legacy: set single overall rating (for grid overlay compat) */
