@@ -304,6 +304,8 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::${S3BucketName}'
                   - !Sub 'arn:aws:s3:::${S3BucketName}/*'
+                  - 'arn:aws:s3:::illust-novel-ah18'
+                  - 'arn:aws:s3:::illust-novel-ah18/*'
         - PolicyName: EC2SpotAccess
           PolicyDocument:
             Version: '2012-10-17'

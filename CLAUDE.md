@@ -69,21 +69,46 @@ ComfyUIおよびカスタムノード群（ControlNet, ADetailer, IP-Adapter, Pu
 3. スポット中断検知時: 自動で `sync-output.sh` 実行
 4. モデルファイル: S3に永続保存、EC2起動時にEBSへ同期
 
+**S3バケット**: `illust-novel-ah18`
+
 **S3構造**:
 ```
-s3://{bucket}/
-├── models/              # モデルファイル永続保存
+s3://illust-novel-ah18/
+├── models/                     # モデルファイル永続保存
 │   ├── checkpoints/
 │   ├── loras/
 │   ├── controlnet/
 │   └── upscalers/
-├── output/              # 生成画像
-│   └── {作品名}/{YYYY-MM-DD}/
-├── logs/                # 生成ログ（証拠保全）
-│   └── {作品名}/{YYYY-MM-DD}/
-├── workflows/           # ワークフローバックアップ
-└── ami-configs/         # AMI再構築用設定
+├── experiments/                # モデル試行・パイプライン検証（Zip単位）
+│   └── {YYYYMMDD}_{model}/
+│       └── {YYYYMMDD}_{model}_{pipeline}_{prompt}_{params}_seed{N}x{count}.zip
+├── productions/                # 本番制作（作品単位）
+│   └── {work-id}_{作品名}/
+│       ├── raw/                # 全生成画像（大量ガチャ結果）
+│       ├── selected/           # 選別済み（採用候補）
+│       ├── final/              # 最終版（ポストプロセス済み）
+│       └── metadata/           # 生成ログ、品質レポート
+├── output/                     # ComfyUI直接出力（sync-output.sh用）
+├── logs/                       # 生成ログ（証拠保全）
+├── workflows/                  # ワークフローバックアップ
+├── references/                 # 参照画像（ControlNet入力、顔参照等）
+│   ├── poses/
+│   ├── faces/
+│   └── styles/
+└── ami-configs/                # AMI再構築用設定
 ```
+
+**実験Zip命名規則**:
+```
+{YYYYMMDD}_{model}_{pipeline}_{prompt要約}_{params}_seed{start}x{count}.zip
+
+例:
+20260216_wai-nsfw-v16_txt2img_blonde-school_steps30-cfg7-euler-a_seed42x10.zip
+20260216_p2_fluxS-waiV16_beach-bikini_cn-pose08-depth06-ipa07_seed100x10.zip
+```
+
+各Zip内に `metadata.json`（モデル名、プロンプト全文、パラメータ、シード一覧）を同梱し、DLSite生成ログ提出にも対応。
+`scripts/batch-experiment.sh` で生成→Zip→S3アップロードを自動化。
 
 #### セキュリティ
 - AMI: Deep Learning AMI（Ubuntu）
