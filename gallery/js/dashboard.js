@@ -86,7 +86,8 @@ function dashboardMixin() {
           for (const [expId, expModel] of Object.entries(expModelMap)) {
             if (key.includes(expId)) {
               model = expModel;
-            break;
+              break;
+            }
           }
         }
         if (!model) continue;

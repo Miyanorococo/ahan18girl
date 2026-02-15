@@ -117,8 +117,8 @@
       ],
       "cfg": 6,
       "steps": 25,
-      "sampler": "dpmpp_2m_karras",
-      "scheduler": "normal",
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
       "clip_skip": 1,
       "resolution": {
         "width": 832,
@@ -135,8 +135,8 @@
       ],
       "cfg": 8,
       "steps": 25,
-      "sampler": "dpmpp_sde_karras",
-      "scheduler": "normal",
+      "sampler": "dpmpp_sde",
+      "scheduler": "karras",
       "clip_skip": 2,
       "resolution": {
         "width": 512,

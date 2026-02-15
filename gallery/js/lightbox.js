@@ -79,8 +79,14 @@ function lightboxMixin() {
     _updateLightboxImage() {
       const images = this.lightbox.images;
       const idx = this.lightbox.index;
-      this.lightbox.currentImage = images[idx] || null;
+      const img = images[idx] || null;
+      this.lightbox.currentImage = img;
       this._preloadAdjacent(images, idx);
+
+      // For model-grid cross-model navigation, update sourceExperiment per image
+      if (this.lightbox.source === 'model-grid' && img?._mgExperiment) {
+        this.lightbox.sourceExperiment = img._mgExperiment;
+      }
 
       // Sync comment draft with stored comment
       const comment = this.getImageComment(this.lightbox.currentImage);

@@ -166,7 +166,7 @@ document.addEventListener('alpine:init', () => {
       } else if (route === 'dashboard') {
         this.initDashboard();
       } else if (route === 'knowledge-base') {
-        this.initKnowledgeBase();
+        this.loadExperiments().then(() => this.initKnowledgeBase());
       }
     },
 
@@ -198,9 +198,7 @@ document.addEventListener('alpine:init', () => {
       try {
         const data = await GalleryAPI.getExperiment(id);
         this.currentExperiment = data;
-        // Re-infer genre now that full metadata (including prompt) is available
-        delete this._inferGenreCache[id];
-        // Auto-infer via Bedrock if no genre set
+        // Auto-infer via Bedrock if no genre set (checks cache + persisted tags internally)
         this._inferGenreAsync(data);
         if (this.route !== 'experiment') {
           this.navigate('experiment', id);
@@ -660,6 +658,26 @@ document.addEventListener('alpine:init', () => {
       } catch (e) {
         console.error('Failed to select images:', e);
         alert('Failed to copy images. Please try again.');
+      }
+    },
+
+    // --- Quick favorite from experiment card thumbnail ---
+    _isExpFavorited(exp) {
+      return this._getExpFavCount(exp) > 0;
+    },
+
+    async _quickFavExperiment(exp) {
+      if (!exp?.id) return;
+      try {
+        const data = await GalleryAPI.getExperiment(exp.id);
+        const images = data?.images || [];
+        if (!images.length) return;
+        // Open lightbox at first image with auto-advance ON for rapid scanning
+        this.autoAdvance = true;
+        localStorage.setItem('gallery_auto_advance', 'true');
+        this.openLightbox(0, null, images, data);
+      } catch (e) {
+        console.error('Failed to open experiment for fav scan:', e);
       }
     },
 

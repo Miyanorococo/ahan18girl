@@ -154,6 +154,37 @@ function modelGridMixin() {
     },
 
     /**
+     * Build a cross-model image list for a given seed.
+     * Returns [{...img, _mgModel, _mgExperiment}, ...] across all loaded models.
+     * Used to enable left/right navigation across models in the lightbox.
+     */
+    _buildCrossModelImages(seed) {
+      const images = [];
+      for (const card of this.modelGrid.modelCards) {
+        const img = seed && card.seedMap[seed] ? card.seedMap[seed] : card.images[0];
+        if (img) {
+          images.push({
+            ...img,
+            _mgModel: card.model,
+            _mgExperiment: card.detail,
+          });
+        }
+      }
+      return images;
+    },
+
+    /**
+     * Open lightbox for cross-model comparison at the given model card.
+     * Left/right will navigate across models for the same seed.
+     */
+    openModelGridLightbox(card) {
+      const seed = this.modelGrid.selectedSeed;
+      const crossImages = this._buildCrossModelImages(seed);
+      const idx = crossImages.findIndex(img => img._mgModel === card.model);
+      this.openLightbox(Math.max(0, idx), 'model-grid', crossImages, card.detail);
+    },
+
+    /**
      * Load an experiment via API with caching.
      */
     async _loadExperimentCached(id) {

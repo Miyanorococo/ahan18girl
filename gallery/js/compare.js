@@ -71,7 +71,7 @@ function compareMixin() {
      */
     _extractSeed(filename) {
       if (!filename) return null;
-      const match = filename.match(/seed[_-]?(\d+)/i);
+      const match = filename.match(/\bseed[_-]?(\d+)/i);
       return match ? match[1] : null;
     },
 

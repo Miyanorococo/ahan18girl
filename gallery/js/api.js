@@ -46,11 +46,10 @@ const GalleryAPI = {
   },
 
   /**
-   * Save images to training-data/ with labels.
-   * @param {string} experimentId - Source experiment ID
-   * @param {string[]} images - Image filenames
-   * @param {string[]} labels - Labels to apply
-   * @param {object} metadata - Extra metadata (scores, comment, etc.)
+   * Infer genre from prompt using Bedrock LLM.
+   * @param {string} promptText - Full prompt text
+   * @param {string} promptSummary - Optional prompt summary
+   * @returns {Promise<Object>} Genre inference result
    */
   inferGenre(promptText, promptSummary = '') {
     return this.fetchJSON('/api/infer-genre', {
@@ -71,6 +70,14 @@ const GalleryAPI = {
     });
   },
 
+  /**
+   * Save images to training-data/ with labels.
+   * @param {string} experimentId - Source experiment ID
+   * @param {string[]} images - Image filenames
+   * @param {string[]} labels - Labels to apply
+   * @param {object} metadata - Extra metadata (scores, comment, etc.)
+   * @returns {Promise<Object>}
+   */
   saveToTraining(experimentId, images, labels, metadata = {}) {
     return this.fetchJSON('/api/select', {
       method: 'POST',

@@ -84,6 +84,11 @@
           <div class="experiment-card" @click="openExperiment(exp.id)">
             <div class="card-thumb" x-show="exp.thumbnail">
               <img :src="exp.thumbnail" :alt="exp.prompt_summary" loading="lazy">
+              <button class="card-fav-btn"
+                      :class="{'active': _isExpFavorited(exp)}"
+                      @click.stop="_quickFavExperiment(exp)"
+                      x-text="_isExpFavorited(exp) ? '&#9829;' : '&#9825;'"
+                      title="Quick favorite"></button>
             </div>
             <div class="card-info">
               <div class="card-title" x-text="exp.prompt_summary || exp.id"></div>
@@ -376,7 +381,7 @@
                   <template x-if="getCardImage(card)">
                     <div>
                       <div class="mg-image-wrap"
-                           @click="openLightbox(getCardImage(card)._index, 'model-grid', card.images, card.detail)">
+                           @click="openModelGridLightbox(card)">
                         <img :src="getCardImage(card).thumb_url" :alt="getCardImage(card).name" loading="lazy">
                       </div>
                       <!-- Score display -->
@@ -950,6 +955,9 @@
           <span x-text="(lightbox.index + 1) + ' / ' + lightbox.images.length"></span>
           <button @click="lightboxNext()">&rarr;</button>
         </div>
+        <!-- Model name overlay for cross-model grid navigation -->
+        <div class="lb-model-badge" x-show="lightbox.source === 'model-grid' && lightbox.currentImage?._mgModel"
+             x-text="displayModelName(lightbox.currentImage?._mgModel || '')"></div>
       </div>
       <!-- Evaluation panel: 5-axis rating + comment -->
       <div class="eval-panel" :class="{'collapsed': !evalPanel.expanded}">
