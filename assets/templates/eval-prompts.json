@@ -3,7 +3,7 @@
     "description": "13モデル横並び比較用プロンプトセット v3 (99 prompts)",
     "created": "2026-02-15",
     "updated": "2026-02-15",
-    "structure": "11ジャンル × 9タイプ(ex, se, sex, penis, toy, orgasm, pregnant, lactation, birth) = 99プロンプト",
+    "structure": "11ジャンル × 10タイプ(ex, se, sex, penis, toy, orgasm, pregnant, lactation, birth, ejac) = 110プロンプト",
     "variants": "A: Illustrious系 / A2: Illustrij / B: Nova / C: Pony系 / D: Animagine / E: FeMix / F: SD1.5",
     "seeds": [
       42,
@@ -12,7 +12,7 @@
       789,
       1024
     ],
-    "total_images": "99 prompts × 5 seeds × 13 models = 6,435 images"
+    "total_images": "110 prompts × 5 seeds × 13 models = 7,150 images"
   },
   "negative_common": {
     "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
@@ -257,6 +257,18 @@
       "subtype": "birth"
     },
     {
+      "id": "P01_ejac",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, mature female, housewife, wedding ring, brown hair, hair bun, large breasts, cum, cumshot, facial, cum on face, cum on breasts, open mouth, tongue out, ahegao, kneeling, kitchen, naked apron, sweat, from front",
+        "C_pony": "rating_explicit, 1boy, 1girl, mature female, housewife, wedding ring, brown hair, hair bun, large breasts, cum, cumshot, facial, cum on face, cum on breasts, open mouth, tongue out, ahegao, kneeling, kitchen, naked apron, sweat, from front",
+        "D_animagine": "1boy, 1girl, mature female, housewife, wedding ring, brown hair, hair bun, large breasts, cum, cumshot, facial, cum on face, cum on breasts, open mouth, tongue out, ahegao, kneeling, kitchen, naked apron, sweat, from front, explicit",
+        "F_sd15": "a mature housewife with brown hair in a bun kneeling in the kitchen wearing a naked apron, receiving a facial cumshot, cum on her face and breasts, mouth open with tongue out in ahegao expression, wedding ring visible, sweating, front view"
+      }
+    },
+    {
       "id": "P02_ex",
       "genre": "JK/学園",
       "type": "explicit",
@@ -364,6 +376,18 @@
       "subtype": "birth"
     },
     {
+      "id": "P02_ejac",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, adult, school uniform, sailor uniform, black hair, ponytail, cum, cumshot, cum in mouth, swallowing, cum dripping, on knees, classroom, after school, blushing, teary eyes, close-up, from front",
+        "C_pony": "rating_explicit, 1boy, 1girl, adult, school uniform, sailor uniform, black hair, ponytail, cum, cumshot, cum in mouth, swallowing, cum dripping, on knees, classroom, after school, blushing, teary eyes, close-up, from front",
+        "D_animagine": "1boy, 1girl, adult, school uniform, sailor uniform, black hair, ponytail, cum, cumshot, cum in mouth, swallowing, cum dripping, on knees, classroom, after school, blushing, teary eyes, close-up, from front, explicit",
+        "F_sd15": "an adult girl in a sailor school uniform with black ponytail on her knees in a classroom, cum in her mouth dripping down, swallowing, blushing with teary eyes, after school setting, close-up front view"
+      }
+    },
+    {
       "id": "P03_ex",
       "genre": "催眠/洗脳",
       "type": "explicit",
@@ -469,6 +493,18 @@
         "F_sd15": "A girl with long silver hair and glowing heart-shaped pupils wearing a collar, lying on a ritual altar in a dark temple giving birth. Her pregnant belly contracts as she crowns, legs spread wide. Candles surround an occult circle with glowing runes and purple flames. Despite labor, her expression is completely blank and emotionless under mind control, showing no pain response. Sweat covers her body. Viewed from above. Anime style illustration."
       },
       "subtype": "birth"
+    },
+    {
+      "id": "P03_ejac",
+      "genre": "催眠/洗脳",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, hypnosis, heart-shaped pupils, blank expression, silver hair, long hair, cum, creampie, cum overflow, vaginal, spread legs, lying on back, collar, leash, dark room, purple ambient light, cum pool, from above",
+        "C_pony": "rating_explicit, 1boy, 1girl, hypnosis, heart-shaped pupils, blank expression, silver hair, long hair, cum, creampie, cum overflow, vaginal, spread legs, lying on back, collar, leash, dark room, purple ambient light, cum pool, from above",
+        "D_animagine": "1boy, 1girl, hypnosis, heart-shaped pupils, blank expression, silver hair, long hair, cum, creampie, cum overflow, vaginal, spread legs, lying on back, collar, leash, dark room, purple ambient light, cum pool, from above, explicit",
+        "F_sd15": "a silver-haired girl under hypnosis with heart pupils lying on her back with legs spread in a dark room with purple lighting, creampie with cum overflowing from vagina, blank expression, wearing collar and leash, cum pooling beneath, viewed from above"
+      }
     },
     {
       "id": "P04_ex",
@@ -579,6 +615,18 @@
       "subtype": "birth"
     },
     {
+      "id": "P04_ejac",
+      "genre": "百合",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 2girls, yuri, squirting, female ejaculation, orgasm, spread legs, tribadism, blonde hair, black hair, long hair, nude, lying on bed, white sheets, arched back, trembling, wet sheets, bedroom, soft lighting, from side",
+        "C_pony": "rating_explicit, 2girls, yuri, squirting, female ejaculation, orgasm, spread legs, tribadism, blonde hair, black hair, long hair, nude, lying on bed, white sheets, arched back, trembling, wet sheets, bedroom, soft lighting, from side",
+        "D_animagine": "2girls, yuri, squirting, female ejaculation, orgasm, spread legs, tribadism, blonde hair, black hair, long hair, nude, lying on bed, white sheets, arched back, trembling, wet sheets, bedroom, soft lighting, from side, explicit",
+        "F_sd15": "two nude girls on a bed during tribadism, one blonde one black-haired, the blonde girl squirting in female ejaculation with arched back, both trembling in orgasm, white sheets soaked, soft bedroom lighting, side view"
+      }
+    },
+    {
       "id": "P05_ex",
       "genre": "おねショタ",
       "type": "explicit",
@@ -685,6 +733,18 @@
       "subtype": "birth"
     },
     {
+      "id": "P05_ejac",
+      "genre": "おねショタ",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, mature female, large breasts, red hair, wavy hair, cum, cumshot, cum on body, cum on breasts, cum on stomach, paizuri aftermath, satisfied expression, lying on back, bedroom, dim lighting, sweat, from above",
+        "C_pony": "rating_explicit, 1boy, 1girl, mature female, large breasts, red hair, wavy hair, cum, cumshot, cum on body, cum on breasts, cum on stomach, paizuri aftermath, satisfied expression, lying on back, bedroom, dim lighting, sweat, from above",
+        "D_animagine": "1boy, 1girl, mature female, large breasts, red hair, wavy hair, cum, cumshot, cum on body, cum on breasts, cum on stomach, paizuri aftermath, satisfied expression, lying on back, bedroom, dim lighting, sweat, from above, explicit",
+        "F_sd15": "a mature woman with wavy red hair lying on her back covered in cum on her breasts and stomach after paizuri, large breasts, satisfied smile, sweating, dim bedroom lighting, viewed from above"
+      }
+    },
+    {
       "id": "P06_ex",
       "genre": "NTR",
       "type": "explicit",
@@ -789,6 +849,18 @@
         "F_sd15": "a married woman giving birth on a hospital bed, her unknowing husband holding her hand supportively, wedding ring visible, screaming in labor with tears of pain and guilt, messy brown hair drenched in sweat, legs spread in stirrups, bright medical lighting, anguished expression hiding her secret"
       },
       "subtype": "birth"
+    },
+    {
+      "id": "P06_ejac",
+      "genre": "NTR",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, married woman, wedding ring, brown hair, cum, creampie, cum overflow, vaginal, after sex, spread legs, lying on hotel bed, messy hair, tears, guilty expression, cum dripping, hickey, hotel room, dim lighting",
+        "C_pony": "rating_explicit, 1boy, 1girl, married woman, wedding ring, brown hair, cum, creampie, cum overflow, vaginal, after sex, spread legs, lying on hotel bed, messy hair, tears, guilty expression, cum dripping, hickey, hotel room, dim lighting",
+        "D_animagine": "1boy, 1girl, married woman, wedding ring, brown hair, cum, creampie, cum overflow, vaginal, after sex, spread legs, lying on hotel bed, messy hair, tears, guilty expression, cum dripping, hickey, hotel room, dim lighting, explicit",
+        "F_sd15": "a married woman with brown messy hair lying on a hotel bed after sex, creampie with cum dripping from vagina, wedding ring visible, tears and guilty expression, love bites on neck, legs spread, dim hotel room lighting"
+      }
     },
     {
       "id": "P07_ex",
@@ -899,6 +971,18 @@
       "subtype": "birth"
     },
     {
+      "id": "P07_ejac",
+      "genre": "fantasy",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, elf, pointy ears, green eyes, silver hair, long hair, cum, cumshot, cum on body, cum on face, bukkake, nude, kneeling, ancient ruins, magical glow, defeated expression, sweat, from front, full body",
+        "C_pony": "rating_explicit, 1boy, 1girl, elf, pointy ears, green eyes, silver hair, long hair, cum, cumshot, cum on body, cum on face, bukkake, nude, kneeling, ancient ruins, magical glow, defeated expression, sweat, from front, full body",
+        "D_animagine": "1boy, 1girl, elf, pointy ears, green eyes, silver hair, long hair, cum, cumshot, cum on body, cum on face, bukkake, nude, kneeling, ancient ruins, magical glow, defeated expression, sweat, from front, full body, explicit",
+        "F_sd15": "a nude silver-haired elf girl with pointy ears and green eyes kneeling in ancient ruins, covered in cum on her face and body, bukkake aftermath, defeated expression, magical glow in the background, sweating, full body front view, fantasy setting"
+      }
+    },
+    {
       "id": "P08_ex",
       "genre": "ryoujoku",
       "type": "explicit",
@@ -1005,6 +1089,18 @@
         "F_sd15": "a black-haired girl giving birth while chained in a dark dungeon, lying on a straw bed on stone floor, legs spread with crowning visible, torn white dress, screaming in pain with tears and sweat, lit only by a single candle, restrained and alone, full body view from the front, dark desperate scene"
       },
       "subtype": "birth"
+    },
+    {
+      "id": "P08_ejac",
+      "genre": "ryoujoku",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, restrained, arms behind back, rope bondage, black hair, cum, cumshot, facial, cum on face, cum in hair, crying, tears, forced, blindfold removed, dungeon, stone wall, candle light, close-up, from front",
+        "C_pony": "rating_explicit, 1boy, 1girl, restrained, arms behind back, rope bondage, black hair, cum, cumshot, facial, cum on face, cum in hair, crying, tears, forced, blindfold removed, dungeon, stone wall, candle light, close-up, from front",
+        "D_animagine": "1boy, 1girl, restrained, arms behind back, rope bondage, black hair, cum, cumshot, facial, cum on face, cum in hair, crying, tears, forced, blindfold removed, dungeon, stone wall, candle light, close-up, from front, explicit",
+        "F_sd15": "a black-haired girl restrained with ropes in a dungeon receiving a facial cumshot, cum on her face and in her hair, crying with tears, blindfold removed, arms behind back, stone walls and candlelight, close-up front view"
+      }
     },
     {
       "id": "P09_ex",
@@ -1115,6 +1211,18 @@
       "subtype": "birth"
     },
     {
+      "id": "P09_ejac",
+      "genre": "futanari",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, ejaculation, cum, cumshot, self facial, own cum, penis, erection, standing, locker room, steam, mirror reflection, orgasm expression, full body, from front",
+        "C_pony": "rating_explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, ejaculation, cum, cumshot, self facial, own cum, penis, erection, standing, locker room, steam, mirror reflection, orgasm expression, full body, from front",
+        "D_animagine": "1girl, futanari, pink hair, short hair, athletic build, toned body, abs, ejaculation, cum, cumshot, self facial, own cum, penis, erection, standing, locker room, steam, mirror reflection, orgasm expression, full body, from front, explicit",
+        "F_sd15": "a futanari girl with pink short hair and athletic body standing in a steamy locker room, ejaculating with cum shooting onto her own face, erect penis, muscular abs, orgasm expression, reflected in mirror, full body front view"
+      }
+    },
+    {
       "id": "P10_ex",
       "genre": "monster girl (lamia)",
       "type": "explicit",
@@ -1223,6 +1331,18 @@
       "subtype": "birth (egg-laying)"
     },
     {
+      "id": "P10_ejac",
+      "genre": "monster girl (lamia)",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, cum, cumshot, cum on body, cum on tail, cum on scales, coiling tail around partner, cave, crystals, bioluminescent, satisfied expression, tongue out, from side",
+        "C_pony": "rating_explicit, 1boy, 1girl, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, cum, cumshot, cum on body, cum on tail, cum on scales, coiling tail around partner, cave, crystals, bioluminescent, satisfied expression, tongue out, from side",
+        "D_animagine": "1boy, 1girl, monster girl, lamia, snake tail, scales, yellow slit eyes, purple hair, long hair, cum, cumshot, cum on body, cum on tail, cum on scales, coiling tail around partner, cave, crystals, bioluminescent, satisfied expression, tongue out, from side, explicit",
+        "F_sd15": "a lamia monster girl with purple hair and yellow snake eyes in a crystal cave, covered in cum on her body and snake tail, scales glistening, coiling her tail around a partner, satisfied expression with tongue out, bioluminescent cave, side view"
+      }
+    },
+    {
       "id": "P11_ex",
       "genre": "generic character (school uniform)",
       "type": "explicit",
@@ -1329,6 +1449,18 @@
         "F_sd15": "a girl with long grey hair and green eyes giving birth in a hospital delivery room, lying on her back in a hospital gown with legs spread wide on stirrups, screaming and straining with tears and sweat, clenched teeth and gripping the bed handrails, baby crowning visible, red bowtie still in her hair, bright overhead medical lighting and equipment visible, front view full body, detailed anime illustration"
       },
       "subtype": "birth"
+    },
+    {
+      "id": "P11_ejac",
+      "genre": "generic character (school uniform)",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1boy, 1girl, long hair, grey hair, green eyes, red bowtie, cum, cumshot, facial, cum on face, cum dripping from chin, open mouth, tongue out, kneeling, field, grass, outdoor, blushing, school bag nearby, after school, from front",
+        "C_pony": "rating_explicit, 1boy, 1girl, long hair, grey hair, green eyes, red bowtie, cum, cumshot, facial, cum on face, cum dripping from chin, open mouth, tongue out, kneeling, field, grass, outdoor, blushing, school bag nearby, after school, from front",
+        "D_animagine": "1boy, 1girl, long hair, grey hair, green eyes, red bowtie, cum, cumshot, facial, cum on face, cum dripping from chin, open mouth, tongue out, kneeling, field, grass, outdoor, blushing, school bag nearby, after school, from front, explicit",
+        "F_sd15": "a grey-haired girl with green eyes and red bowtie kneeling in a grassy field outdoors, receiving a facial cumshot, cum on her face dripping from chin, mouth open with tongue out, blushing, school bag on the ground nearby, after school setting, front view"
+      }
     }
   ]
 }
