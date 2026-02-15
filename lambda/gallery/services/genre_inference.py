@@ -30,13 +30,11 @@ SYSTEM_PROMPT = """あなたはアダルトアニメ画像のジャンル分類�
 
 画像生成プロンプトを分析し、以下のJSON形式で返してください。
 
-必須フィールド:
-- genre: メインジャンル（■一覧から最適なものを選択。該当なしなら自由に命名）
-- genre_en: 英語のジャンル名
-- sub_genre: サブジャンル（該当する場合のみ。なければ空文字列）
-- tags: DLSiteタグ形式の配列（3-8個。■タグ参照から選択 + 自由追加）
-- nsfw_level: "safe" | "sensitive" | "explicit"
-- scene: シーンの簡潔な説明（日本語、20文字以内）
+出力形式（短縮キー、最小JSON）:
+{"g":"ジャンル","e":"english","s":"サブジャンル","n":"safe|sensitive|explicit","t":["タグ","3個まで"]}
+- g: メインジャンル（■一覧から選択。該当なしなら自由命名）
+- e: 英語名  s: サブジャンル（不要なら省略）  n: nsfw度
+- t: タグ3個以内
 
 ■ メインジャンル一覧:
 [シチュエーション] 学校/学園, オフィス/職場, 日常/生活, ファンタジー, 温泉/風呂, 野外/露出, 風俗/ソープ, ハーレム, 純愛, 寝取られ/NTR, 百合, 催眠/洗脳, 時間停止
@@ -50,20 +48,13 @@ SYSTEM_PROMPT = """あなたはアダルトアニメ画像のジャンル分類�
 ただしプレイがなくキャラ/衣装が主体なら衣装をgenreにする
 （例: 「メイドがポーズ」→ genre=メイド）
 
-■ タグ参照（複数選択可、上記以外も自由に追加OK）:
-汗, 赤面, 涙, アヘ顔, 潮吹き, おっぱい, お尻, 太もも, 腋,
-ベッド, 教室, 屋上, 浴室, キッチン, 図書室, 電車,
-朝, 昼, 夜, 月明かり, 夕焼け,
-見つめる, 誘惑, 恥じらい, 笑顔, 無表情
-
-「アダルト」「エロティック」「NSFW」「hentai」のような汎用ジャンル名は禁止。
-JSONのみ返し、他のテキストは含めない。"""
+「アダルト」「エロティック」「NSFW」「hentai」等の汎用名は禁止。JSONのみ返答。"""
 
 
 def _build_anthropic_body(system, user_msg):
     return json.dumps({
         "anthropic_version": "bedrock-2023-05-31",
-        "max_tokens": 300,
+        "max_tokens": 100,
         "system": system,
         "messages": [{"role": "user", "content": user_msg}],
     })
@@ -74,7 +65,7 @@ def _build_nova_body(system, user_msg):
         "schemaVersion": "messages-v1",
         "system": [{"text": system}],
         "messages": [{"role": "user", "content": [{"text": user_msg}]}],
-        "inferenceConfig": {"maxTokens": 300, "temperature": 0.1},
+        "inferenceConfig": {"maxTokens": 100, "temperature": 0.1},
     })
 
 
@@ -132,9 +123,17 @@ def infer_genre(prompt_text, prompt_summary=""):
             text = text.strip()
 
             parsed = json.loads(text)
-            logger.info("Genre inferred via %s: %s", model_id, parsed.get("genre_en", "?"))
-            parsed["_model"] = model_id  # track which model was used
-            return parsed
+            # Expand short keys to full names for downstream compatibility
+            result = {
+                "genre": parsed.get("g", parsed.get("genre", "")),
+                "genre_en": parsed.get("e", parsed.get("genre_en", "")),
+                "sub_genre": parsed.get("s", parsed.get("sub_genre", "")),
+                "nsfw_level": parsed.get("n", parsed.get("nsfw_level", "")),
+                "tags": parsed.get("t", parsed.get("tags", [])),
+                "_model": model_id,
+            }
+            logger.info("Genre inferred via %s: %s", model_id, result.get("genre_en", "?"))
+            return result
 
         except json.JSONDecodeError:
             logger.warning("Model %s returned non-JSON: %s", model_id, text[:200])

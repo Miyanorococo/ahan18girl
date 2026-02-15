@@ -144,7 +144,6 @@ def _process_zip(s3, zip_key):
                         metadata["genre_ja"] = genre_result.get("genre", "")
                         metadata["tags"] = genre_result.get("tags", [])
                         metadata["nsfw_level"] = genre_result.get("nsfw_level", "")
-                        metadata["scene"] = genre_result.get("scene", "")
                         # Re-upload metadata with genre info
                         s3.put_object(
                             f"{gallery_prefix}/metadata.json",
