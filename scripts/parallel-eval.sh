@@ -33,8 +33,8 @@ if [[ -f "${REPO_ROOT}/.env" ]]; then
     set -a; source "${REPO_ROOT}/.env"; set +a
 fi
 
-log() { echo "[$(date '+%H:%M:%S')] $*"; }
-err() { log "ERROR: $*" >&2; }
+log() { echo "[$(date '+%H:%M:%S')] $*" >&2; }
+err() { echo "[$(date '+%H:%M:%S')] ERROR: $*" >&2; }
 
 # 13ワーカー: 1モデル1台（最大並列）
 # GPU Spot limit = 64 vCPU, g5/g6e.xlarge = 4 vCPU → max 16台
