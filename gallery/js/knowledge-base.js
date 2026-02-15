@@ -34,8 +34,15 @@ function knowledgeBaseMixin() {
     // Core computation (shared data, computed once)
     // =========================================================================
 
+    _invalidateKBCache() {
+      this.kb._cache = null;
+    },
+
     _computeKBData() {
       if (this.kb._cache) return; // already computed
+
+      // Pre-compiled regex (avoid re-compilation per iteration)
+      const expPathRegex = /gallery\/experiments\/(.+?)\/(full|thumb)\//;
 
       // Build experiment → model map (from index, no extra API calls)
       const expModelMap = {};
@@ -59,12 +66,12 @@ function knowledgeBaseMixin() {
       const allModels = new Set();
 
       for (const [key, entry] of Object.entries(this.ratings.images || {})) {
-        if (!entry?.scores) continue;
+        if (!entry || typeof entry !== 'object' || !entry.scores || typeof entry.scores !== 'object') continue;
         const overall = entry.scores.overall;
         if (!overall || overall <= 0) continue;
 
         // Extract experiment ID from rating key path
-        const match = key.match(/gallery\/experiments\/(.+?)\/(full|thumb)\//);
+        const match = key.match(expPathRegex);
         if (!match) continue;
         const expId = match[1];
         const model = expModelMap[expId];

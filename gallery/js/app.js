@@ -449,6 +449,7 @@ document.addEventListener('alpine:init', () => {
     /** Persist ratings to localStorage + debounced server sync */
     _persistRatings() {
       this._expCountCache = null; // invalidate cache
+      if (this._invalidateKBCache) this._invalidateKBCache(); // invalidate KB cache
       localStorage.setItem('gallery_ratings', JSON.stringify(this.ratings));
 
       clearTimeout(this._ratingSaveTimer);
