@@ -96,13 +96,33 @@ s3://r18-anime-assets/
 │   ├── faces/
 │   └── styles/
 ├── ami-configs/                # AMI再構築用設定
-├── gallery/                    # ギャラリーフロントエンド + Lambda展開データ
-│   ├── css/                    # スタイルシート
-│   ├── js/                     # Alpine.js + mixins
+├── gallery/                    # ギャラリーフロントエンド（Alpine.js SPA）
+│   ├── css/gallery.css         # 全スタイル
+│   ├── js/
+│   │   ├── app.js              # メインコンポーネント（ルーティング/評価/フィルタ）
+│   │   ├── lightbox.js         # ライトボックス（5軸評価/♥/コメント/Save）
+│   │   ├── model-grid.js       # Model Grid View（Nモデル比較）
+│   │   ├── dashboard.js        # Dashboard（チャート/ヒートマップ/Insights/Export）
+│   │   ├── compare.js          # 2パネル比較
+│   │   ├── api.js              # APIクライアント
+│   │   └── utils.js            # ユーティリティ
 │   ├── index.html              # SPA エントリポイント
 │   ├── experiments/            # Lambda自動展開（Zip→thumb/full/metadata.json）
-│   ├── user-data/              # ratings.json (評価データ)
-│   └── ★ gallery/のS3 syncは --exclude 'experiments/*' --exclude 'user-data/*' 必須
+│   ├── user-data/              # ratings.json (v2: 5軸スコア+コメント+♥+タグ)
+│   └── ★ S3 syncは --exclude 'experiments/*' --exclude 'user-data/*' 必須
+├── lambda/gallery/             # Lambda関数
+│   ├── lambda_function.py      # ルーター（API Gateway + S3 Event）
+│   ├── routes/
+│   │   ├── experiments.py      # GET 実験一覧/詳細
+│   │   ├── ratings.py          # GET/PUT 評価データ
+│   │   ├── select.py           # POST コピー/削除/学習データ保存
+│   │   ├── extract.py          # S3 Event → Zip展開 + Bedrock genre推定
+│   │   └── productions.py      # GET 本番制作データ
+│   └── services/
+│       ├── genre_inference.py   # Bedrock Haiku ジャンルAI推定（フォールバック付き）
+│       ├── index_builder.py     # experiment index構築
+│       ├── s3_client.py         # S3操作ラッパー
+│       └── thumbnail.py         # Pillowサムネイル生成
 └── training-data/              # ♥ Save で保存した学習データ
     ├── {model}/{label}/        # ラベル別画像
     └── labels.json             # メタデータ
@@ -114,6 +134,18 @@ aws s3 sync gallery/ s3://r18-anime-assets/gallery/ \
   --exclude 'experiments/*' --exclude 'user-data/*'
 ```
 ⚠️ `--delete` を使うとLambdaが展開した実験データ・評価データが消える。絶対に使わない。
+
+**Lambda再デプロイ**:
+```bash
+cd lambda/gallery && zip -r /tmp/lambda-gallery.zip . -x "*.pyc" "__pycache__/*"
+aws lambda update-function-code --function-name r18-anime-gallery --zip-file fileb:///tmp/lambda-gallery.zip --region us-east-1
+```
+
+**ジャンルAI推定（Bedrock）**:
+- Zip展開時 + ギャラリー閲覧時に自動実行
+- フォールバック: Haiku 4.5 → 3.5 → 3（Anthropicのみ。NovaはNSFW拒否）
+- DLSite準拠分類: 制服/人妻/触手/温泉/ランジェリー等
+- コスト: ~$0.00029/回（短縮出力フォーマット）
 
 **実験Zip命名規則**:
 ```
