@@ -280,27 +280,34 @@ document.addEventListener('alpine:init', () => {
       this.page = 1; // reset to first page on filter change
     },
 
-    /** Get rated image count for an experiment (estimate from ratings keys) */
-    _getExpRatedCount(exp) {
-      if (!exp?.id) return 0;
-      let count = 0;
-      for (const key of Object.keys(this.ratings.images || {})) {
-        if (key.includes(exp.id)) {
-          const entry = this.ratings.images[key];
-          if (entry?.scores && Object.values(entry.scores).some(v => v > 0)) count++;
+    /** Cached rated/fav counts per experiment. Rebuilt on rating changes. */
+    _expCountCache: null,
+
+    _buildExpCountCache() {
+      const cache = {};
+      for (const [key, entry] of Object.entries(this.ratings.images || {})) {
+        // Find matching experiment by checking if key contains exp.id
+        for (const exp of this.experiments) {
+          if (!exp.id || !key.includes(exp.id)) continue;
+          if (!cache[exp.id]) cache[exp.id] = { rated: 0, fav: 0 };
+          if (entry?.scores && Object.values(entry.scores).some(v => v > 0)) {
+            cache[exp.id].rated++;
+          }
+          if (entry?.favorited) cache[exp.id].fav++;
+          break; // one image belongs to one experiment
         }
       }
-      return count;
+      this._expCountCache = cache;
     },
 
-    /** Get favorited image count for an experiment */
+    _getExpRatedCount(exp) {
+      if (!this._expCountCache) this._buildExpCountCache();
+      return this._expCountCache[exp?.id]?.rated || 0;
+    },
+
     _getExpFavCount(exp) {
-      if (!exp?.id) return 0;
-      let count = 0;
-      for (const key of Object.keys(this.ratings.images || {})) {
-        if (key.includes(exp.id) && this.ratings.images[key]?.favorited) count++;
-      }
-      return count;
+      if (!this._expCountCache) this._buildExpCountCache();
+      return this._expCountCache[exp?.id]?.fav || 0;
     },
 
     /** Get paginated slice of filteredExperiments */
@@ -416,6 +423,7 @@ document.addEventListener('alpine:init', () => {
 
     /** Persist ratings to localStorage + debounced server sync */
     _persistRatings() {
+      this._expCountCache = null; // invalidate cache
       localStorage.setItem('gallery_ratings', JSON.stringify(this.ratings));
 
       clearTimeout(this._ratingSaveTimer);

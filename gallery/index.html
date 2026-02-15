@@ -538,7 +538,7 @@
        @keydown.3.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 3)"
        @keydown.4.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 4)"
        @keydown.5.window="if(lightbox.open && !$event.target.matches('input,textarea')) setImageScore(lightbox.currentImage, 'overall', 5)"
-       @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) toggleFavorite(lightbox.currentImage)"
+       @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) toggleFavorite(lightbox.currentImage)">
     <div class="lightbox-backdrop" @click="closeLightbox()"></div>
     <div class="lightbox-body">
       <div class="lightbox-content">
