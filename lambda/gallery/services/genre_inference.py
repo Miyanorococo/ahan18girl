@@ -8,23 +8,20 @@ logger = logging.getLogger(__name__)
 
 REGION = "us-east-1"
 
-# Fallback chain: cheapest first, each tried if previous fails/is deprecated
+# Fallback chain: cheapest Anthropic first. Nova models are excluded because
+# they refuse to classify NSFW content (return empty responses).
 MODEL_CHAIN = [
     {
         "id": "anthropic.claude-3-haiku-20240307-v1:0",
-        "format": "anthropic",
+        "format": "anthropic",  # $0.25/1M input, $1.25/1M output
     },
     {
-        "id": "amazon.nova-micro-v1:0",
-        "format": "nova",
+        "id": "anthropic.claude-3-5-haiku-20241022-v1:0",
+        "format": "anthropic",  # $0.80/1M input, $4/1M output
     },
     {
-        "id": "amazon.nova-2-lite-v1:0",
-        "format": "nova",
-    },
-    {
-        "id": "amazon.nova-lite-v1:0",
-        "format": "nova",
+        "id": "anthropic.claude-haiku-4-5-20251001-v1:0",
+        "format": "anthropic",  # newest Haiku
     },
 ]
 
