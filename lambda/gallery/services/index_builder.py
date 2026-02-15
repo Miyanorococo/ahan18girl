@@ -90,6 +90,7 @@ def _build_entry(s3_client, experiment_id, metadata):
         "prompt_id": prompt_id,
         "date": metadata.get("date", date or "") or (metadata.get("generated_at", "")[:10] if metadata.get("generated_at") else ""),
         "image_count": image_count,
+        "aesthetic_avg": metadata.get("aesthetic_avg"),
         "thumbnail": thumbnail,
         "created_at": metadata.get("created_at", "") or metadata.get("generated_at", "") or datetime.now(timezone.utc).isoformat(),
     }

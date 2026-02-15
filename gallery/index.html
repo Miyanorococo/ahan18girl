@@ -99,6 +99,9 @@
               <div class="card-date" x-text="formatDate(exp.created_at || exp.date)"></div>
               <div class="card-bottom">
                 <span class="card-count" x-text="(exp.image_count || 0) + ' images'"></span>
+                <span class="card-aesthetic" x-show="exp.aesthetic_avg"
+                      :class="{'high': exp.aesthetic_avg >= 0.7, 'low': exp.aesthetic_avg < 0.4}"
+                      x-text="'AI ' + (exp.aesthetic_avg * 100).toFixed(0)"></span>
                 <span class="card-rating-badge" x-show="_getExpRatedCount(exp) > 0"
                       :class="{'complete': _getExpRatedCount(exp) >= (exp.image_count || 0)}"
                       x-text="_getExpRatedCount(exp) + '/' + (exp.image_count || 0) + ' rated'"></span>
@@ -983,6 +986,10 @@
           </div>
           <div class="lb-info-line">
             <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.model?.checkpoint || ''"></span>
+            <span class="lb-ai-score"
+                  x-show="getAestheticScore(lightbox.currentImage)"
+                  :class="{'high': getAestheticScore(lightbox.currentImage) >= 0.7, 'low': getAestheticScore(lightbox.currentImage) < 0.4}"
+                  x-text="'AI ' + ((getAestheticScore(lightbox.currentImage) || 0) * 100).toFixed(0)"></span>
             <span x-text="lightbox.currentImage?.name || ''"></span>
           </div>
         </div>

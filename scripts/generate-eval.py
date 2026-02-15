@@ -390,6 +390,7 @@ def rebuild_gallery_index(bucket):
                 "prompt_id": prompt_id,
                 "date": meta.get("date", "") or (meta.get("generated_at", "")[:10] if meta.get("generated_at") else ""),
                 "image_count": image_count,
+                "aesthetic_avg": meta.get("aesthetic_avg"),
                 "thumbnail": thumbnail,
                 "created_at": meta.get("created_at", "") or meta.get("generated_at", ""),
             }
@@ -585,6 +586,14 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
                         json.dump(metadata, f, ensure_ascii=False, indent=2)
 
     log.info("=== Done: %d models, %d images ===", total_models, total_images)
+
+    # Auto-rebuild gallery index after generation
+    if total_images > 0 and not dry_run:
+        log.info("Rebuilding gallery index...")
+        try:
+            rebuild_gallery_index(S3_BUCKET)
+        except Exception as e:
+            log.error("Gallery index rebuild failed: %s", e)
 
 
 def main():

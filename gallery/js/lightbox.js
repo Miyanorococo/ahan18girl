@@ -64,16 +64,31 @@ function lightboxMixin() {
 
     lightboxPrev() {
       if (!this.lightbox.open) return;
+      this._slideDirection = 'right';
       const len = this.lightbox.images.length;
       this.lightbox.index = (this.lightbox.index - 1 + len) % len;
-      this._updateLightboxImage();
+      this._animateSlide();
     },
 
     lightboxNext() {
       if (!this.lightbox.open) return;
+      this._slideDirection = 'left';
       const len = this.lightbox.images.length;
       this.lightbox.index = (this.lightbox.index + 1) % len;
-      this._updateLightboxImage();
+      this._animateSlide();
+    },
+
+    _slideDirection: null,
+
+    _animateSlide() {
+      const center = document.querySelector('.lb-center');
+      if (!center) { this._updateLightboxImage(); return; }
+      const dir = this._slideDirection || 'left';
+      center.classList.add('slide-' + dir);
+      setTimeout(() => {
+        this._updateLightboxImage();
+        center.classList.remove('slide-' + dir);
+      }, 150);
     },
 
     _updateLightboxImage() {

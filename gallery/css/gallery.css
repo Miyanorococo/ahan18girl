@@ -313,6 +313,16 @@ body {
   color: var(--accent);
 }
 
+.card-aesthetic {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-muted);
+}
+.card-aesthetic.high { background: rgba(76,175,80,0.2); color: #81c784; }
+.card-aesthetic.low { background: rgba(244,67,54,0.2); color: #e57373; }
+
 /* === Pagination === */
 .pagination {
   display: flex;
@@ -960,6 +970,22 @@ body {
   font-size: 0.75rem;
   color: rgba(255,255,255,0.5);
 }
+
+.lb-ai-score {
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  font-weight: 600;
+}
+.lb-ai-score.high { background: rgba(76,175,80,0.3); color: #a5d6a7; }
+.lb-ai-score.low { background: rgba(244,67,54,0.3); color: #ef9a9a; }
+
+/* Slide animation */
+.lb-center > img {
+  transition: opacity 0.2s ease-out, transform 0.25s ease-out;
+}
+.lb-center.slide-left > img { opacity: 0; transform: translateX(-40px); }
+.lb-center.slide-right > img { opacity: 0; transform: translateX(40px); }
 
 /* === Evaluation Panel (in lightbox) === */
 .eval-panel {

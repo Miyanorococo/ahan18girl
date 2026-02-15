@@ -351,6 +351,13 @@ document.addEventListener('alpine:init', () => {
       return Math.ceil(this.filteredExperiments.length / this.pageSize);
     },
 
+    /** Get aesthetic score for an image from experiment metadata */
+    getAestheticScore(img) {
+      if (!img?.name) return null;
+      const exp = this.lightbox?.sourceExperiment || this.currentExperiment;
+      return exp?.metadata?.aesthetic_scores?.[img.name] || null;
+    },
+
     // --- Ratings (v2 multi-axis) ---
     _ratingKey(img) {
       if (!img) return null;
