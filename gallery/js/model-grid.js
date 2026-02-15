@@ -62,7 +62,7 @@ function modelGridMixin() {
         if (!pid) continue;
 
         const runDate = extractRunDate(exp);
-        const pMatch = pid.match(/^P(\d+)_(.+)$/);
+        const pMatch = pid.match(/^U?P(\d+)_(.+)$/);
 
         let key, themeNum, themeName, scene, sceneLabel;
 
@@ -114,6 +114,9 @@ function modelGridMixin() {
           }
         }
         const exps = Object.values(latest);
+        // Find latest created_at across all experiments in this group
+        const latestTime = exps.reduce((max, e) =>
+          (e.created_at || '') > max ? (e.created_at || '') : max, '');
         allGroups.push({
           key: g.key,
           themeNum: g.themeNum,
@@ -121,6 +124,7 @@ function modelGridMixin() {
           scene: g.scene,
           sceneLabel: g.sceneLabel,
           runDate: g.runDate,
+          latestTime,
           prompt: g.prompt,
           experiments: exps,
           models: exps.map((e) => e.model),
@@ -247,8 +251,8 @@ function modelGridMixin() {
     },
 
     getCardImage(card) {
-      if (this.modelGrid.selectedSeed && card.seedMap[this.modelGrid.selectedSeed]) {
-        return card.seedMap[this.modelGrid.selectedSeed];
+      if (this.modelGrid.selectedSeed) {
+        return card.seedMap[this.modelGrid.selectedSeed] || null;
       }
       return card.images[0] || null;
     },
@@ -260,10 +264,9 @@ function modelGridMixin() {
     _buildCrossModelImages(seed) {
       const images = [];
       for (const card of this.modelGrid.modelCards) {
-        const img = seed && card.seedMap[seed] ? card.seedMap[seed] : card.images[0];
-        if (img) {
-          images.push({ ...img, _mgModel: card.model, _mgExperiment: card.detail });
-        }
+        const img = seed ? card.seedMap[seed] : card.images[0];
+        if (!img) continue;
+        images.push({ ...img, _mgModel: card.model, _mgExperiment: card.detail });
       }
       return images;
     },
