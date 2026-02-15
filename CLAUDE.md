@@ -57,6 +57,47 @@ us-east-1（バージニア）。GPUスポット価格が最安。
 **不採用: Trainium / Inferentia**
 ComfyUIおよびカスタムノード群（ControlNet, ADetailer, IP-Adapter, PuLID, SUPIR）がすべてCUDA専用。Neuron SDK対応なし。バッチ量産フェーズで再評価。
 
+#### バッチ評価（13モデル並列） — AWS Batch + Step Functions
+
+EC2 Fleet + bash スクリプトの問題（UserData二重base64、ドライバ欠如、孤立EBS、手動リトライ等）を構造的に解決。
+
+**アーキテクチャ**:
+```
+Step Functions (r18-anime-eval)
+  ├─ Map State (13並列)
+  │   └─ Batch SubmitJob (MODEL_NAME=XXX) ← .sync で完了待ち
+  │       ├─ Spot CE (g6e.xlarge/2xlarge, g6.xlarge/2xlarge)
+  │       └─ OD CE (g6e.xlarge) ← Spot不可時の自動フォールバック
+  ├─ Lambda: ギャラリーindex再構築
+  └─ Lambda: SNS通知
+```
+
+**Docker**: `r18-anime-eval` (ECR) — CUDA 12.4 + ComfyUI + generate-eval.py
+**モデルファイル**: S3から実行時にダウンロード（EFS/EBS不要、孤立リスクゼロ）
+**リトライ**: Batch自動5回（Spot中断、OOM対応）+ generate-eval.pyのS3レジュームで重複なし
+**ドライバ**: `ECS_AL2_NVIDIA` AMI自動選択（ドライバ問題を根絶）
+
+**コマンド**:
+```bash
+# Docker build → ECR push
+./scripts/build-and-push.sh
+
+# 全13モデル実行
+./scripts/start-batch-eval.sh
+
+# 単一モデルテスト
+./scripts/start-batch-eval.sh --models "dreamshaper-8"
+
+# 進捗確認
+./scripts/start-batch-eval.sh --status
+
+# Batchログ
+aws logs tail /aws/batch/r18-anime-eval --follow
+```
+
+**CloudFormation**: `aws/batch-cloudformation.yml` (スタック名: `r18-anime-batch`)
+**State Machine定義**: `aws/stepfunctions.asl.json`
+
 #### ストレージ
 | リソース | 用途 | 備考 |
 |---|---|---|

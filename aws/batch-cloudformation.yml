@@ -1,0 +1,655 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: r18_anime - AWS Batch + Step Functions for 13-model parallel evaluation
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Default: vpc-0947329e01acf61c1
+
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Private subnets (multiple AZs for Spot availability)
+    Default: subnet-056261462869cbfa2,subnet-019606bc955539fbe,subnet-0f157f0947d8bef8e,subnet-06614586de12d6e08,subnet-034d901aa43c8b856
+
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Default: sg-0b99a0515a9c4f92c
+
+  S3BucketName:
+    Type: String
+    Default: r18-anime-assets
+
+  DockerImageUri:
+    Type: String
+    Description: ECR image URI (set after first build-and-push.sh)
+    Default: ''
+
+  PrivateRouteTableId:
+    Type: String
+    Default: rtb-0cb6b45c73607931e
+    Description: Private route table ID (for S3 VPC Endpoint)
+
+  NotificationEmail:
+    Type: String
+    Default: ''
+    Description: Email for SNS notifications (leave empty to skip)
+
+Conditions:
+  HasDockerImage: !Not [!Equals [!Ref DockerImageUri, '']]
+  HasEmail: !Not [!Equals [!Ref NotificationEmail, '']]
+
+Resources:
+  # ============================================================
+  # ECR Repository
+  # ============================================================
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: r18-anime-eval
+      ImageScanningConfiguration:
+        ScanOnPush: false
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [{
+              "rulePriority": 1,
+              "description": "Keep last 5 images",
+              "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 5
+              },
+              "action": { "type": "expire" }
+            }]
+          }
+
+  # ============================================================
+  # IAM Roles
+  # ============================================================
+
+  # Batch Service Role
+  BatchServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: r18-anime-batch-service-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: batch.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+
+  # EC2 Instance Role (for Batch-managed instances)
+  BatchInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: r18-anime-batch-instance-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+      Policies:
+        - PolicyName: S3ModelAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${S3BucketName}'
+                  - !Sub 'arn:aws:s3:::${S3BucketName}/*'
+
+  BatchInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: r18-anime-batch-instance-profile
+      Roles:
+        - !Ref BatchInstanceRole
+
+  # Spot Fleet Role
+  BatchSpotFleetRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: r18-anime-batch-spot-fleet-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: spotfleet.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole
+
+  # ECS Task Execution Role (for ECR image pull + CloudWatch logs)
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: r18-anime-batch-task-execution-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  # Step Functions Role
+  StepFunctionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: r18-anime-stepfunctions-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: BatchAndLambdaAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - batch:SubmitJob
+                  - batch:DescribeJobs
+                  - batch:TerminateJob
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !GetAtt GalleryIndexLambda.Arn
+                  - !GetAtt NotificationLambda.Arn
+              - Effect: Allow
+                Action:
+                  - events:PutTargets
+                  - events:PutRule
+                  - events:DescribeRule
+                Resource:
+                  - !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule'
+
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: r18-anime-batch-lambda-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3AndSNS
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${S3BucketName}'
+                  - !Sub 'arn:aws:s3:::${S3BucketName}/*'
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource:
+                  - !Ref NotificationTopic
+
+  # ============================================================
+  # S3 VPC Gateway Endpoint (free, avoids NAT Gateway charges for S3 traffic)
+  # ============================================================
+  S3VpcEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VpcId
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.s3'
+      VpcEndpointType: Gateway
+      RouteTableIds:
+        - !Ref PrivateRouteTableId
+
+  # ============================================================
+  # Batch Compute Environments
+  # ============================================================
+
+  # Launch Template for Batch instances (larger root volume for Docker image + models)
+  BatchLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: r18-anime-batch-lt
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              VolumeSize: 100
+              VolumeType: gp3
+              Encrypted: true
+
+  # Spot CE (primary) - multi-type, multi-AZ for maximum availability
+  SpotComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      ComputeEnvironmentName: r18-anime-eval-spot-v2
+      Type: MANAGED
+      State: ENABLED
+      ServiceRole: !GetAtt BatchServiceRole.Arn
+      ComputeResources:
+        Type: SPOT
+        BidPercentage: 100
+        SpotIamFleetRole: !GetAtt BatchSpotFleetRole.Arn
+        AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
+        MinvCpus: 0
+        MaxvCpus: 128
+        InstanceTypes:
+          - g6e.xlarge
+          - g6e.2xlarge
+          - g6.xlarge
+          - g6.2xlarge
+        InstanceRole: !GetAtt BatchInstanceProfile.Arn
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        Subnets: !Ref SubnetIds
+        LaunchTemplate:
+          LaunchTemplateId: !Ref BatchLaunchTemplate
+          Version: $Latest
+        Ec2Configuration:
+          - ImageType: ECS_AL2_NVIDIA
+        Tags:
+          Purpose: eval-batch
+          Project: r18_anime
+
+  # On-Demand CE (fallback) - guaranteed capacity
+  OnDemandComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      ComputeEnvironmentName: r18-anime-eval-ondemand-v2
+      Type: MANAGED
+      State: ENABLED
+      ServiceRole: !GetAtt BatchServiceRole.Arn
+      ComputeResources:
+        Type: EC2
+        AllocationStrategy: BEST_FIT_PROGRESSIVE
+        MinvCpus: 0
+        MaxvCpus: 64
+        InstanceTypes:
+          - g6e.xlarge
+        InstanceRole: !GetAtt BatchInstanceProfile.Arn
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        Subnets: !Ref SubnetIds
+        LaunchTemplate:
+          LaunchTemplateId: !Ref BatchLaunchTemplate
+          Version: $Latest
+        Ec2Configuration:
+          - ImageType: ECS_AL2_NVIDIA
+        Tags:
+          Purpose: eval-batch
+          Project: r18_anime
+
+  # ============================================================
+  # Batch Job Queue (Spot first, OD fallback)
+  # ============================================================
+  JobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      JobQueueName: r18-anime-eval-queue
+      State: ENABLED
+      Priority: 1
+      ComputeEnvironmentOrder:
+        - Order: 1
+          ComputeEnvironment: !Ref SpotComputeEnvironment
+        - Order: 2
+          ComputeEnvironment: !Ref OnDemandComputeEnvironment
+
+  # ============================================================
+  # Batch Job Definition
+  # ============================================================
+  JobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Condition: HasDockerImage
+    Properties:
+      JobDefinitionName: r18-anime-eval-job
+      Type: container
+      RetryStrategy:
+        Attempts: 5
+        EvaluateOnExit:
+          # Retry on Spot interruption
+          - Action: RETRY
+            OnReason: 'Host EC2*'
+          # Retry on OOM
+          - Action: RETRY
+            OnReason: 'OutOfMemory*'
+          # Retry on general container failure (transient errors)
+          - Action: RETRY
+            OnExitCode: '1'
+          # Don't retry on explicit failures
+          - Action: EXIT
+            OnExitCode: '2'
+      Timeout:
+        AttemptDurationSeconds: 7200  # 2 hours per attempt
+      ContainerProperties:
+        Image: !Ref DockerImageUri
+        ResourceRequirements:
+          - Type: GPU
+            Value: '1'
+          - Type: VCPU
+            Value: '4'
+          - Type: MEMORY
+            Value: '14336'
+        ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Ref LogGroup
+            awslogs-stream-prefix: eval
+        Environment:
+          - Name: S3_BUCKET
+            Value: !Ref S3BucketName
+          - Name: AWS_DEFAULT_REGION
+            Value: !Ref 'AWS::Region'
+        # MODEL_NAME injected via ContainerOverrides from Step Functions
+
+  # ============================================================
+  # CloudWatch Log Group
+  # ============================================================
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/batch/r18-anime-eval
+      RetentionInDays: 14
+
+  # ============================================================
+  # Lambda Functions
+  # ============================================================
+
+  # Gallery index rebuild (runs after all 13 jobs complete)
+  GalleryIndexLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: r18-anime-eval-gallery-index
+      Runtime: python3.12
+      Handler: index.handler
+      Timeout: 600
+      MemorySize: 256
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref S3BucketName
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+
+          def handler(event, context):
+              bucket = os.environ["S3_BUCKET"]
+              prefix = "gallery/experiments/"
+              s3 = boto3.client("s3")
+              index = []
+
+              paginator = s3.get_paginator("list_objects_v2")
+              for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+                  for obj in page.get("Contents", []):
+                      key = obj["Key"]
+                      if not key.endswith("/metadata.json"):
+                          continue
+                      try:
+                          resp = s3.get_object(Bucket=bucket, Key=key)
+                          meta = json.loads(resp["Body"].read())
+                      except Exception:
+                          continue
+
+                      exp_id = key[len(prefix):-len("/metadata.json")]
+                      img_resp = s3.list_objects_v2(
+                          Bucket=bucket, Prefix=f"{prefix}{exp_id}/full/", MaxKeys=100
+                      )
+                      image_count = img_resp.get("KeyCount", 0)
+
+                      thumb_resp = s3.list_objects_v2(
+                          Bucket=bucket, Prefix=f"{prefix}{exp_id}/thumb/", MaxKeys=1
+                      )
+                      thumbnail = ""
+                      for t in thumb_resp.get("Contents", []):
+                          thumbnail = f"/{t['Key']}"
+                          break
+
+                      prompt_id = exp_id.split("/")[-1] if "/" in exp_id else ""
+                      entry = {
+                          "id": exp_id,
+                          "model": meta.get("model", {}).get("checkpoint", "unknown"),
+                          "pipeline": meta.get("pipeline", "txt2img"),
+                          "prompt_summary": meta.get("prompt_summary", ""),
+                          "genre": meta.get("genre", ""),
+                          "genre_ja": meta.get("genre_ja", ""),
+                          "content_type": meta.get("type", ""),
+                          "nsfw_level": meta.get("nsfw_level", ""),
+                          "prompt_id": prompt_id,
+                          "date": meta.get("date", "") or (meta.get("generated_at", "")[:10] if meta.get("generated_at") else ""),
+                          "image_count": image_count,
+                          "thumbnail": thumbnail,
+                          "created_at": meta.get("created_at", "") or meta.get("generated_at", ""),
+                      }
+                      index.append(entry)
+
+              index.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+              s3.put_object(
+                  Bucket=bucket,
+                  Key=f"{prefix}index.json",
+                  Body=json.dumps(index, ensure_ascii=False, indent=2).encode(),
+                  ContentType="application/json",
+              )
+              return {"experiments": len(index)}
+
+  # SNS notification (runs after gallery index rebuild)
+  NotificationLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: r18-anime-eval-notification
+      Runtime: python3.12
+      Handler: index.handler
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          TOPIC_ARN: !Ref NotificationTopic
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+
+          def handler(event, context):
+              topic_arn = os.environ["TOPIC_ARN"]
+              sns = boto3.client("sns")
+
+              results = event.get("results", [])
+              succeeded = sum(1 for r in results if r.get("status") == "SUCCEEDED")
+              failed = sum(1 for r in results if r.get("status") != "SUCCEEDED")
+              gallery_count = event.get("gallery", {}).get("experiments", 0)
+
+              message = (
+                  f"Evaluation complete\n"
+                  f"Models: {succeeded} succeeded, {failed} failed\n"
+                  f"Gallery experiments: {gallery_count}\n"
+              )
+              if failed > 0:
+                  failed_models = [r["model"] for r in results if r.get("status") != "SUCCEEDED"]
+                  message += f"Failed: {', '.join(failed_models)}\n"
+
+              sns.publish(
+                  TopicArn=topic_arn,
+                  Subject="r18-anime eval complete",
+                  Message=message,
+              )
+              return {"notified": True}
+
+  # ============================================================
+  # SNS Topic
+  # ============================================================
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: r18-anime-eval-notifications
+
+  NotificationSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasEmail
+    Properties:
+      TopicArn: !Ref NotificationTopic
+      Protocol: email
+      Endpoint: !Ref NotificationEmail
+
+  # ============================================================
+  # Step Functions State Machine
+  # ============================================================
+  StateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Condition: HasDockerImage
+    Properties:
+      StateMachineName: r18-anime-eval
+      RoleArn: !GetAtt StepFunctionsRole.Arn
+      DefinitionString: !Sub |
+        {
+          "Comment": "13-model parallel evaluation via AWS Batch",
+          "StartAt": "ParallelEvaluation",
+          "States": {
+            "ParallelEvaluation": {
+              "Type": "Map",
+              "MaxConcurrency": 13,
+              "ItemsPath": "$.models",
+              "ResultPath": "$.results",
+              "Iterator": {
+                "StartAt": "SubmitBatchJob",
+                "States": {
+                  "SubmitBatchJob": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::batch:submitJob.sync",
+                    "Parameters": {
+                      "JobName.$": "States.Format('eval-{}', $.jobName)",
+                      "JobDefinition": "${JobDefinition}",
+                      "JobQueue": "${JobQueue}",
+                      "ContainerOverrides": {
+                        "Environment": [
+                          {
+                            "Name": "MODEL_NAME",
+                            "Value.$": "$.model"
+                          }
+                        ]
+                      }
+                    },
+                    "ResultPath": "$.batchResult",
+                    "Retry": [
+                      {
+                        "ErrorEquals": ["Batch.ServerException"],
+                        "IntervalSeconds": 60,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2
+                      }
+                    ],
+                    "Catch": [
+                      {
+                        "ErrorEquals": ["States.ALL"],
+                        "ResultPath": "$.error",
+                        "Next": "JobFailed"
+                      }
+                    ],
+                    "Next": "FormatResult"
+                  },
+                  "FormatResult": {
+                    "Type": "Pass",
+                    "Parameters": {
+                      "model.$": "$.model",
+                      "status.$": "$.batchResult.Status",
+                      "jobId.$": "$.batchResult.JobId"
+                    },
+                    "End": true
+                  },
+                  "JobFailed": {
+                    "Type": "Pass",
+                    "Parameters": {
+                      "model.$": "$.model",
+                      "status": "FAILED",
+                      "error.$": "$.error"
+                    },
+                    "End": true
+                  }
+                }
+              },
+              "Next": "RebuildGalleryIndex"
+            },
+            "RebuildGalleryIndex": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${GalleryIndexLambda}",
+                "Payload.$": "$"
+              },
+              "ResultSelector": {
+                "experiments.$": "$.Payload.experiments"
+              },
+              "ResultPath": "$.gallery",
+              "Next": "SendNotification"
+            },
+            "SendNotification": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${NotificationLambda}",
+                "Payload.$": "$"
+              },
+              "End": true
+            }
+          }
+        }
+
+Outputs:
+  ECRRepositoryUri:
+    Value: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepository}'
+    Export:
+      Name: r18-anime-ecr-uri
+
+  JobQueueArn:
+    Value: !Ref JobQueue
+    Export:
+      Name: r18-anime-batch-job-queue
+
+  JobDefinitionArn:
+    Condition: HasDockerImage
+    Value: !Ref JobDefinition
+    Export:
+      Name: r18-anime-batch-job-definition
+
+  StateMachineArn:
+    Condition: HasDockerImage
+    Value: !Ref StateMachine
+    Export:
+      Name: r18-anime-stepfunctions-arn
+
+  LogGroupName:
+    Value: !Ref LogGroup
+
+  SNSTopicArn:
+    Value: !Ref NotificationTopic

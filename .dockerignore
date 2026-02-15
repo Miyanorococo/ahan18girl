@@ -1,0 +1,13 @@
+.git
+.env
+.env.example
+output/
+docs/
+gallery/
+lambda/
+comfyui/
+*.pptx
+*.zip
+*.pyc
+__pycache__
+node_modules/

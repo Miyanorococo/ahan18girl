@@ -1,0 +1,92 @@
+{
+  "Comment": "13-model parallel evaluation via AWS Batch. Input: {models: [{model: 'name', jobName: 'safe-name'}, ...]}",
+  "StartAt": "ParallelEvaluation",
+  "States": {
+    "ParallelEvaluation": {
+      "Type": "Map",
+      "MaxConcurrency": 13,
+      "ItemsPath": "$.models",
+      "ResultPath": "$.results",
+      "Iterator": {
+        "StartAt": "SubmitBatchJob",
+        "States": {
+          "SubmitBatchJob": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::batch:submitJob.sync",
+            "Parameters": {
+              "JobName.$": "States.Format('eval-{}', $.jobName)",
+              "JobDefinition": "${JobDefinitionArn}",
+              "JobQueue": "${JobQueueArn}",
+              "ContainerOverrides": {
+                "Environment": [
+                  {
+                    "Name": "MODEL_NAME",
+                    "Value.$": "$.model"
+                  }
+                ]
+              }
+            },
+            "ResultPath": "$.batchResult",
+            "Retry": [
+              {
+                "ErrorEquals": ["Batch.ServerException"],
+                "IntervalSeconds": 60,
+                "MaxAttempts": 3,
+                "BackoffRate": 2
+              }
+            ],
+            "Catch": [
+              {
+                "ErrorEquals": ["States.ALL"],
+                "ResultPath": "$.error",
+                "Next": "JobFailed"
+              }
+            ],
+            "Next": "FormatResult"
+          },
+          "FormatResult": {
+            "Type": "Pass",
+            "Parameters": {
+              "model.$": "$.model",
+              "status.$": "$.batchResult.Status",
+              "jobId.$": "$.batchResult.JobId"
+            },
+            "End": true
+          },
+          "JobFailed": {
+            "Type": "Pass",
+            "Parameters": {
+              "model.$": "$.model",
+              "status": "FAILED",
+              "error.$": "$.error"
+            },
+            "End": true
+          }
+        }
+      },
+      "Next": "RebuildGalleryIndex"
+    },
+    "RebuildGalleryIndex": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${GalleryIndexLambdaArn}",
+        "Payload.$": "$"
+      },
+      "ResultSelector": {
+        "experiments.$": "$.Payload.experiments"
+      },
+      "ResultPath": "$.gallery",
+      "Next": "SendNotification"
+    },
+    "SendNotification": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${NotificationLambdaArn}",
+        "Payload.$": "$"
+      },
+      "End": true
+    }
+  }
+}
