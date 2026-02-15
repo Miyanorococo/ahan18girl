@@ -178,6 +178,17 @@ function dashboardMixin() {
         }
       }
 
+      // Count total images per model/prompt/seed for denominator
+      const totalByModel = {};
+      const totalByPrompt = {};
+      const totalBySeed = {};
+      for (const exp of this.experiments) {
+        const m = exp.model || 'unknown';
+        const p = exp.prompt_summary || exp.id;
+        totalByModel[m] = (totalByModel[m] || 0) + (exp.image_count || 0);
+        totalByPrompt[p] = (totalByPrompt[p] || 0) + (exp.image_count || 0);
+      }
+
       const byModel = {};
       const byPrompt = {};
       const bySeed = {};
@@ -186,7 +197,6 @@ function dashboardMixin() {
       for (const [key, entry] of Object.entries(this.ratings.images || {})) {
         if (!entry?.favorited) continue;
 
-        // Identify model and prompt from key
         let model = 'unknown', prompt = 'unknown', seed = 'unknown';
         for (const [expId, expModel] of Object.entries(expModelMap)) {
           if (key.includes(expId)) {
@@ -195,7 +205,6 @@ function dashboardMixin() {
             break;
           }
         }
-        // Extract seed from filename if present
         const seedMatch = key.match(/seed(\d+)/);
         if (seedMatch) seed = seedMatch[1];
 
@@ -204,24 +213,25 @@ function dashboardMixin() {
         bySeed[seed] = (bySeed[seed] || 0) + 1;
 
         favImages.push({
-          key,
-          model,
-          prompt,
-          seed,
+          key, model, prompt, seed,
           scores: entry.scores || {},
           comment: entry.comment || '',
           overallAvg: this._avgOfScores(entry.scores),
         });
       }
 
-      // Sort breakdowns
-      const sortDesc = obj => Object.entries(obj).sort((a, b) => b[1] - a[1]);
+      // Sort and include denominator for fair comparison
+      const sortWithTotal = (counts, totals) =>
+        Object.entries(counts)
+          .map(([k, v]) => [k, v, totals[k] || 0])
+          .sort((a, b) => b[1] - a[1]);
 
       this.dashboard.favorites = {
         total: favImages.length,
-        byModel: sortDesc(byModel),
-        byPrompt: sortDesc(byPrompt),
-        bySeed: sortDesc(bySeed),
+        totalImages: this.experiments.reduce((s, e) => s + (e.image_count || 0), 0),
+        byModel: sortWithTotal(byModel, totalByModel),
+        byPrompt: sortWithTotal(byPrompt, totalByPrompt),
+        bySeed: Object.entries(bySeed).sort((a, b) => b[1] - a[1]).map(([k, v]) => [k, v, 0]),
         topImages: favImages.sort((a, b) => b.overallAvg - a.overallAvg).slice(0, 20),
       };
     },

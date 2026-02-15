@@ -432,7 +432,7 @@
                         :class="{'dash-score-high': stat.avgScores[axis.key] >= 4, 'dash-score-low': stat.avgScores[axis.key] !== null && stat.avgScores[axis.key] < 3}"
                         x-text="stat.avgScores[axis.key] != null ? stat.avgScores[axis.key].toFixed(1) : '—'"></td>
                   </template>
-                  <td x-text="stat.imageCount"></td>
+                  <td><span x-text="stat.ratedCount + '/' + stat.imageCount"></span></td>
                   <td>
                     <span class="badge" x-show="stat.verdict"
                           :class="{
@@ -461,19 +461,19 @@
 
         <!-- Favorites Analysis -->
         <div class="dash-favorites" x-show="dashboard.favorites && dashboard.favorites.total > 0">
-          <h3>&#9829; お気に入り分析 <span class="dash-fav-count" x-text="'(' + (dashboard.favorites?.total || 0) + '枚)'"></span></h3>
+          <h3>&#9829; お気に入り分析 <span class="dash-fav-count" x-text="'(' + (dashboard.favorites?.total || 0) + ' / ' + (dashboard.favorites?.totalImages || 0) + '枚)'"></span></h3>
 
           <div class="dash-fav-grid">
             <!-- By Model -->
             <div class="dash-fav-card">
               <div class="dash-fav-card-title">モデル別</div>
-              <template x-for="[model, count] in (dashboard.favorites?.byModel || [])" :key="'fm-' + model">
+              <template x-for="[model, count, total] in (dashboard.favorites?.byModel || [])" :key="'fm-' + model">
                 <div class="dash-fav-row">
                   <span class="dash-fav-label" x-text="displayModelName(model)"></span>
                   <div class="dash-fav-bar-wrap">
                     <div class="dash-fav-bar" :style="'width:' + (count / (dashboard.favorites?.total || 1) * 100) + '%'"></div>
                   </div>
-                  <span class="dash-fav-count-num" x-text="count"></span>
+                  <span class="dash-fav-count-num" x-text="count + (total ? '/' + total : '')"></span>
                 </div>
               </template>
             </div>
@@ -481,13 +481,13 @@
             <!-- By Prompt -->
             <div class="dash-fav-card">
               <div class="dash-fav-card-title">プロンプト別</div>
-              <template x-for="[prompt, count] in (dashboard.favorites?.byPrompt || [])" :key="'fp-' + prompt">
+              <template x-for="[prompt, count, total] in (dashboard.favorites?.byPrompt || [])" :key="'fp-' + prompt">
                 <div class="dash-fav-row">
                   <span class="dash-fav-label" x-text="prompt"></span>
                   <div class="dash-fav-bar-wrap">
                     <div class="dash-fav-bar" :style="'width:' + (count / (dashboard.favorites?.total || 1) * 100) + '%'"></div>
                   </div>
-                  <span class="dash-fav-count-num" x-text="count"></span>
+                  <span class="dash-fav-count-num" x-text="count + (total ? '/' + total : '')"></span>
                 </div>
               </template>
             </div>
