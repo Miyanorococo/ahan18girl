@@ -60,10 +60,8 @@ function dashboardMixin() {
         }
       }
 
-      const expPathRegex = /gallery\/experiments\/(.+?)\/(full|thumb)\//;
-
       // Aggregate 4-tier ratings per model: ★(5) / ♥(2) / 👎(-1) / unrated
-      const modelTiers = {}; // model -> { star: N, heart: N, bad: N, total: N }
+      const modelTiers = {};
       const modelCommentCount = {};
 
       for (const [key, entry] of Object.entries(this.ratings.images || {})) {
@@ -71,19 +69,8 @@ function dashboardMixin() {
         const overall = entry.scores.overall;
         if (overall === undefined || overall === null) continue;
 
-        let model = null;
-        const pathMatch = key.match(expPathRegex);
-        if (pathMatch) {
-          model = expModelMap[pathMatch[1]];
-        }
-        if (!model) {
-          for (const [expId, expModel] of Object.entries(expModelMap)) {
-            if (key.includes(expId)) {
-              model = expModel;
-              break;
-            }
-          }
-        }
+        const match = key.match(/gallery\/experiments\/(.+?)\/(full|thumb)\//);
+        const model = match ? expModelMap[match[1]] : null;
         if (!model) continue;
 
         if (!modelTiers[model]) {
@@ -152,23 +139,24 @@ function dashboardMixin() {
     },
 
     /**
+     * Extract experiment ID from a rating key using regex (O(1) lookup).
+     * Rating keys look like: /gallery/experiments/{exp_id}/(full|thumb)/filename.png
+     */
+    _resolveRatingKey(key, expMap) {
+      const match = key.match(/gallery\/experiments\/(.+?)\/(full|thumb)\//);
+      if (match) return expMap[match[1]] || null;
+      return null;
+    },
+
+    /**
      * Analyze favorited images: breakdown by model, prompt, seed.
      */
     _computeFavoritesAnalysis() {
-      const expModelMap = {};
-      const expPromptMap = {};
-      for (const exp of this.experiments) {
-        if (exp.id) {
-          if (exp.model) expModelMap[exp.id] = exp.model;
-          expPromptMap[exp.id] = exp.prompt_summary || exp.id;
-        }
-      }
-
-      // Count total images per model/prompt/seed for denominator
+      const expMap = {};
       const totalByModel = {};
       const totalByPrompt = {};
-      const totalBySeed = {};
       for (const exp of this.experiments) {
+        if (exp.id) expMap[exp.id] = exp;
         const m = exp.model || 'unknown';
         const p = exp.prompt_summary || exp.id;
         totalByModel[m] = (totalByModel[m] || 0) + (exp.image_count || 0);
@@ -183,16 +171,11 @@ function dashboardMixin() {
       for (const [key, entry] of Object.entries(this.ratings.images || {})) {
         if (!entry?.favorited) continue;
 
-        let model = 'unknown', prompt = 'unknown', seed = 'unknown';
-        for (const [expId, expModel] of Object.entries(expModelMap)) {
-          if (key.includes(expId)) {
-            model = expModel;
-            prompt = expPromptMap[expId] || expId;
-            break;
-          }
-        }
+        const exp = this._resolveRatingKey(key, expMap);
+        const model = exp?.model || 'unknown';
+        const prompt = exp?.prompt_summary || 'unknown';
         const seedMatch = key.match(/seed(\d+)/);
-        if (seedMatch) seed = seedMatch[1];
+        const seed = seedMatch ? seedMatch[1] : 'unknown';
 
         byModel[model] = (byModel[model] || 0) + 1;
         byPrompt[prompt] = (byPrompt[prompt] || 0) + 1;
@@ -201,12 +184,10 @@ function dashboardMixin() {
         favImages.push({
           key, model, prompt, seed,
           scores: entry.scores || {},
-          comment: entry.comment || '',
-          overallAvg: this._avgOfScores(entry.scores),
+          overallAvg: entry.scores?.overall || 0,
         });
       }
 
-      // Sort and include denominator for fair comparison
       const sortWithTotal = (counts, totals) =>
         Object.entries(counts)
           .map(([k, v]) => [k, v, totals[k] || 0])
@@ -222,64 +203,38 @@ function dashboardMixin() {
       };
     },
 
-    _avgOfScores(scores) {
-      if (!scores) return 0;
-      const vals = Object.values(scores).filter(v => v > 0);
-      return vals.length > 0 ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 10) / 10 : 0;
-    },
-
     /**
-     * Build model × genre heatmap.
-     * Each cell = average overall score for that model+genre combo.
+     * Build model × genre heatmap using experiment-level AI scores (no rating key loops).
      */
     _computeHeatmap() {
-      // Map rating keys to experiment metadata
-      const expMap = {};
-      for (const exp of this.experiments) {
-        if (exp.id) expMap[exp.id] = exp;
-      }
-
-      // Accumulate scores: heatData[model][genre] = { sum, count, favCount }
       const heatData = {};
       const genres = new Set();
 
-      for (const [key, entry] of Object.entries(this.ratings.images || {})) {
-        if (!entry?.scores) continue;
-        const avg = this._avgOfScores(entry.scores);
-        if (avg === 0) continue;
-
-        let model = null, genre = null;
-        for (const [expId, exp] of Object.entries(expMap)) {
-          if (key.includes(expId)) {
-            model = exp.model;
-            genre = this.getExpGenre(exp) || 'other';
-            break;
-          }
-        }
-        if (!model || !genre) continue;
+      for (const exp of this.experiments) {
+        const model = exp.model;
+        const genre = (exp.genre || 'other').toLowerCase();
+        const score = exp.aesthetic_avg;
+        if (!model || !score) continue;
 
         genres.add(genre);
         if (!heatData[model]) heatData[model] = {};
-        if (!heatData[model][genre]) heatData[model][genre] = { sum: 0, count: 0, favCount: 0 };
-        heatData[model][genre].sum += avg;
+        if (!heatData[model][genre]) heatData[model][genre] = { sum: 0, count: 0 };
+        heatData[model][genre].sum += score * 5; // normalize 0-1 to 0-5 scale
         heatData[model][genre].count++;
-        if (entry.favorited) heatData[model][genre].favCount++;
       }
 
       const genreList = [...genres].sort();
       const models = Object.keys(heatData).sort();
 
-      // Build matrix rows
       const rows = models.map(model => ({
         model,
         displayName: this.displayModelName(model),
         cells: genreList.map(genre => {
           const d = heatData[model]?.[genre];
-          if (!d) return { score: null, count: 0, favCount: 0 };
+          if (!d) return { score: null, count: 0 };
           return {
             score: Math.round(d.sum / d.count * 10) / 10,
             count: d.count,
-            favCount: d.favCount,
           };
         }),
       }));
