@@ -367,20 +367,23 @@ launch_worker_fleet() {
     local name="${WORKER_NAMES[$worker_idx]}"
 
     # --- Attempt 1: Spot (g6 multi-type × all AZs) ---
-    local overrides="["
-    local first=true
-    for itype in "${SPOT_INSTANCE_TYPES[@]}"; do
-        for subnet in "${SUBNETS[@]}"; do
-            [[ "$first" == "true" ]] && first=false || overrides+=","
-            overrides+="{\"InstanceType\":\"${itype}\",\"SubnetId\":\"${subnet}\"}"
+    local fleet_result instance_id=""
+
+    # --- Attempt 1: Spot (skip if SPOT_INSTANCE_TYPES is empty, e.g. forced OD) ---
+    if [[ ${#SPOT_INSTANCE_TYPES[@]} -gt 0 ]]; then
+        local overrides="["
+        local first=true
+        for itype in "${SPOT_INSTANCE_TYPES[@]}"; do
+            for subnet in "${SUBNETS[@]}"; do
+                [[ "$first" == "true" ]] && first=false || overrides+=","
+                overrides+="{\"InstanceType\":\"${itype}\",\"SubnetId\":\"${subnet}\"}"
+            done
         done
-    done
-    overrides+="]"
+        overrides+="]"
 
-    log "  [${name}] Trying Spot (${SPOT_INSTANCE_TYPES[*]})..."
+        log "  [${name}] Trying Spot (${SPOT_INSTANCE_TYPES[*]})..."
 
-    local fleet_result instance_id
-    fleet_result=$(aws ec2 create-fleet --region "${REGION}" \
+        fleet_result=$(aws ec2 create-fleet --region "${REGION}" \
         --type instant \
         --target-capacity-specification "TotalTargetCapacity=1,DefaultTargetCapacityType=spot" \
         --spot-options '{"AllocationStrategy":"capacity-optimized","InstanceInterruptionBehavior":"terminate"}' \
@@ -394,7 +397,8 @@ launch_worker_fleet() {
         --tag-specifications "ResourceType=fleet,Tags=[{Key=Name,Value=r18-eval-fleet-${name}},{Key=Purpose,Value=eval-batch}]" \
         2>&1)
 
-    instance_id=$(echo "${fleet_result}" | extract_fleet_instance_id)
+        instance_id=$(echo "${fleet_result}" | extract_fleet_instance_id)
+    fi  # end Spot attempt
 
     # --- Attempt 2: On-Demand fallback ---
     if [[ -z "${instance_id}" ]]; then
@@ -522,6 +526,117 @@ check_progress() {
 }
 
 # =============================================================================
+# Watch mode: auto-retry interrupted workers
+#
+# - Checks every WATCH_INTERVAL seconds
+# - INTERRUPTED → clear marker → relaunch via Fleet
+# - Per-worker retry limit (MAX_RETRIES). Beyond that → force On-Demand
+# - generate-eval.py auto-resumes from S3 (skips completed prompts)
+# - Exits when all workers are DONE
+# =============================================================================
+WATCH_INTERVAL=120  # seconds between checks
+MAX_RETRIES=5       # per worker; matches Spot/OD break-even point
+
+# Retry counters (associative array: worker_name → count)
+declare -A RETRY_COUNTS
+
+get_worker_index() {
+    local target="$1"
+    for i in $(seq 0 $((NUM_WORKERS - 1))); do
+        [[ "${WORKER_NAMES[$i]}" == "${target}" ]] && echo "$i" && return
+    done
+    echo "-1"
+}
+
+relaunch_worker() {
+    local template_id="$1"
+    local name="$2"
+    local idx
+    idx=$(get_worker_index "${name}")
+    if [[ "$idx" == "-1" ]]; then
+        err "Unknown worker: ${name}"
+        return 1
+    fi
+
+    local retries="${RETRY_COUNTS[$name]:-0}"
+    retries=$((retries + 1))
+    RETRY_COUNTS[$name]=$retries
+
+    # Clear interrupted marker
+    aws s3 rm "s3://${S3_BUCKET}/eval-status/${name}-interrupted.txt" --region "${REGION}" 2>/dev/null || true
+
+    if [[ $retries -gt $MAX_RETRIES ]]; then
+        log "  [${name}] Retry ${retries}/${MAX_RETRIES} exceeded → forcing On-Demand"
+        # Temporarily override to OD-only
+        local saved_spot=("${SPOT_INSTANCE_TYPES[@]}")
+        SPOT_INSTANCE_TYPES=()  # empty = skip Spot attempt
+        launch_worker_fleet "${template_id}" "$idx" || true
+        SPOT_INSTANCE_TYPES=("${saved_spot[@]}")
+    else
+        log "  [${name}] Retry ${retries}/${MAX_RETRIES} (Spot, generate-eval.py will auto-resume)"
+        launch_worker_fleet "${template_id}" "$idx" || true
+    fi
+}
+
+watch_and_retry() {
+    local template_id="$1"
+
+    log ""
+    log "=== Watch mode started (interval=${WATCH_INTERVAL}s, max_retries=${MAX_RETRIES}) ==="
+    log "  Ctrl+C to stop watching (workers continue running)"
+    log ""
+
+    while true; do
+        local done_count=0
+        local interrupted_workers=()
+
+        for name in "${WORKER_NAMES[@]}"; do
+            local done_marker interrupted_marker
+            done_marker=$(aws s3 ls "s3://${S3_BUCKET}/eval-status/${name}-done.txt" --region "${REGION}" 2>/dev/null || true)
+            interrupted_marker=$(aws s3 ls "s3://${S3_BUCKET}/eval-status/${name}-interrupted.txt" --region "${REGION}" 2>/dev/null || true)
+            if [[ -n "$done_marker" ]]; then
+                done_count=$((done_count + 1))
+            elif [[ -n "$interrupted_marker" ]]; then
+                interrupted_workers+=("$name")
+            fi
+        done
+
+        # All done?
+        if [[ $done_count -eq ${NUM_WORKERS} ]]; then
+            log "🎉 All ${NUM_WORKERS} workers complete!"
+            # Show image count
+            local image_count
+            image_count=$(aws s3 ls "s3://${S3_BUCKET}/gallery/experiments/" \
+                --region "${REGION}" --recursive 2>/dev/null | grep -c "/full/.*\.png$" || echo 0)
+            log "  Images in S3: ${image_count} / 7150"
+            log "  Next: ./parallel-eval.sh --cleanup"
+            return 0
+        fi
+
+        # Relaunch interrupted workers
+        if [[ ${#interrupted_workers[@]} -gt 0 ]]; then
+            log "[$(date '+%H:%M:%S')] Detected ${#interrupted_workers[@]} interrupted worker(s): ${interrupted_workers[*]}"
+            for name in "${interrupted_workers[@]}"; do
+                relaunch_worker "${template_id}" "${name}"
+            done
+        fi
+
+        # Status summary
+        local image_count
+        image_count=$(aws s3 ls "s3://${S3_BUCKET}/gallery/experiments/" \
+            --region "${REGION}" --recursive 2>/dev/null | grep -c "/full/.*\.png$" || echo 0)
+        local running_instances
+        running_instances=$(aws ec2 describe-instances --region "${REGION}" \
+            --filters "Name=tag:Purpose,Values=eval-batch" \
+                      "Name=instance-state-name,Values=running,pending" \
+            --query 'length(Reservations[].Instances[])' --output text 2>/dev/null || echo 0)
+        log "[$(date '+%H:%M:%S')] Done: ${done_count}/${NUM_WORKERS} | Running: ${running_instances} | Images: ${image_count}/7150"
+
+        sleep "${WATCH_INTERVAL}"
+    done
+}
+
+# =============================================================================
 # Cleanup
 # =============================================================================
 cleanup() {
@@ -599,6 +714,7 @@ main() {
             --ami) ami_override="$2"; shift 2 ;;
             --prefer-g5) SPOT_INSTANCE_TYPES=("g5.xlarge"); OD_INSTANCE_TYPE="g5.xlarge"; shift ;;
             --spot-only) OD_INSTANCE_TYPE=""; shift ;;
+            --no-watch) NO_WATCH=true; shift ;;
             --status) check_progress; exit 0 ;;
             --cleanup) cleanup; exit 0 ;;
             -h|--help)
@@ -609,6 +725,7 @@ Options:
   --skip-snapshot SNAP_ID  Reuse existing snapshot (skip creation)
   --ami AMI_ID             Use specific AMI (default: auto-detect from tags)
   --prefer-g5              Use g5.xlarge only (skip g6e)
+  --no-watch               Launch only, don't enter watch mode
   --status                 Check worker progress
   --cleanup                Terminate workers + delete resources
 
@@ -616,7 +733,11 @@ EC2 Fleet strategy:
   Spot types: ${SPOT_INSTANCE_TYPES[*]}
   OD fallback: ${OD_INSTANCE_TYPE:-disabled}
   AZs: us-east-1a/b/c/d/f (all 5)
-  Spot is used unless capacity unavailable (break-even: 5+ interruptions)
+
+Auto-retry:
+  Interrupted Spot workers are auto-relaunched (max ${MAX_RETRIES}/worker)
+  Beyond ${MAX_RETRIES} retries → forced On-Demand
+  generate-eval.py auto-resumes from S3 (no duplicate work)
 HELPEOF
                 exit 0 ;;
             *) err "Unknown: $1"; exit 1 ;;
@@ -661,7 +782,7 @@ HELPEOF
 
     # Step 4: Launch workers via EC2 Fleet
     log "Launching ${NUM_WORKERS} workers via EC2 Fleet (capacity-optimized)..."
-    log "  Instance types: ${INSTANCE_TYPES[*]}"
+    log "  Instance types: ${SPOT_INSTANCE_TYPES[*]}"
     log "  AZs: all 5 (us-east-1a/b/c/d/f)"
 
     local instance_ids=()
@@ -683,7 +804,7 @@ HELPEOF
     "ami_id": "${ami_id}",
     "launch_template": "${template_id}",
     "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "instance_types": "$(IFS=,; echo "${INSTANCE_TYPES[*]}")",
+    "instance_types": "$(IFS=,; echo "${SPOT_INSTANCE_TYPES[*]}")",
     "workers": ${NUM_WORKERS},
     "failed": ${failed}
 }
@@ -704,11 +825,20 @@ STATEOF
     log "  OD fallback: ${OD_INSTANCE_TYPE:-disabled}"
     log "  Strategy:  Spot first (capacity-optimized) → OD fallback"
     log "------------------------------------------------------------"
-    log "  Monitor:   $0 --status"
-    log "  Cleanup:   $0 --cleanup"
     log "  Workers self-terminate on completion"
     log "  Volumes auto-delete on termination (no orphans)"
+    if [[ "${NO_WATCH:-}" == "true" ]]; then
+        log "  Monitor:   $0 --status"
+        log "  Cleanup:   $0 --cleanup"
+    else
+        log "  Auto-retry: max ${MAX_RETRIES}/worker, then force On-Demand"
+    fi
     log "============================================================"
+
+    # Step 5: Enter watch mode (auto-retry interrupted workers)
+    if [[ "${NO_WATCH:-}" != "true" ]]; then
+        watch_and_retry "${template_id}"
+    fi
 }
 
 main "$@"

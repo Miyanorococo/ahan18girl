@@ -479,11 +479,8 @@ document.addEventListener('alpine:init', () => {
     getExpGenre(exp) {
       if (!exp) return '';
       const tags = this.getExpTags(exp.id);
-      if (tags.genre) return tags.genre;
-      if (exp._userGenre) return exp._userGenre;
-      if (exp.genre) return exp.genre;
-      // Auto-infer from prompt keywords
-      return this._inferGenre(exp);
+      const raw = tags.genre || exp._userGenre || exp.genre || this._inferGenre(exp);
+      return raw ? raw.toLowerCase() : '';
     },
 
     /** Genre inference cache + Bedrock LLM auto-inference */

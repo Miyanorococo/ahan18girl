@@ -52,7 +52,7 @@ function knowledgeBaseMixin() {
       for (const exp of this.experiments) {
         if (!exp.id || !exp.model) continue;
         expModelMap[exp.id] = exp.model;
-        expGenreMap[exp.id] = exp.genre || (exp.prompt_summary || '').split('_')[0] || 'other';
+        expGenreMap[exp.id] = (exp.genre || (exp.prompt_summary || '').split('_')[0] || 'other').toLowerCase();
         expTypeMap[exp.id] = exp.content_type || (exp.prompt_summary || '').split('_').slice(1).join('_') || 'unknown';
         expPromptIdMap[exp.id] = exp.prompt_id || exp.id.split('/').pop() || '';
       }

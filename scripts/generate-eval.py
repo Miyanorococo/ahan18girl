@@ -376,11 +376,18 @@ def rebuild_gallery_index(bucket):
                 thumbnail = f"/{t['Key']}"
                 break
 
+            prompt_id = exp_id.split("/")[-1] if "/" in exp_id else ""
+
             entry = {
                 "id": exp_id,
                 "model": meta.get("model", {}).get("checkpoint", "unknown"),
                 "pipeline": meta.get("pipeline", "txt2img"),
                 "prompt_summary": meta.get("prompt_summary", ""),
+                "genre": meta.get("genre", ""),
+                "genre_ja": meta.get("genre_ja", ""),
+                "content_type": meta.get("type", ""),
+                "nsfw_level": meta.get("nsfw_level", ""),
+                "prompt_id": prompt_id,
                 "date": meta.get("date", ""),
                 "image_count": image_count,
                 "thumbnail": thumbnail,
