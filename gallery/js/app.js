@@ -521,6 +521,25 @@ document.addEventListener('alpine:init', () => {
       }
     },
 
+    // --- Navigation helpers ---
+    goToUnrated() {
+      const unrated = this.experiments.find(exp => this._getExpRatedCount(exp) === 0);
+      if (unrated) {
+        this.openExperiment(unrated.id);
+      } else {
+        // All rated — find partially rated
+        const partial = this.experiments.find(exp => {
+          const rated = this._getExpRatedCount(exp);
+          return rated > 0 && rated < (exp.image_count || 0);
+        });
+        if (partial) {
+          this.openExperiment(partial.id);
+        } else {
+          this.navigate('experiments');
+        }
+      }
+    },
+
     // --- Utility: extract model name from experiment ---
     _extractModelFromExperiment(exp) {
       return exp?.model || exp?.metadata?.model?.checkpoint || exp?.id?.split('_')[1] || 'unknown';

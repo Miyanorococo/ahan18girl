@@ -15,6 +15,7 @@ function dashboardMixin() {
       favorites: null,     // Favorites analysis
       heatmap: null,       // model × genre score matrix
       insights: [],        // Auto-detected patterns
+      _expandedModel: null, // currently expanded model in ranking
       loading: false,
       chartReady: false,
     },
