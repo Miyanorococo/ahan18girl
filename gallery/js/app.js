@@ -346,7 +346,11 @@ document.addEventListener('alpine:init', () => {
     getAestheticScore(img) {
       if (!img?.name) return null;
       const exp = img._mgExperiment || this.lightbox?.sourceExperiment || this.currentExperiment;
-      return exp?.metadata?.aesthetic_scores?.[img.name] || null;
+      const scores = exp?.metadata?.aesthetic_scores;
+      if (!scores) return null;
+      // Try exact name, then stem+.png (scores use .png, thumbs use .webp)
+      const stem = img.name.replace(/\.[^.]+$/, '');
+      return scores[img.name] || scores[stem + '.png'] || scores[stem + '.jpg'] || null;
     },
 
     // --- Ratings (v2 multi-axis) ---
