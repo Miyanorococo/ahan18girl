@@ -12,7 +12,7 @@
       789,
       1024
     ],
-    "total_images": "122 prompts × 5 seeds × 6 models = 3660 images",
+    "total_images": "122 prompts × 5 seeds × 7 models = 4270 images",
     "note": "v3: incorporated pro photographer insights (27_AIグラビア連載60回分析) - model-specific quality prefixes, generation-aware negatives, lighting/skin/composition enhancements",
     "version": "v3-pro-knowledge"
   },
@@ -30,7 +30,8 @@
       "models": [
         "wai-nsfw-illustrious-v16",
         "wai-nsfw-illustrious-v11",
-        "wai-branch-rouwei"
+        "wai-branch-rouwei",
+        "wai-nsfw-illustrious-v12"
       ],
       "cfg": 7,
       "steps": 25,
