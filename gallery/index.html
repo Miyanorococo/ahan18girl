@@ -676,14 +676,48 @@
 
     <!-- Book view -->
     <div x-show="route === 'book'" x-cloak>
-      <div class="section-header">
-        <h2>Book</h2>
-      </div>
-
       <div x-show="book.loading" class="loading-spinner">Loading...</div>
 
-      <template x-if="!book.loading && book.pages.length > 0">
+      <!-- Book LIST (no book selected) -->
+      <template x-if="!book.loading && !book.currentBook">
+        <div>
+          <div class="section-header"><h2>Books</h2></div>
+          <div class="book-list">
+            <template x-for="(b, idx) in book.books" :key="'bl-' + b.id">
+              <div class="book-card" @click="openBook(b.id)">
+                <div class="book-card-thumb" x-show="b.coverThumb">
+                  <img :src="b.coverThumb" :alt="b.theme">
+                </div>
+                <div class="book-card-body">
+                  <div class="book-card-header">
+                    <span class="book-card-num" x-text="'#' + (idx + 1)"></span>
+                    <span class="book-card-theme" x-text="b.theme"></span>
+                  </div>
+                  <div class="book-card-meta">
+                    <span class="book-meta-date" x-text="b.dateFormatted"></span>
+                    <span x-text="b.pageCount + ' pages'"></span>
+                    <span x-text="b.modelCount + ' models'"></span>
+                    <span x-text="b.imageCount + ' exps'"></span>
+                    <span x-text="b.prefix" class="badge"></span>
+                    <span x-show="b.genre" class="badge genre" x-text="b.genre"></span>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+          <div x-show="book.books.length === 0" class="empty-state">Bookがありません。</div>
+        </div>
+      </template>
+
+      <!-- Book DETAIL (book selected) -->
+      <template x-if="!book.loading && book.currentBook">
         <div class="book-view">
+          <!-- Header -->
+          <div class="book-header">
+            <button class="btn-ghost" @click="closeBook()">&larr; Books</button>
+            <span class="book-title" x-text="'#' + (book.books.indexOf(book.currentBook) + 1) + ' ' + book.currentBook.theme + ' (' + book.currentBook.dateFormatted + ')'"></span>
+          </div>
+
           <!-- Page counter + nav -->
           <div class="book-nav">
             <button class="btn-ghost" @click="bookPrev()" :disabled="book.currentPage <= 0">&larr; Prev</button>
@@ -704,18 +738,16 @@
           <!-- Main image -->
           <div class="book-image" @click="bookOpenLightbox()">
             <img :src="bookCurrentImage()?.full_url || bookCurrentImage()?.thumb_url" :alt="bookCurrentPage()?.scene">
-            <!-- Rating overlay -->
             <div class="book-rating-overlay" x-show="getImageRating(bookCurrentImage())">
               <span x-text="getImageRating(bookCurrentImage()) >= 5 ? '★' : getImageRating(bookCurrentImage()) >= 2 ? '♥' : getImageRating(bookCurrentImage()) < 0 ? '👎' : ''"></span>
             </div>
-            <!-- AI score overlay -->
             <div class="book-ai-overlay" x-show="getAestheticScore(bookCurrentImage())"
                  :class="{'high': getAestheticScore(bookCurrentImage()) >= 0.7, 'low': getAestheticScore(bookCurrentImage()) < 0.4}">
               <span x-text="'AI ' + ((getAestheticScore(bookCurrentImage()) || 0) * 100).toFixed(0)"></span>
             </div>
           </div>
 
-          <!-- Quick rating buttons -->
+          <!-- Quick rating -->
           <div class="book-rate">
             <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}"
                     @click="quickRate(bookCurrentImage(), -1)">👎</button>
@@ -737,11 +769,11 @@
             </template>
           </div>
 
-          <!-- Prompt display -->
+          <!-- Prompt -->
           <div class="book-prompt" x-show="bookCurrentExperiment()?.metadata?.prompt?.positive"
                x-text="bookCurrentExperiment()?.metadata?.prompt?.positive || ''"></div>
 
-          <!-- Page list (thumbnails) -->
+          <!-- Page strip -->
           <div class="book-pages">
             <template x-for="(page, idx) in book.pages" :key="'bp-' + page.id">
               <div class="book-page-thumb"
@@ -755,10 +787,6 @@
           </div>
         </div>
       </template>
-
-      <div x-show="!book.loading && book.pages.length === 0" class="empty-state">
-        本のデータがありません。
-      </div>
     </div>
 
     <!-- Knowledge Base view -->

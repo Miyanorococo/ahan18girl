@@ -2454,3 +2454,35 @@ body {
 .book-page-thumb:hover { opacity: 0.8; }
 .book-page-thumb img { width: 100%; display: block; }
 .book-page-label { display: block; text-align: center; font-size: 0.5rem; color: var(--text-muted); padding: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* === Book List === */
+.book-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.book-card {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.book-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.book-card-thumb {
+  flex: 0 0 80px; height: 110px; overflow: hidden;
+}
+.book-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.book-card-body { flex: 1; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
+.book-card-header { display: flex; align-items: center; gap: 8px; }
+.book-card-num { font-weight: 700; color: var(--accent); font-size: 0.9rem; }
+.book-card-theme { font-weight: 600; font-size: 0.9rem; }
+.book-card-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.7rem; color: var(--text-muted); align-items: center; }
+.book-meta-date { font-weight: 600; color: var(--text-secondary); }
+
+.book-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+.book-title { font-weight: 600; font-size: 1rem; }

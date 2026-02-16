@@ -160,7 +160,11 @@ document.addEventListener('alpine:init', () => {
       } else if (route === 'knowledge-base') {
         this.loadExperiments().then(() => this.initKnowledgeBase());
       } else if (route === 'book') {
-        this.initBook(param || 'S');
+        if (param) {
+          this.initBookList().then(() => this.openBook(param));
+        } else {
+          this.initBookList();
+        }
       }
     },
 
