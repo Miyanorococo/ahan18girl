@@ -1,0 +1,439 @@
+{
+  "_meta": {
+    "description": "イラストノベル本番 - JK恋愛ストーリー 33シーン+おまけ",
+    "created": "2026-02-16",
+    "version": "prod-jk-v1",
+    "character": "黒髪ロング、青い目、巨乳JK",
+    "seeds": [
+      42,
+      123,
+      456
+    ],
+    "note": "100 images per model (33×3 + 1 bonus)"
+  },
+  "negative_common": {
+    "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, ",
+    "safe": "",
+    "realistic_safe": "flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_explicit": "censored, mosaic censoring, bar censor, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_sensitive": "censored, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, "
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": [
+        "wai-nsfw-illustrious-v16",
+        "wai-nsfw-illustrious-v11",
+        "wai-branch-rouwei",
+        "wai-nsfw-illustrious-v12"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "B_nova": {
+      "models": [
+        "nova-anime-xl-il"
+      ],
+      "cfg": 5,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "D_animagine": {
+      "models": [
+        "animagine-xl-4.0"
+      ],
+      "cfg": 5,
+      "steps": 28,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers",
+      "strip_tags": [
+        "warm lighting",
+        "soft lighting",
+        "soft shadows",
+        "afternoon light",
+        "classroom light",
+        "golden hour light",
+        "candlelight",
+        "warm candlelight",
+        "bioluminescent glow",
+        "afternoon sunlight",
+        "golden hour",
+        "from front",
+        "from above",
+        "from below",
+        "from side",
+        "from behind",
+        "dynamic angle",
+        "low angle",
+        "close-up",
+        "cowboy shot",
+        "full body",
+        "upper body",
+        "dynamic pose",
+        "dynamic_pose",
+        "dynamic_angle",
+        "smooth skin",
+        "wet skin",
+        "glistening skin",
+        "detailed skin",
+        "skin texture",
+        "subsurface scattering",
+        "natural skin texture",
+        "skin pores"
+      ]
+    },
+    "E_femix": {
+      "models": [
+        "femix-hassakuxl"
+      ],
+      "cfg": 6,
+      "steps": 25,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "clip_skip": 1,
+      "resolution": {
+        "width": 832,
+        "height": 1216
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    }
+  },
+  "prompts": [
+    {
+      "id": "S00_cover",
+      "genre": "JK/学園",
+      "type": "sensitive",
+      "subtype": "cover",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing, wind, floating hair, skirt lift, looking at viewer, smile, blush, cherry blossoms, school gate, spring, sunlight, lens flare"
+      }
+    },
+    {
+      "id": "S01_standing",
+      "genre": "JK/学園",
+      "type": "sensitive",
+      "subtype": "standing_portrait",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing, arms crossed, looking away, slight frown, cool expression, classroom, window, afternoon light"
+      }
+    },
+    {
+      "id": "S02_date1",
+      "genre": "JK/学園",
+      "type": "safe",
+      "subtype": "date",
+      "content": {
+        "default": "sfw, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, white sundress, straw hat, holding hat, smile, blush, outdoor, park, green trees, sunlight, summer, looking at viewer, wind, floating hair"
+      }
+    },
+    {
+      "id": "S03_date2",
+      "genre": "JK/学園",
+      "type": "safe",
+      "subtype": "date",
+      "content": {
+        "default": "sfw, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, casual clothes, off-shoulder sweater, denim skirt, holding hands, pov, smile, shy, blush, outdoor, seaside, sunset, golden hour, orange sky"
+      }
+    },
+    {
+      "id": "S04_flirting",
+      "genre": "JK/学園",
+      "type": "sensitive",
+      "subtype": "flirting",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, casual clothes, tank top, short shorts, sitting on bed, leaning forward, cleavage, shy smile, blush, looking at viewer, bedroom, warm lighting, evening"
+      }
+    },
+    {
+      "id": "S05_kiss",
+      "genre": "JK/学園",
+      "type": "sensitive",
+      "subtype": "kiss",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, hetero, kiss, french kiss, closed eyes, blush, tears of joy, embrace, holding, bedroom, warm lighting, close-up"
+      }
+    },
+    {
+      "id": "S06a_finger_normal",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "fingering",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, lying on bed, spread legs, fingering, 1boy, hand between legs, blush, embarrassed, looking away, panting, white sheets, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S06b_finger_squirt",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, lying on bed, spread legs, fingering, squirting, female ejaculation, 1boy, arched back, ahegao, tongue out, blush, sweat, wet sheets, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S07a_oral_normal",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "oral",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, fellatio, oral, penis, kneeling, looking up at viewer, blush, embarrassed, saliva, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S07b_oral_cum",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, fellatio, cum in mouth, cum on face, facial, cum dripping, cross-eyed, dazed, blush, kneeling, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S08a_sex1_before",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "pre_insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, lying on back, spread legs, 1boy, penis, about to penetrate, nervous, blush, embarrassed, biting lip, white sheets, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S08b_sex1_insert",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, sex, vaginal, missionary, lying on back, penetration, spread legs, tears, pain, blush, gripping sheets, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S08c_sex1_pos1",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, sex, vaginal, missionary, lying on back, legs wrapped, panting, blush, sweat, pleasure, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S08d_sex1_pos2",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, sex, vaginal, from behind, doggystyle, twisted torso, looking back, blush, panting, sweat, on bed, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S08e_sex1_almost",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, sex, vaginal, missionary, arched back, trembling, about to orgasm, fucked silly, panting, sweat, blush, gripping sheets, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S08f_sex1_climax",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, sex, vaginal, orgasm, fucked silly, ahegao, rolling eyes, tongue out, cum, creampie, arched back, trembling, sweat, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S08g_sex1_after",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "afterglow",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, lying on bed, after sex, cum overflow, cum on thighs, cross-eyed, dazed, satisfied smile, messy hair, sweat, blush, white sheets, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S09_bath",
+      "genre": "JK/学園",
+      "type": "sensitive",
+      "subtype": "bath",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, bathing, bathtub, wet hair, wet skin, steam, relaxed, gentle smile, blush, soap bubbles, bathroom, warm water lighting"
+      }
+    },
+    {
+      "id": "S10a_toy_normal",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "toy",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, lying on bed, vibrator, sex toy, spread legs, biting lip, embarrassed, blush, panting, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S10b_toy_orgasm",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, vibrator, orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, arched back, trembling, sweat, blush, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S11_lactation",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "lactation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, lactation, breast milk, milk dripping, large breasts, squeezing breast, embarrassed, blush, sitting on bed, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S12a_sex2_before",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "pre_insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, cowgirl position, girl on top, straddling, 1boy, about to penetrate, looking down, shy smile, blush, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S12b_sex2_insert",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, cowgirl position, girl on top, straddling, sex, vaginal, penetration, gasping, blush, hands on chest, bedroom, warm lighting, from below"
+      }
+    },
+    {
+      "id": "S12c_sex2_quick_orgasm",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, cowgirl position, girl on top, sex, vaginal, orgasm, fucked silly, ahegao, trembling, squirting, arched back, sweat, bedroom, warm lighting, from below"
+      }
+    },
+    {
+      "id": "S12d_sex2_pos1",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, cowgirl position, girl on top, bouncing, sex, vaginal, riding, large breasts, bouncing breasts, blush, panting, sweat, bedroom, warm lighting, from below"
+      }
+    },
+    {
+      "id": "S12e_sex2_pos2",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, sitting sex, face to face, straddling lap, sex, vaginal, embrace, arms around neck, forehead touch, intimate, blush, panting, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S12f_sex2_almost",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, cowgirl position, sex, vaginal, about to orgasm, trembling, fucked silly, panting, sweat, blush, gripping shoulders, bedroom, warm lighting, from below"
+      }
+    },
+    {
+      "id": "S12g_sex2_climax",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, cowgirl position, sex, vaginal, orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, cum, creampie, arched back, trembling, sweat, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S12h_sex2_after",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "afterglow",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, lying on bed, after sex, cum overflow, cum on body, cum on thighs, cross-eyed, dazed, exhausted, satisfied smile, messy hair, sweat, white sheets, bedroom, warm lighting"
+      }
+    },
+    {
+      "id": "S13_pregnant",
+      "genre": "JK/学園",
+      "type": "sensitive",
+      "subtype": "pregnant",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, pregnant, large belly, hand on belly, white maternity dress, gentle smile, blush, standing, bedroom, window, morning light, curtains, warm tones"
+      }
+    },
+    {
+      "id": "S14_pregnant_sex",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, pregnant, large belly, sex, vaginal, from behind, gentle, careful, blush, panting, embarrassed, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "S15_birth",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "birth",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, pregnant, huge belly, lying on bed, labor, spread legs, panting, sweat, flushed, determined expression, gripping sheets, hospital bed, bright overhead light"
+      }
+    },
+    {
+      "id": "S16_future",
+      "genre": "JK/学園",
+      "type": "safe",
+      "subtype": "standing_portrait",
+      "content": {
+        "default": "sfw, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, mature, adult, casual clothes, white blouse, long skirt, gentle smile, wedding ring, holding child hand, outdoor, park, cherry blossoms, spring, sunlight, warm tones"
+      }
+    },
+    {
+      "id": "S99_bonus_swimsuit",
+      "genre": "JK/学園",
+      "type": "sensitive",
+      "subtype": "bonus",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, high school girl, large breasts, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, bikini, white bikini, large breasts, cleavage, wet skin, beach, ocean, summer, sunlight, smile, looking at viewer, wind, floating hair, sand"
+      }
+    }
+  ]
+}
