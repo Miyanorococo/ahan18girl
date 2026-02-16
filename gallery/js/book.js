@@ -65,10 +65,13 @@ function bookMixin() {
         bookMap[bookKey]._exps.push(exp);
       }
 
-      // Build book list with theme detection
+      // Build book list - only production prefixes (S = story)
+      // Test prefixes (UP, P, FS, DY, SQ, CG, NR, TN, SM, R) are excluded
+      const testPrefixes = new Set(['UP', 'P', 'FS', 'DY', 'SQ', 'CG', 'NR', 'TN', 'SM', 'R']);
       const books = [];
       for (const b of Object.values(bookMap)) {
-        if (b._scenes.size < 2) continue; // skip single-scene "books"
+        if (b._scenes.size < 2) continue;
+        if (testPrefixes.has(b.prefix)) continue; // skip test batches
 
         // Detect theme from prompt summaries
         const summaries = b._exps.map(e => e.prompt_summary || '').filter(Boolean);
