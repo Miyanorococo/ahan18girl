@@ -231,6 +231,13 @@ def assemble_prompt(config, group_key, group, prompt_entry):
 
     positive = group["quality_prefix"] + body + group["quality_suffix"]
 
+    # Model-group-specific tag filtering
+    strip_tags = group.get("strip_tags", [])
+    if strip_tags:
+        tags = [t.strip() for t in positive.split(",") if t.strip()]
+        tags = [t for t in tags if t not in strip_tags]
+        positive = ", ".join(tags)
+
     # Assemble negative: type-specific prefix + group negative
     neg_common = config.get("negative_common", {})
     neg_prefix = neg_common.get(prompt_type, "")

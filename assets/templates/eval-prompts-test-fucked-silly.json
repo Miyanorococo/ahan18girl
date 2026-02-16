@@ -52,7 +52,31 @@
       },
       "quality_prefix": "masterpiece, best quality, very aesthetic, absurdres, ",
       "negative": "(worst quality:1.2), bad anatomy, bad hands, extra digits, fewer digits",
-      "quality_suffix": ""
+      "quality_suffix": "",
+      "strip_tags": [
+        "warm lighting",
+        "soft lighting",
+        "soft shadows",
+        "afternoon light",
+        "classroom light",
+        "golden hour light",
+        "candlelight",
+        "warm candlelight",
+        "bioluminescent glow",
+        "afternoon sunlight",
+        "golden hour",
+        "from front",
+        "from above",
+        "from below",
+        "from side",
+        "from behind",
+        "dynamic angle",
+        "low angle",
+        "close-up",
+        "cowboy shot",
+        "full body",
+        "upper body"
+      ]
     },
     "B_nova": {
       "models": [

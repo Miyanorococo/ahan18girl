@@ -114,7 +114,31 @@
       },
       "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
       "quality_suffix": "",
-      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers",
+      "strip_tags": [
+        "warm lighting",
+        "soft lighting",
+        "soft shadows",
+        "afternoon light",
+        "classroom light",
+        "golden hour light",
+        "candlelight",
+        "warm candlelight",
+        "bioluminescent glow",
+        "afternoon sunlight",
+        "golden hour",
+        "from front",
+        "from above",
+        "from below",
+        "from side",
+        "from behind",
+        "dynamic angle",
+        "low angle",
+        "close-up",
+        "cowboy shot",
+        "full body",
+        "upper body"
+      ]
     },
     "E_femix": {
       "models": [
