@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "description": "潮吹き (squirting) test - 8 genres × 7 models",
+    "description": "潮吹き + 騎乗位 test - 18 prompts × 7 models",
     "created": "2026-02-16",
     "version": "test-squirting",
     "seeds": [
@@ -199,6 +199,96 @@
       "subtype": "squirting",
       "content": {
         "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, purple hair, long hair, yellow slit eyes, nude, large breasts, squirting, female ejaculation, orgasm, spread legs, tail coiled, arched back, ahegao, blush, underground den, warm candlelight, from front"
+      }
+    },
+    {
+      "id": "SQ09_futanari",
+      "genre": "futanari (clitoris hypertrophy)",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, nude, enlarged clitoris, clitoris hypertrophy, squirting, female ejaculation, orgasm, spread legs, arched back, lying on bed, blush, ahegao, tongue out, sweat, bedroom, warm lighting, from front"
+      }
+    },
+    {
+      "id": "CG01_nurse",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, 1girl, 1boy, nurse, nurse cap, white uniform, open clothes, large breasts, brown hair, ponytail, cowgirl position, girl on top, straddling, sex, vaginal, riding, blush, panting, sweat, hospital bed, warm lighting, from below"
+      }
+    },
+    {
+      "id": "CG02_sm",
+      "genre": "SMプレイ",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, 1girl, 1boy, black hair, long hair, collar, leash, cowgirl position, girl on top, straddling, sex, vaginal, riding, dominant, smirk, sweat, blush, bedroom, red lighting, candles, from below"
+      }
+    },
+    {
+      "id": "CG03_tentacle",
+      "genre": "触手",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, 1girl, tentacles, tentacle sex, riding tentacle, cowgirl position, straddling, penetration, blonde hair, long hair, nude, large breasts, blush, panting, ahegao, sweat, dark cave, bioluminescent glow, from front"
+      }
+    },
+    {
+      "id": "CG04_wife",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, 1girl, 1boy, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, cowgirl position, girl on top, straddling, sex, vaginal, riding, panting, blush, embarrassed, bedroom, warm lighting, soft shadows, from below"
+      }
+    },
+    {
+      "id": "CG05_jk",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, 1girl, 1boy, school uniform, sailor uniform, blue skirt, skirt lifted, thighhighs, black hair, ponytail, cowgirl position, girl on top, straddling, sex, vaginal, riding, blush, embarrassed, shy, bedroom, afternoon light, from below"
+      }
+    },
+    {
+      "id": "CG06_ntr",
+      "genre": "NTR",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, 1girl, 1boy, married woman, wedding ring, brown hair, messy hair, cowgirl position, girl on top, straddling, sex, vaginal, riding, fucked silly, ahegao, tongue out, hotel bed, warm lighting, blush, sweat, from below"
+      }
+    },
+    {
+      "id": "CG07_fantasy",
+      "genre": "fantasy",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, 1girl, 1boy, elf, pointy ears, silver hair, long hair, green eyes, cowgirl position, girl on top, straddling, sex, vaginal, riding, nude, blush, panting, enchanted forest, moonlight, glowing, from below"
+      }
+    },
+    {
+      "id": "CG08_monster",
+      "genre": "monster girl (lamia)",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, purple hair, long hair, yellow slit eyes, 1boy, cowgirl position, girl on top, straddling, sex, vaginal, riding, tail wrapped around partner, nude, large breasts, blush, panting, underground den, warm candlelight, from below"
+      }
+    },
+    {
+      "id": "CG09_futanari",
+      "genre": "futanari (clitoris hypertrophy)",
+      "type": "explicit",
+      "subtype": "cowgirl",
+      "content": {
+        "default": "nsfw, explicit, 2girls, futanari, pink hair, short hair, cowgirl position, girl on top, straddling, sex, vaginal, enlarged clitoris, riding, nude, blush, panting, embarrassed, bedroom, warm lighting, from below"
       }
     }
   ]
