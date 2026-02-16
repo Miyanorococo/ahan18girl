@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "description": "イラストノベル本番 - JK恋愛ストーリー 33シーン+おまけ",
+    "description": "イラストノベル本番 - Book 0216a - JK恋愛ストーリー",
     "created": "2026-02-16",
     "version": "prod-jk-v1",
     "character": "黒髪ロング、青い目、巨乳JK",
@@ -9,7 +9,9 @@
       123,
       456
     ],
-    "note": "100 images per model (33×3 + 1 bonus)"
+    "note": "100 images per model (33×3 + 1 bonus)",
+    "book_id": "0216a",
+    "book_theme": "JK恋愛ストーリー（黒髪巨乳）"
   },
   "negative_common": {
     "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
@@ -130,7 +132,7 @@
   },
   "prompts": [
     {
-      "id": "S00_cover",
+      "id": "0216a_S00_cover",
       "genre": "JK/学園",
       "type": "sensitive",
       "subtype": "cover",
@@ -139,7 +141,7 @@
       }
     },
     {
-      "id": "S01_standing",
+      "id": "0216a_S01_standing",
       "genre": "JK/学園",
       "type": "sensitive",
       "subtype": "standing_portrait",
@@ -148,7 +150,7 @@
       }
     },
     {
-      "id": "S02_date1",
+      "id": "0216a_S02_date1",
       "genre": "JK/学園",
       "type": "safe",
       "subtype": "date",
@@ -157,7 +159,7 @@
       }
     },
     {
-      "id": "S03_date2",
+      "id": "0216a_S03_date2",
       "genre": "JK/学園",
       "type": "safe",
       "subtype": "date",
@@ -166,7 +168,7 @@
       }
     },
     {
-      "id": "S04_flirting",
+      "id": "0216a_S04_flirting",
       "genre": "JK/学園",
       "type": "sensitive",
       "subtype": "flirting",
@@ -175,7 +177,7 @@
       }
     },
     {
-      "id": "S05_kiss",
+      "id": "0216a_S05_kiss",
       "genre": "JK/学園",
       "type": "sensitive",
       "subtype": "kiss",
@@ -184,7 +186,7 @@
       }
     },
     {
-      "id": "S06a_finger_normal",
+      "id": "0216a_S06a_finger_normal",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "fingering",
@@ -193,7 +195,7 @@
       }
     },
     {
-      "id": "S06b_finger_squirt",
+      "id": "0216a_S06b_finger_squirt",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "squirting",
@@ -202,7 +204,7 @@
       }
     },
     {
-      "id": "S07a_oral_normal",
+      "id": "0216a_S07a_oral_normal",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "oral",
@@ -211,7 +213,7 @@
       }
     },
     {
-      "id": "S07b_oral_cum",
+      "id": "0216a_S07b_oral_cum",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "ejaculation",
@@ -220,7 +222,7 @@
       }
     },
     {
-      "id": "S08a_sex1_before",
+      "id": "0216a_S08a_sex1_before",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "pre_insertion",
@@ -229,7 +231,7 @@
       }
     },
     {
-      "id": "S08b_sex1_insert",
+      "id": "0216a_S08b_sex1_insert",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "insertion",
@@ -238,7 +240,7 @@
       }
     },
     {
-      "id": "S08c_sex1_pos1",
+      "id": "0216a_S08c_sex1_pos1",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "sex",
@@ -247,7 +249,7 @@
       }
     },
     {
-      "id": "S08d_sex1_pos2",
+      "id": "0216a_S08d_sex1_pos2",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "sex",
@@ -256,7 +258,7 @@
       }
     },
     {
-      "id": "S08e_sex1_almost",
+      "id": "0216a_S08e_sex1_almost",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "orgasm",
@@ -265,7 +267,7 @@
       }
     },
     {
-      "id": "S08f_sex1_climax",
+      "id": "0216a_S08f_sex1_climax",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "orgasm",
@@ -274,7 +276,7 @@
       }
     },
     {
-      "id": "S08g_sex1_after",
+      "id": "0216a_S08g_sex1_after",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "afterglow",
@@ -283,7 +285,7 @@
       }
     },
     {
-      "id": "S09_bath",
+      "id": "0216a_S09_bath",
       "genre": "JK/学園",
       "type": "sensitive",
       "subtype": "bath",
@@ -292,7 +294,7 @@
       }
     },
     {
-      "id": "S10a_toy_normal",
+      "id": "0216a_S10a_toy_normal",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "toy",
@@ -301,7 +303,7 @@
       }
     },
     {
-      "id": "S10b_toy_orgasm",
+      "id": "0216a_S10b_toy_orgasm",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "orgasm",
@@ -310,7 +312,7 @@
       }
     },
     {
-      "id": "S11_lactation",
+      "id": "0216a_S11_lactation",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "lactation",
@@ -319,7 +321,7 @@
       }
     },
     {
-      "id": "S12a_sex2_before",
+      "id": "0216a_S12a_sex2_before",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "pre_insertion",
@@ -328,7 +330,7 @@
       }
     },
     {
-      "id": "S12b_sex2_insert",
+      "id": "0216a_S12b_sex2_insert",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "insertion",
@@ -337,7 +339,7 @@
       }
     },
     {
-      "id": "S12c_sex2_quick_orgasm",
+      "id": "0216a_S12c_sex2_quick_orgasm",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "orgasm",
@@ -346,7 +348,7 @@
       }
     },
     {
-      "id": "S12d_sex2_pos1",
+      "id": "0216a_S12d_sex2_pos1",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "sex",
@@ -355,7 +357,7 @@
       }
     },
     {
-      "id": "S12e_sex2_pos2",
+      "id": "0216a_S12e_sex2_pos2",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "sex",
@@ -364,7 +366,7 @@
       }
     },
     {
-      "id": "S12f_sex2_almost",
+      "id": "0216a_S12f_sex2_almost",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "orgasm",
@@ -373,7 +375,7 @@
       }
     },
     {
-      "id": "S12g_sex2_climax",
+      "id": "0216a_S12g_sex2_climax",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "orgasm",
@@ -382,7 +384,7 @@
       }
     },
     {
-      "id": "S12h_sex2_after",
+      "id": "0216a_S12h_sex2_after",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "afterglow",
@@ -391,7 +393,7 @@
       }
     },
     {
-      "id": "S13_pregnant",
+      "id": "0216a_S13_pregnant",
       "genre": "JK/学園",
       "type": "sensitive",
       "subtype": "pregnant",
@@ -400,7 +402,7 @@
       }
     },
     {
-      "id": "S14_pregnant_sex",
+      "id": "0216a_S14_pregnant_sex",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "sex",
@@ -409,7 +411,7 @@
       }
     },
     {
-      "id": "S15_birth",
+      "id": "0216a_S15_birth",
       "genre": "JK/学園",
       "type": "explicit",
       "subtype": "birth",
@@ -418,7 +420,7 @@
       }
     },
     {
-      "id": "S16_future",
+      "id": "0216a_S16_future",
       "genre": "JK/学園",
       "type": "safe",
       "subtype": "standing_portrait",
@@ -427,7 +429,7 @@
       }
     },
     {
-      "id": "S99_bonus_swimsuit",
+      "id": "0216a_S99_bonus_swimsuit",
       "genre": "JK/学園",
       "type": "sensitive",
       "subtype": "bonus",

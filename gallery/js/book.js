@@ -44,17 +44,24 @@ function bookMixin() {
         if (!dateMatch) continue;
         const date = dateMatch[1];
 
-        // Extract prefix (letters before first digit): S, SQ, CG, FS, DY, UP, P, NR, etc.
-        const prefixMatch = pid.match(/^([A-Za-z]+)\d/);
-        if (!prefixMatch) continue;
-        const prefix = prefixMatch[1];
+        // Extract book ID: "0216a_S00_cover" → bookId="0216a", or legacy "S00_cover" → bookId="S"
+        const bookIdMatch = pid.match(/^(\d{4}[a-z])_/);
+        let bookId;
+        if (bookIdMatch) {
+          bookId = bookIdMatch[1]; // new format: 0216a
+        } else {
+          // Legacy: group by letter prefix (S, SQ, etc.)
+          const prefixMatch = pid.match(/^([A-Za-z]+)\d/);
+          if (!prefixMatch) continue;
+          bookId = prefixMatch[1];
+        }
 
-        const bookKey = `${date}_${prefix}`;
+        const bookKey = `${date}_${bookId}`;
         if (!bookMap[bookKey]) {
           bookMap[bookKey] = {
             id: bookKey,
             date,
-            prefix,
+            bookId,
             _models: new Set(),
             _scenes: new Set(),
             _exps: [],
@@ -65,13 +72,12 @@ function bookMixin() {
         bookMap[bookKey]._exps.push(exp);
       }
 
-      // Build book list - only production prefixes (S = story)
-      // Test prefixes (UP, P, FS, DY, SQ, CG, NR, TN, SM, R) are excluded
+      // Build book list - only books with proper book ID (0216a format) or S prefix
       const testPrefixes = new Set(['UP', 'P', 'FS', 'DY', 'SQ', 'CG', 'NR', 'TN', 'SM', 'R']);
       const books = [];
       for (const b of Object.values(bookMap)) {
         if (b._scenes.size < 2) continue;
-        if (testPrefixes.has(b.prefix)) continue; // skip test batches
+        if (testPrefixes.has(b.bookId)) continue;
 
         // Detect theme from prompt summaries
         const summaries = b._exps.map(e => e.prompt_summary || '').filter(Boolean);
@@ -92,7 +98,7 @@ function bookMixin() {
           'TN': '触手',
           'SM': 'SMプレイ',
         };
-        const theme = themeNames[b.prefix] || topGenre || b.prefix;
+        const theme = themeNames[b.bookId] || topGenre || b.bookId;
 
         // Find cover thumbnail (first scene sorted by prompt_id)
         const sortedExps = [...b._exps].sort((a, b) => (a.prompt_id || '').localeCompare(b.prompt_id || ''));
@@ -103,7 +109,7 @@ function bookMixin() {
           id: b.id,
           date: b.date,
           dateFormatted: `${b.date.slice(0,4)}/${b.date.slice(4,6)}/${b.date.slice(6,8)}`,
-          prefix: b.prefix,
+          bookId: b.bookId,
           theme,
           genre: topGenre,
           modelCount: b._models.size,
@@ -136,21 +142,27 @@ function bookMixin() {
     /**
      * Open a specific book. Loads all pages for that date+prefix.
      */
-    async openBook(bookId) {
+    async openBook(bookKey) {
       this.book.loading = true;
-      const bookInfo = this.book.books.find(b => b.id === bookId);
+      const bookInfo = this.book.books.find(b => b.id === bookKey);
       if (!bookInfo) { this.book.loading = false; return; }
 
       this.book.currentBook = bookInfo;
-      const { date, prefix } = bookInfo;
+      const { date, bookId } = bookInfo;
 
       // Filter experiments for this book
       const bookExps = this.experiments.filter(e => {
         const dateMatch = e.id.match(/^(\d{8})_/);
         if (!dateMatch || dateMatch[1] !== date) return false;
         const pid = e.prompt_id || '';
-        const prefixMatch = pid.match(/^([A-Za-z]+)\d/);
-        return prefixMatch && prefixMatch[1] === prefix;
+        // Match by book ID
+        if (/^\d{4}[a-z]_/.test(pid)) {
+          const m = pid.match(/^(\d{4}[a-z])_/);
+          return m && m[1] === bookId;
+        }
+        // Legacy: match by letter prefix
+        const m = pid.match(/^([A-Za-z]+)\d/);
+        return m && m[1] === bookId;
       });
 
       // Group by scene
