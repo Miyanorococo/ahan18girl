@@ -2384,21 +2384,32 @@ body {
 }
 
 /* === Book View === */
-.book-view { max-width: 900px; margin: 0 auto; }
+.book-view { max-width: 1100px; margin: 0 auto; }
 
-.book-nav {
-  display: flex; align-items: center; justify-content: center;
-  gap: 20px; padding: 12px 0; margin-bottom: 8px;
+.book-top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 8px 0; margin-bottom: 8px; flex-wrap: wrap;
 }
-.book-page-info { font-size: 0.9rem; color: var(--text-secondary); min-width: 200px; text-align: center; }
-
+.book-page-info { font-size: 0.9rem; color: var(--text-secondary); white-space: nowrap; }
 .book-models {
-  display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
-  margin-bottom: 12px;
+  display: flex; gap: 6px; flex-wrap: wrap;
 }
+
+.book-main {
+  display: flex; align-items: center; gap: 8px;
+}
+.book-side-btn {
+  flex: 0 0 48px; height: 80px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; color: var(--text-primary); font-size: 1.4rem;
+  cursor: pointer; transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.book-side-btn:hover:not(:disabled) { background: rgba(255,255,255,0.12); }
+.book-side-btn:disabled { opacity: 0.2; cursor: default; }
 
 .book-image {
-  position: relative; cursor: pointer;
+  flex: 1; position: relative; cursor: pointer;
   display: flex; justify-content: center; align-items: center;
   background: rgba(0,0,0,0.3); border-radius: var(--radius-card);
   min-height: 400px; overflow: hidden;

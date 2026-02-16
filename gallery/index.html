@@ -718,33 +718,33 @@
             <span class="book-title" x-text="'#' + (book.books.indexOf(book.currentBook) + 1) + ' ' + book.currentBook.theme + ' (' + book.currentBook.dateFormatted + ')'"></span>
           </div>
 
-          <!-- Page counter + nav -->
-          <div class="book-nav">
-            <button class="btn-ghost" @click="bookPrev()" :disabled="book.currentPage <= 0">&larr; Prev</button>
+          <!-- Page info + Model selector -->
+          <div class="book-top-bar">
             <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
-            <button class="btn-ghost" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1">Next &rarr;</button>
+            <div class="book-models">
+              <template x-for="model in book.allModels" :key="'bm-' + model">
+                <button class="filter-btn"
+                        :class="{'active': book.selectedModel === model}"
+                        @click="bookSelectModel(model)"
+                        x-text="displayModelName(model)"></button>
+              </template>
+            </div>
           </div>
 
-          <!-- Model selector -->
-          <div class="book-models">
-            <template x-for="model in book.allModels" :key="'bm-' + model">
-              <button class="filter-btn"
-                      :class="{'active': book.selectedModel === model}"
-                      @click="bookSelectModel(model)"
-                      x-text="displayModelName(model)"></button>
-            </template>
-          </div>
-
-          <!-- Main image -->
-          <div class="book-image" @click="bookOpenLightbox()">
-            <img :src="bookCurrentImage()?.full_url || bookCurrentImage()?.thumb_url" :alt="bookCurrentPage()?.scene">
-            <div class="book-rating-overlay" x-show="getImageRating(bookCurrentImage())">
-              <span x-text="getImageRating(bookCurrentImage()) >= 5 ? '★' : getImageRating(bookCurrentImage()) >= 2 ? '♥' : getImageRating(bookCurrentImage()) < 0 ? '👎' : ''"></span>
+          <!-- Main area: Prev | Image | Next -->
+          <div class="book-main">
+            <button class="book-side-btn" @click="bookPrev()" :disabled="book.currentPage <= 0">&larr;</button>
+            <div class="book-image" @click="bookOpenLightbox()">
+              <img :src="bookCurrentImage()?.full_url || bookCurrentImage()?.thumb_url" :alt="bookCurrentPage()?.scene">
+              <div class="book-rating-overlay" x-show="getImageRating(bookCurrentImage())">
+                <span x-text="getImageRating(bookCurrentImage()) >= 5 ? '★' : getImageRating(bookCurrentImage()) >= 2 ? '♥' : getImageRating(bookCurrentImage()) < 0 ? '👎' : ''"></span>
+              </div>
+              <div class="book-ai-overlay" x-show="getAestheticScore(bookCurrentImage())"
+                   :class="{'high': getAestheticScore(bookCurrentImage()) >= 0.7, 'low': getAestheticScore(bookCurrentImage()) < 0.4}">
+                <span x-text="'AI ' + ((getAestheticScore(bookCurrentImage()) || 0) * 100).toFixed(0)"></span>
+              </div>
             </div>
-            <div class="book-ai-overlay" x-show="getAestheticScore(bookCurrentImage())"
-                 :class="{'high': getAestheticScore(bookCurrentImage()) >= 0.7, 'low': getAestheticScore(bookCurrentImage()) < 0.4}">
-              <span x-text="'AI ' + ((getAestheticScore(bookCurrentImage()) || 0) * 100).toFixed(0)"></span>
-            </div>
+            <button class="book-side-btn" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1">&rarr;</button>
           </div>
 
           <!-- Quick rating -->
