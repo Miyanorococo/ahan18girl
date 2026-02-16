@@ -327,6 +327,14 @@ r18_anime/
 | sensitive | `leaning forward` + `floating hair` |
 | 恥じらい | `embarrassed, shy, bashful`（シーンに合わせ使い分け） |
 
+### Book View（ギャラリー機能）
+
+- `#/book` でBook一覧 → クリックでBook詳細（ページ送り+モデル/seed切替）
+- **Book = 同じ日付 + 同じプロンプトプレフィックス**（= 1バッチジョブ）
+- 本番プレフィックス `S` のみ表示。テスト用（UP, P, FS, DY, SQ, CG, NR, TN, SM, R）は除外
+- 同じ日に同じSプレフィックスで再生成 → 同じBookに入る（差分比較可能）
+- 別の日に生成 → 別のBook（Book番号が増える）
+
 ### 参照ファイル
 
 - `characters/` — キャラ定義JSON + ストーリーブロック定義
