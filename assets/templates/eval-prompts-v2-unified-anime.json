@@ -12,7 +12,7 @@
       789,
       1024
     ],
-    "total_images": "122 prompts × 5 seeds × 13 models = 7,930 images",
+    "total_images": "122 prompts × 5 seeds × 6 models = 3660 images",
     "note": "v2.7: cross-eyed for ejac post-cum, fucked_silly for sex intensity",
     "version": "v2-unified"
   },
@@ -29,8 +29,6 @@
     "A_illustrious": {
       "models": [
         "wai-nsfw-illustrious-v16",
-        "wai-nsfw-illustrious-v14",
-        "wai-nsfw-illustrious-v12",
         "wai-nsfw-illustrious-v11",
         "wai-branch-rouwei"
       ],
@@ -47,46 +45,11 @@
       "quality_suffix": "",
       "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
     },
-    "A2_illustrij": {
-      "models": [
-        "illustrij-v20"
-      ],
-      "cfg": 7,
-      "steps": 30,
-      "sampler": "euler_ancestral",
-      "scheduler": "sgm_uniform",
-      "clip_skip": 2,
-      "resolution": {
-        "width": 832,
-        "height": 1216
-      },
-      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
-      "quality_suffix": "",
-      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
-    },
     "B_nova": {
       "models": [
         "nova-anime-xl-il"
       ],
       "cfg": 5,
-      "steps": 25,
-      "sampler": "euler_ancestral",
-      "scheduler": "normal",
-      "clip_skip": 2,
-      "resolution": {
-        "width": 1024,
-        "height": 1536
-      },
-      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
-      "quality_suffix": "",
-      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
-    },
-    "C_pony": {
-      "models": [
-        "autismmix-sdxl",
-        "pony-diffusion-v6-xl"
-      ],
-      "cfg": 7,
       "steps": 25,
       "sampler": "euler_ancestral",
       "scheduler": "normal",
@@ -159,25 +122,6 @@
       "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
       "quality_suffix": "",
       "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
-    },
-    "F_sd15": {
-      "models": [
-        "dreamshaper-8",
-        "aam-anylora-anime-mix"
-      ],
-      "cfg": 8,
-      "steps": 25,
-      "sampler": "dpmpp_sde",
-      "scheduler": "karras",
-      "clip_skip": 2,
-      "resolution": {
-        "width": 512,
-        "height": 768
-      },
-      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
-      "quality_suffix": "",
-      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers",
-      "_note": "BadDream/UnrealisticDream embeddingは未インストールのため除外。インストール後に追加可"
     }
   },
   "prompts": [
