@@ -400,13 +400,18 @@
                            @click="openModelGridLightbox(card)">
                         <img :src="getCardImage(card).thumb_url" :alt="getCardImage(card).name" loading="lazy">
                       </div>
-                      <!-- Score display -->
-                      <div class="mg-scores" x-show="getImageRating(getCardImage(card))">
-                        <span x-text="getImageRating(getCardImage(card)) >= 5 ? '★' : getImageRating(getCardImage(card)) >= 2 ? '♥' : getImageRating(getCardImage(card)) < 0 ? '👎' : ''"></span>
+                      <!-- Score + AI score -->
+                      <div class="mg-image-info">
+                        <span class="mg-rating-badge" x-show="getImageRating(getCardImage(card))"
+                              x-text="getImageRating(getCardImage(card)) >= 5 ? '★' : getImageRating(getCardImage(card)) >= 2 ? '♥' : getImageRating(getCardImage(card)) < 0 ? '👎' : ''"></span>
+                        <span class="mg-ai-score"
+                              x-show="getAestheticScore(getCardImage(card))"
+                              :class="{'high': getAestheticScore(getCardImage(card)) >= 0.7, 'low': getAestheticScore(getCardImage(card)) < 0.4}"
+                              x-text="'AI ' + ((getAestheticScore(getCardImage(card)) || 0) * 100).toFixed(0)"></span>
                       </div>
-                      <!-- Comment -->
-                      <div class="mg-comment" x-show="getImageComment(getCardImage(card))"
-                           x-text="getImageComment(getCardImage(card))"></div>
+                      <!-- Prompt -->
+                      <div class="mg-prompt" x-show="card.detail?.metadata?.prompt?.positive"
+                           x-text="(card.detail?.metadata?.prompt?.positive || '').slice(0, 120) + '...'"></div>
                     </div>
                   </template>
                   <template x-if="!getCardImage(card)">

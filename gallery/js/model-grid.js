@@ -252,10 +252,17 @@ function modelGridMixin() {
     },
 
     getCardImage(card) {
+      let img = null;
       if (this.modelGrid.selectedSeed) {
-        return card.seedMap[this.modelGrid.selectedSeed] || null;
+        img = card.seedMap[this.modelGrid.selectedSeed] || null;
+      } else {
+        img = card.images[0] || null;
       }
-      return card.images[0] || null;
+      // Attach experiment detail for AI score lookup
+      if (img && !img._mgExperiment) {
+        img._mgExperiment = card.detail;
+      }
+      return img;
     },
 
     getCardImages(card) {

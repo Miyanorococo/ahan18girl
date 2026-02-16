@@ -345,7 +345,7 @@ document.addEventListener('alpine:init', () => {
     /** Get aesthetic score for an image from experiment metadata */
     getAestheticScore(img) {
       if (!img?.name) return null;
-      const exp = this.lightbox?.sourceExperiment || this.currentExperiment;
+      const exp = img._mgExperiment || this.lightbox?.sourceExperiment || this.currentExperiment;
       return exp?.metadata?.aesthetic_scores?.[img.name] || null;
     },
 
