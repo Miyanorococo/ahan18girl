@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery New</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">filter_drama</span>
+        <h1>Gallery</h1>
+      </div>
+      
+      <nav class="nav-menu">
+        <button class="nav-item active" data-view="dashboard">
+          <span class="material-icons-round">dashboard</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-view="experiments">
+          <span class="material-icons-round">science</span>
+          <span>Experiments</span>
+        </button>
+        <button class="nav-item" data-view="productions">
+          <span class="material-icons-round">collections</span>
+          <span>Productions</span>
+        </button>
+        <button class="nav-item" data-view="compare">
+          <span class="material-icons-round">compare</span>
+          <span>Compare</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="theme-toggle" id="themeToggle">
+          <span class="material-icons-round">dark_mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="breadcrumbs">
+          <span class="current-view-title">Dashboard</span>
+        </div>
+        <div class="top-actions">
+          <div class="search-bar">
+            <span class="material-icons-round">search</span>
+            <input type="text" placeholder="Search experiments..." id="globalSearch">
+          </div>
+        </div>
+      </header>
+
+      <!-- View Container -->
+      <div id="view-container" class="view-container">
+        <!-- Dashboard View -->
+        <div class="view active" id="view-dashboard">
+          <div class="dashboard-grid">
+            <div class="kpi-card">
+              <h3>Total Experiments</h3>
+              <div class="value" id="kpi-total-exp">-</div>
+            </div>
+            <div class="kpi-card">
+              <h3>Total Images</h3>
+              <div class="value" id="kpi-total-img">-</div>
+            </div>
+             <div class="kpi-card">
+              <h3>Favorites</h3>
+              <div class="value" id="kpi-fav">-</div>
+            </div>
+          </div>
+          
+          <div class="section-title">Recent Experiments</div>
+          <div class="experiments-grid" id="dashboard-recent-grid">
+              <!-- JS will populate -->
+          </div>
+        </div>
+
+        <!-- Experiments View -->
+        <div class="view" id="view-experiments">
+          <div class="filters-bar">
+             <select id="filter-model" class="filter-select"><option value="">All Models</option></select>
+             <select id="filter-genre" class="filter-select"><option value="">All Genres</option></select>
+             <div class="view-toggles">
+               <button class="icon-btn active" data-layout="grid"><span class="material-icons-round">grid_view</span></button>
+               <button class="icon-btn" data-layout="list"><span class="material-icons-round">view_list</span></button>
+             </div>
+          </div>
+          <div class="experiments-grid" id="experiments-grid">
+            <!-- JS will populate -->
+          </div>
+           <div class="pagination" id="experiments-pagination"></div>
+        </div>
+        
+        <!-- Experiment Detail View (Overlay or separate view) -->
+        <div class="view" id="view-detail">
+             <div class="detail-header">
+                 <button class="back-btn"><span class="material-icons-round">arrow_back</span> Back</button>
+                 <h2 id="detail-title">Experiment Title</h2>
+             </div>
+             <div class="detail-content">
+                 <div class="detail-sidebar">
+                     <div class="meta-group">
+                         <label>Model</label>
+                         <div id="detail-model"></div>
+                     </div>
+                      <div class="meta-group">
+                         <label>Prompt</label>
+                         <div id="detail-prompt" class="prompt-text"></div>
+                     </div>
+                 </div>
+                 <div class="detail-gallery" id="detail-gallery">
+                     <!-- Images -->
+                 </div>
+             </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
