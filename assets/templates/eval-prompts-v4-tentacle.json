@@ -13,8 +13,8 @@
       1024
     ],
     "total_images": "122 prompts × 5 seeds × 13 models = 7,930 images",
-    "note": "Nurse theme for Step Functions parallel test. NR prefix.",
-    "version": "v6-nurse-stepfunctions-test"
+    "note": "Tentacle NSFW prompts. TN prefix.",
+    "version": "v4-tentacle"
   },
   "negative_common": {
     "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
@@ -155,43 +155,43 @@
   },
   "prompts": [
     {
-      "id": "NR01_ex",
-      "genre": "ナース",
+      "id": "TN01_ex",
+      "genre": "触手",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, nurse, white nurse uniform unbuttoned, cleavage, short skirt, white thigh-high stockings, garter belt visible, sitting on hospital bed, legs crossed, seductive smile, stethoscope around neck, hospital room, medical equipment, bright fluorescent lighting"
+        "default": "nsfw, explicit, 1girl, solo, tentacles, tentacle sex, restrained, large breasts, nipples, spread legs, penetration, vaginal, multiple tentacles wrapping around body, slime, wet skin, ahegao, rolling eyes, tongue out, tears, dark dungeon, glowing tentacles, purple and green bioluminescence, from below angle"
       }
     },
     {
-      "id": "NR02_ex",
-      "genre": "ナース",
+      "id": "TN02_ex",
+      "genre": "触手",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, nurse, topless, nurse cap on head, white skirt pulled up, no panties, bending over hospital bed, looking back at viewer over shoulder, blushing, large breasts, navel, hospital curtain background, soft lighting"
+        "default": "nsfw, explicit, 1girl, solo, school uniform torn, tentacles, tentacle pit, suspended in air by tentacles, arms restrained above head, legs spread apart, multiple tentacles, tentacle around breasts, tentacle between thighs, crying, blushing, saliva, dark cave, eerie green lighting, detailed tentacle texture, suckers visible"
       }
     },
     {
-      "id": "NR03_se",
-      "genre": "ナース",
+      "id": "TN03_ex",
+      "genre": "触手",
+      "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, swimsuit pulled aside, pool, underwater tentacles emerging from water, tentacle wrapping around waist, tentacle groping breasts, frightened expression, open mouth, wet hair clinging to face, blue water, sunlight filtering through water surface, dynamic composition"
+      }
+    },
+    {
+      "id": "TN04_ex",
+      "genre": "触手",
+      "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nude, onsen hot spring, tentacles emerging from rocks, steam, multiple thick tentacles coiling around legs and torso, tentacle penetration, orgasm face, head tilted back, eyes closed, blush, sweat, traditional japanese wooden bath, night sky, moon"
+      }
+    },
+    {
+      "id": "TN05_se",
+      "genre": "触手",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, sensitive, 1girl, solo, sexy nurse costume, very short white dress, deep v-neck, red cross emblem, white stockings, nurse cap, holding syringe playfully, winking, standing in corridor, hospital hallway, windows, natural daylight, cheerful atmosphere"
-      }
-    },
-    {
-      "id": "NR04_ex",
-      "genre": "ナース",
-      "type": "explicit",
-      "content": {
-        "default": "nsfw, explicit, 1girl, solo, nude, wearing only nurse cap and stethoscope, lying on examination table, arms above head, spread legs, blushing, embarrassed expression, medical office, examination light overhead, clinical white room, detailed anatomy"
-      }
-    },
-    {
-      "id": "NR05_sf",
-      "genre": "ナース",
-      "type": "safe",
-      "content": {
-        "default": "1girl, solo, professional nurse, white scrubs uniform, standing confidently, arms crossed, gentle caring smile, long hair in ponytail, hospital ward background, patient beds, monitors, warm morning sunlight through window, realistic medical setting, portrait photography"
+        "default": "nsfw, sensitive, 1girl, solo, fantasy warrior woman, torn armor, tentacle monster encounter, large tentacles wrapping around body, struggling pose, determined expression, sword dropped nearby, dark forest background, magical glow, dramatic lighting, rain, wet skin, detailed fantasy armor remnants"
       }
     }
   ]

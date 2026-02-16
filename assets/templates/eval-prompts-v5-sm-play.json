@@ -13,8 +13,8 @@
       1024
     ],
     "total_images": "122 prompts × 5 seeds × 13 models = 7,930 images",
-    "note": "Nurse theme for Step Functions parallel test. NR prefix.",
-    "version": "v6-nurse-stepfunctions-test"
+    "note": "SM play prompts. SM prefix. Both NSFW and SFW.",
+    "version": "v5-sm-play"
   },
   "negative_common": {
     "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
@@ -155,43 +155,83 @@
   },
   "prompts": [
     {
-      "id": "NR01_ex",
-      "genre": "ナース",
+      "id": "SM01_ex",
+      "genre": "SMプレイ",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, nurse, white nurse uniform unbuttoned, cleavage, short skirt, white thigh-high stockings, garter belt visible, sitting on hospital bed, legs crossed, seductive smile, stethoscope around neck, hospital room, medical equipment, bright fluorescent lighting"
+        "default": "nsfw, explicit, 1girl, solo, bdsm, rope bondage, shibari, red rope tied around body, arms bound behind back, kneeling on wooden floor, nude, large breasts, nipples, blindfold, ball gag, drooling, blushing, sweat, dimly lit japanese room, tatami, candle light, shadows, submissive pose"
       }
     },
     {
-      "id": "NR02_ex",
-      "genre": "ナース",
+      "id": "SM02_ex",
+      "genre": "SMプレイ",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, nurse, topless, nurse cap on head, white skirt pulled up, no panties, bending over hospital bed, looking back at viewer over shoulder, blushing, large breasts, navel, hospital curtain background, soft lighting"
+        "default": "nsfw, explicit, 1girl, solo, dominatrix outfit, black leather corset, thigh-high leather boots, fishnet stockings, holding riding crop, standing with legs apart, confident smirk, looking down at viewer, dark dungeon room, chains on wall, red accent lighting, dramatic shadows, long black hair"
       }
     },
     {
-      "id": "NR03_se",
-      "genre": "ナース",
-      "type": "sensitive",
-      "content": {
-        "default": "nsfw, sensitive, 1girl, solo, sexy nurse costume, very short white dress, deep v-neck, red cross emblem, white stockings, nurse cap, holding syringe playfully, winking, standing in corridor, hospital hallway, windows, natural daylight, cheerful atmosphere"
-      }
-    },
-    {
-      "id": "NR04_ex",
-      "genre": "ナース",
+      "id": "SM03_ex",
+      "genre": "SMプレイ",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, nude, wearing only nurse cap and stethoscope, lying on examination table, arms above head, spread legs, blushing, embarrassed expression, medical office, examination light overhead, clinical white room, detailed anatomy"
+        "default": "nsfw, explicit, 1girl, solo, suspended bondage, hanging from ceiling rope, arms tied above head, legs spread with rope, nude, dripping wax on stomach, red candle wax trails on skin, pain and pleasure expression, tears, blushing, dark room, spotlight from above, sweat glistening on body"
       }
     },
     {
-      "id": "NR05_sf",
-      "genre": "ナース",
+      "id": "SM04_ex",
+      "genre": "SMプレイ",
+      "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, maid outfit, collar with leash, kneeling on all fours, pet play, cat ears headband, tail plug, blushing, tongue out, looking up at viewer with pleading eyes, short skirt lifted, no underwear, luxury bedroom, plush carpet, soft lighting"
+      }
+    },
+    {
+      "id": "SM05_ex",
+      "genre": "SMプレイ",
+      "type": "explicit",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, tied to bed, spread eagle position, wrists and ankles bound to bedposts with silk ribbons, nude, blindfolded with black silk, vibrator between legs, arching back, moaning, open mouth, messy hair on pillow, white bed sheets, bedroom, soft warm lighting"
+      }
+    },
+    {
+      "id": "SM01_sf",
+      "genre": "SMプレイ",
       "type": "safe",
       "content": {
-        "default": "1girl, solo, professional nurse, white scrubs uniform, standing confidently, arms crossed, gentle caring smile, long hair in ponytail, hospital ward background, patient beds, monitors, warm morning sunlight through window, realistic medical setting, portrait photography"
+        "default": "1girl, solo, elegant shibari rope art, decorative red rope pattern over black dress, artistic bondage fashion, standing gracefully, serene expression, eyes closed, japanese aesthetic, minimalist white background, studio photography, fashion editorial style, beautiful rope patterns on torso"
+      }
+    },
+    {
+      "id": "SM02_sf",
+      "genre": "SMプレイ",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, gothic fashion, black leather choker with ring, black corset over white blouse, long black skirt, holding riding crop casually, confident pose, slight smile, dark elegant room, victorian furniture, candlelight, moody atmosphere, fashion portrait photography"
+      }
+    },
+    {
+      "id": "SM03_sf",
+      "genre": "SMプレイ",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, japanese rope art exhibition, model wearing white kimono partially open, decorative shibari rope over kimono, artistic composition, traditional japanese room, shoji screen background, natural daylight, zen aesthetic, cultural art photography, serene expression"
+      }
+    },
+    {
+      "id": "SM04_sf",
+      "genre": "SMプレイ",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, cat ear headband, maid outfit with lace collar and small bell, kneeling politely, hands on lap, cute shy smile, looking up, cozy cafe interior, warm ambient lighting, kawaii aesthetic, cosplay photography, full outfit visible"
+      }
+    },
+    {
+      "id": "SM05_sf",
+      "genre": "SMプレイ",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, silk ribbons wrapped around wrists decoratively, wearing elegant black lingerie as fashion, sitting on edge of bed, crossed legs, mysterious confident expression, luxury hotel room, dramatic window light, boudoir photography style, artistic and tasteful composition"
       }
     }
   ]

@@ -1,0 +1,164 @@
+{
+  "_meta": {
+    "description": "dynamic_pose vs specific tags A/B test",
+    "created": "2026-02-16",
+    "version": "test-dynamic",
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  },
+  "negative_common": {
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, "
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": [
+        "wai-nsfw-illustrious-v16",
+        "wai-nsfw-illustrious-v14"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits"
+    },
+    "D_animagine": {
+      "models": [
+        "animagine-xl-4.0"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, very aesthetic, absurdres, ",
+      "quality_suffix": "",
+      "negative": "(worst quality:1.2), bad anatomy, bad hands, extra digits, fewer digits"
+    },
+    "C_pony": {
+      "models": [
+        "pony-diffusion-v6-xl"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "score_9, score_8_up, score_7_up, ",
+      "quality_suffix": "",
+      "negative": "(worst quality:1.2), illustration, 3d, 2d, painting, bad anatomy, bad hands"
+    }
+  },
+  "prompts": [
+    {
+      "id": "DY01_control_standing",
+      "genre": "dynamic_test",
+      "type": "sensitive",
+      "subtype": "control_static",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, blonde hair, long hair, blue eyes, school uniform, sailor uniform, standing, looking at viewer, smile, blush, classroom, afternoon light, from front"
+      }
+    },
+    {
+      "id": "DY02_dynamic_pose",
+      "genre": "dynamic_test",
+      "type": "sensitive",
+      "subtype": "dynamic_pose",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, blonde hair, long hair, blue eyes, school uniform, sailor uniform, dynamic pose, looking at viewer, smile, blush, classroom, afternoon light, from front"
+      }
+    },
+    {
+      "id": "DY03_dynamic_angle",
+      "genre": "dynamic_test",
+      "type": "sensitive",
+      "subtype": "dynamic_angle",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, blonde hair, long hair, blue eyes, school uniform, sailor uniform, standing, looking at viewer, smile, blush, classroom, afternoon light, dynamic angle"
+      }
+    },
+    {
+      "id": "DY04_floating_hair",
+      "genre": "dynamic_test",
+      "type": "sensitive",
+      "subtype": "floating_hair",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, blonde hair, long hair, floating hair, blue eyes, school uniform, sailor uniform, standing, looking at viewer, smile, blush, classroom, afternoon light, from front"
+      }
+    },
+    {
+      "id": "DY05_wind",
+      "genre": "dynamic_test",
+      "type": "sensitive",
+      "subtype": "wind_effect",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, blonde hair, long hair, hair blowing, blue eyes, school uniform, sailor uniform, skirt lift, wind, standing, looking at viewer, smile, blush, outdoor, rooftop, sky, afternoon sunlight"
+      }
+    },
+    {
+      "id": "DY06_arched_back",
+      "genre": "dynamic_test",
+      "type": "explicit",
+      "subtype": "arched_back",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, blonde hair, long hair, blue eyes, nude, arched back, lying on bed, arms above head, blush, sweat, panting, bedroom, warm lighting, from above"
+      }
+    },
+    {
+      "id": "DY07_dynamic_nsfw",
+      "genre": "dynamic_test",
+      "type": "explicit",
+      "subtype": "dynamic_pose_nsfw",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, blonde hair, long hair, blue eyes, nude, dynamic pose, blush, sweat, panting, bedroom, warm lighting, from front"
+      }
+    },
+    {
+      "id": "DY08_twisted",
+      "genre": "dynamic_test",
+      "type": "explicit",
+      "subtype": "twisted_torso",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, blonde hair, long hair, blue eyes, nude, twisted torso, looking back, from behind, blush, shy, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "DY09_leaning",
+      "genre": "dynamic_test",
+      "type": "sensitive",
+      "subtype": "leaning_forward",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, blonde hair, long hair, blue eyes, school uniform, sailor uniform, leaning forward, cleavage, looking at viewer, smile, blush, classroom, desk, afternoon light, from front"
+      }
+    },
+    {
+      "id": "DY10_all_dynamic",
+      "genre": "dynamic_test",
+      "type": "sensitive",
+      "subtype": "all_combined",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, blonde hair, long hair, floating hair, blue eyes, school uniform, sailor uniform, dynamic pose, dynamic angle, wind, leaning forward, looking at viewer, smile, blush, outdoor, rooftop, sky, afternoon sunlight"
+      }
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "_meta": {
+    "description": "fucked_silly expression test - 5 variants × 13 models",
+    "created": "2026-02-16",
+    "version": "test-fucked-silly",
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  },
+  "negative_common": {
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, "
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": [
+        "wai-nsfw-illustrious-v16",
+        "wai-nsfw-illustrious-v14",
+        "wai-nsfw-illustrious-v12",
+        "wai-nsfw-illustrious-v11",
+        "wai-branch-rouwei"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits",
+      "quality_suffix": ""
+    },
+    "D_animagine": {
+      "models": [
+        "animagine-xl-4.0"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, very aesthetic, absurdres, ",
+      "negative": "(worst quality:1.2), bad anatomy, bad hands, extra digits, fewer digits",
+      "quality_suffix": ""
+    },
+    "B_nova": {
+      "models": [
+        "nova-anime-xl-il"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "negative": "bad quality, worst quality, bad anatomy, bad hands",
+      "quality_suffix": ""
+    },
+    "C_pony": {
+      "models": [
+        "pony-diffusion-v6-xl",
+        "autismmix-sdxl"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "score_9, score_8_up, score_7_up, ",
+      "negative": "(worst quality:1.2), illustration, 3d, 2d, painting, bad anatomy, bad hands",
+      "quality_suffix": ""
+    },
+    "E_femix": {
+      "models": [
+        "femix-hassakuxl"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands",
+      "quality_suffix": ""
+    },
+    "A2_illustrij": {
+      "models": [
+        "illustrij-v20"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands",
+      "quality_suffix": ""
+    },
+    "F_sd15": {
+      "models": [
+        "dreamshaper-8",
+        "aam-anylora-anime-mix"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "dpmpp_2m_sde_karras",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 512,
+        "height": 768
+      },
+      "quality_prefix": "best quality, masterpiece, realistic, detailed, ",
+      "negative": "illustration, 3d, sepia, painting, cartoons, sketch, (worst quality:2), bad anatomy, bad hands",
+      "quality_suffix": ""
+    }
+  },
+  "prompts": [
+    {
+      "id": "FS01_ahegao_light",
+      "genre": "fucked_silly_test",
+      "type": "explicit",
+      "subtype": "ahegao_light",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, blonde hair, long hair, blue eyes, nude, lying on bed, after sex, fucked silly, ahegao, rolling eyes, tongue out, drooling, blush, sweat, messy hair, white sheets, bedroom, warm lighting, soft shadows, from above"
+      }
+    },
+    {
+      "id": "FS02_ahegao_intense",
+      "genre": "fucked_silly_test",
+      "type": "explicit",
+      "subtype": "ahegao_intense",
+      "content": {
+        "default": "nsfw, explicit, 1girl, 1boy, sex, vaginal, silver hair, red eyes, fucked silly, ahegao, rolling eyes, tongue out, drooling, tears of joy, trembling, orgasm, panting, spread legs, on bed, warm lighting, from above, blush, sweat"
+      }
+    },
+    {
+      "id": "FS03_cross_eyed",
+      "genre": "fucked_silly_test",
+      "type": "explicit",
+      "subtype": "cross_eyed",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, pink hair, twintails, green eyes, cross-eyed, dazed, confused expression, tongue out slightly, blush, sweat, nude, sitting on bed, after sex, cum on body, messy, bedroom, afternoon light, from front"
+      }
+    },
+    {
+      "id": "FS04_heart_pupils",
+      "genre": "fucked_silly_test",
+      "type": "explicit",
+      "subtype": "heart_pupils_combo",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, black hair, bob cut, heart-shaped pupils, fucked silly, ahegao, tongue out, drooling, saliva, blush, nude, large breasts, lying on back, spread legs, after sex, bedroom, soft lighting, detailed eyes, from above"
+      }
+    },
+    {
+      "id": "FS05_gentle_silly",
+      "genre": "fucked_silly_test",
+      "type": "explicit",
+      "subtype": "gentle_dazed",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, brown hair, ponytail, amber eyes, dazed, half-closed eyes, satisfied smile, tongue out slightly, blush, flushed, sweat, nude, lying in bed, after sex, relaxed pose, messy sheets, morning light, warm tones, from side"
+      }
+    }
+  ]
+}
