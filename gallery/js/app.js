@@ -36,6 +36,7 @@ document.addEventListener('alpine:init', () => {
     ...modelGridMixin(),
     ...dashboardMixin(),
     ...knowledgeBaseMixin(),
+    ...bookMixin(),
 
     // Debounced server rating save
     _ratingSaveTimer: null,
@@ -158,6 +159,8 @@ document.addEventListener('alpine:init', () => {
         this.loadExperiments().then(() => this.initDashboard());
       } else if (route === 'knowledge-base') {
         this.loadExperiments().then(() => this.initKnowledgeBase());
+      } else if (route === 'book') {
+        this.initBook(param || 'S');
       }
     },
 

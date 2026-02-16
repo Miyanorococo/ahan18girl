@@ -16,6 +16,7 @@
       <a :class="{'active': route === 'compare'}" @click.prevent="navigate('compare')">Compare</a>
       <a :class="{'active': route === 'model-grid'}" @click.prevent="navigate('model-grid')">Grid</a>
       <a :class="{'active': route === 'dashboard'}" @click.prevent="navigate('dashboard')">Dashboard</a>
+      <a :class="{'active': route === 'book'}" @click.prevent="navigate('book')">Book</a>
       <a :class="{'active': route === 'knowledge-base'}" @click.prevent="navigate('knowledge-base')">KB</a>
     </div>
     <div class="nav-actions">
@@ -33,7 +34,7 @@
   </nav>
 
   <!-- Main content area -->
-  <main class="content" :class="{'content-wide': route === 'model-grid' || route === 'dashboard' || route === 'knowledge-base'}">
+  <main class="content" :class="{'content-wide': route === 'model-grid' || route === 'dashboard' || route === 'knowledge-base' || route === 'book'}">
 
     <!-- Experiments list view -->
     <div x-show="route === 'experiments'" x-cloak>
@@ -673,6 +674,93 @@
       </div>
     </div>
 
+    <!-- Book view -->
+    <div x-show="route === 'book'" x-cloak>
+      <div class="section-header">
+        <h2>Book</h2>
+      </div>
+
+      <div x-show="book.loading" class="loading-spinner">Loading...</div>
+
+      <template x-if="!book.loading && book.pages.length > 0">
+        <div class="book-view">
+          <!-- Page counter + nav -->
+          <div class="book-nav">
+            <button class="btn-ghost" @click="bookPrev()" :disabled="book.currentPage <= 0">&larr; Prev</button>
+            <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
+            <button class="btn-ghost" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1">Next &rarr;</button>
+          </div>
+
+          <!-- Model selector -->
+          <div class="book-models">
+            <template x-for="model in book.allModels" :key="'bm-' + model">
+              <button class="filter-btn"
+                      :class="{'active': book.selectedModel === model}"
+                      @click="bookSelectModel(model)"
+                      x-text="displayModelName(model)"></button>
+            </template>
+          </div>
+
+          <!-- Main image -->
+          <div class="book-image" @click="bookOpenLightbox()">
+            <img :src="bookCurrentImage()?.full_url || bookCurrentImage()?.thumb_url" :alt="bookCurrentPage()?.scene">
+            <!-- Rating overlay -->
+            <div class="book-rating-overlay" x-show="getImageRating(bookCurrentImage())">
+              <span x-text="getImageRating(bookCurrentImage()) >= 5 ? '★' : getImageRating(bookCurrentImage()) >= 2 ? '♥' : getImageRating(bookCurrentImage()) < 0 ? '👎' : ''"></span>
+            </div>
+            <!-- AI score overlay -->
+            <div class="book-ai-overlay" x-show="getAestheticScore(bookCurrentImage())"
+                 :class="{'high': getAestheticScore(bookCurrentImage()) >= 0.7, 'low': getAestheticScore(bookCurrentImage()) < 0.4}">
+              <span x-text="'AI ' + ((getAestheticScore(bookCurrentImage()) || 0) * 100).toFixed(0)"></span>
+            </div>
+          </div>
+
+          <!-- Quick rating buttons -->
+          <div class="book-rate">
+            <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}"
+                    @click="quickRate(bookCurrentImage(), -1)">👎</button>
+            <button class="rate-btn rate-heart" :class="{'active': getImageRating(bookCurrentImage()) === 2}"
+                    @click="quickRate(bookCurrentImage(), 2)">♥</button>
+            <button class="rate-btn rate-star" :class="{'active': getImageRating(bookCurrentImage()) === 5}"
+                    @click="quickRate(bookCurrentImage(), 5)">★</button>
+          </div>
+
+          <!-- Seed thumbnails -->
+          <div class="book-seeds">
+            <template x-for="img in bookSeedImages()" :key="'bs-' + img.name">
+              <div class="book-seed-thumb"
+                   :class="{'active': img._seed === book.selectedSeed}"
+                   @click="bookSelectSeed(img._seed)">
+                <img :src="img.thumb_url" :alt="img._seed">
+                <span class="book-seed-label" x-text="'seed ' + (img._seed || '?')"></span>
+              </div>
+            </template>
+          </div>
+
+          <!-- Prompt display -->
+          <div class="book-prompt" x-show="bookCurrentExperiment()?.metadata?.prompt?.positive"
+               x-text="bookCurrentExperiment()?.metadata?.prompt?.positive || ''"></div>
+
+          <!-- Page list (thumbnails) -->
+          <div class="book-pages">
+            <template x-for="(page, idx) in book.pages" :key="'bp-' + page.id">
+              <div class="book-page-thumb"
+                   :class="{'active': idx === book.currentPage}"
+                   @click="book.currentPage = idx">
+                <img :src="(page.models.find(m => m.model === book.selectedModel)?.images[0]?.thumb_url) || (page.models[0]?.images[0]?.thumb_url) || ''"
+                     :alt="page.scene">
+                <span class="book-page-label" x-text="page.id"></span>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <div x-show="!book.loading && book.pages.length === 0" class="empty-state">
+        本のデータがありません。
+      </div>
+    </div>
+
     <!-- Knowledge Base view -->
     <div x-show="route === 'knowledge-base'" x-cloak>
       <div class="section-header">
@@ -941,6 +1029,7 @@
   <script src="/gallery/js/model-grid.js"></script>
   <script src="/gallery/js/dashboard.js"></script>
   <script src="/gallery/js/knowledge-base.js"></script>
+  <script src="/gallery/js/book.js"></script>
   <script src="/gallery/js/app.js"></script>
 </body>
 </html>
