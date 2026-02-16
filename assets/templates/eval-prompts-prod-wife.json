@@ -1,0 +1,437 @@
+{
+  "_meta": {
+    "description": "イラストノベル - Book 0216b - 人妻 不倫ストーリー（茶髪お団子）",
+    "book_id": "0216b",
+    "book_theme": "人妻 不倫ストーリー（茶髪お団子）",
+    "seeds": [
+      42,
+      123,
+      456
+    ]
+  },
+  "negative_common": {
+    "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, ",
+    "safe": "",
+    "realistic_safe": "flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_explicit": "censored, mosaic censoring, bar censor, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_sensitive": "censored, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, "
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": [
+        "wai-nsfw-illustrious-v16",
+        "wai-nsfw-illustrious-v11",
+        "wai-branch-rouwei",
+        "wai-nsfw-illustrious-v12"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "B_nova": {
+      "models": [
+        "nova-anime-xl-il"
+      ],
+      "cfg": 5,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "D_animagine": {
+      "models": [
+        "animagine-xl-4.0"
+      ],
+      "cfg": 5,
+      "steps": 28,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers",
+      "strip_tags": [
+        "warm lighting",
+        "soft lighting",
+        "soft shadows",
+        "afternoon light",
+        "classroom light",
+        "golden hour light",
+        "candlelight",
+        "warm candlelight",
+        "bioluminescent glow",
+        "afternoon sunlight",
+        "golden hour",
+        "from front",
+        "from above",
+        "from below",
+        "from side",
+        "from behind",
+        "dynamic angle",
+        "low angle",
+        "close-up",
+        "cowboy shot",
+        "full body",
+        "upper body",
+        "dynamic pose",
+        "dynamic_pose",
+        "dynamic_angle",
+        "smooth skin",
+        "wet skin",
+        "glistening skin",
+        "detailed skin",
+        "skin texture",
+        "subsurface scattering",
+        "natural skin texture",
+        "skin pores"
+      ]
+    },
+    "E_femix": {
+      "models": [
+        "femix-hassakuxl"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits"
+    }
+  },
+  "prompts": [
+    {
+      "id": "0216b_S00_cover",
+      "genre": "人妻",
+      "type": "sensitive",
+      "subtype": "cover",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, apron, casual dress, standing, wind, floating hair, looking at viewer, smile, blush, front door, house entrance, morning light, warm tones"
+      }
+    },
+    {
+      "id": "0216b_S01_standing",
+      "genre": "人妻",
+      "type": "sensitive",
+      "subtype": "standing_portrait",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, apron, casual dress, standing, arms crossed, looking away, slight frown, cool expression, living room, sofa, afternoon light"
+      }
+    },
+    {
+      "id": "0216b_S02_date1",
+      "genre": "人妻",
+      "type": "safe",
+      "subtype": "date",
+      "content": {
+        "default": "sfw, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, casual dress, cardigan, sun hat, smile, blush, outdoor, cafe terrace, afternoon sunlight, looking at viewer, wind, floating hair"
+      }
+    },
+    {
+      "id": "0216b_S03_date2",
+      "genre": "人妻",
+      "type": "safe",
+      "subtype": "date",
+      "content": {
+        "default": "sfw, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, elegant dress, necklace, light makeup, holding hands, pov, smile, shy, blush, outdoor, park bench, evening, warm street lights"
+      }
+    },
+    {
+      "id": "0216b_S04_flirting",
+      "genre": "人妻",
+      "type": "sensitive",
+      "subtype": "flirting",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, naked apron, apron only, sideboob, sitting on bed, leaning forward, cleavage, shy smile, blush, looking at viewer, bedroom, warm lighting, soft shadows, evening"
+      }
+    },
+    {
+      "id": "0216b_S05_kiss",
+      "genre": "人妻",
+      "type": "sensitive",
+      "subtype": "kiss",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, hetero, kiss, french kiss, closed eyes, blush, tears of joy, embrace, bedroom, warm lighting, soft shadows, close-up"
+      }
+    },
+    {
+      "id": "0216b_S06a_finger",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "fingering",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, lying on bed, spread legs, fingering, 1boy, hand between legs, blush, embarrassed, looking away, panting, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S06b_squirt",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, lying on bed, spread legs, fingering, squirting, female ejaculation, 1boy, arched back, ahegao, tongue out, blush, sweat, wet sheets, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S07a_oral",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "oral",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, fellatio, oral, penis, kneeling, looking up at viewer, blush, embarrassed, saliva, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S07b_oral_cum",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, fellatio, cum in mouth, cum on face, facial, cum dripping, cross-eyed, dazed, blush, kneeling, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S08a_before",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "pre_insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, lying on back, spread legs, 1boy, penis, about to penetrate, nervous, blush, embarrassed, biting lip, looking away, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S08b_insert",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, sex, vaginal, missionary, lying on back, penetration, spread legs, surprised, open mouth, gasp, blush, gripping sheets, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S08c_pos1",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, sex, vaginal, missionary, lying on back, legs wrapped, surprised pleasure, wide eyes, blush, panting, sweat, confused expression, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S08d_pos2",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, sex, vaginal, from behind, doggystyle, twisted torso, looking back, shocked, blush, panting, sweat, covering mouth, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S08e_almost",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, sex, vaginal, missionary, arched back, trembling, about to orgasm, eyes wide, panting, sweat, blush, gripping sheets, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S08f_climax",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, sex, vaginal, orgasm, ahegao, rolling eyes, tongue out, surprised by own orgasm, cum, creampie, arched back, trembling, tears of pleasure, sweat, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S08g_after",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "afterglow",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, lying on bed, after sex, cum overflow, cum on thighs, dazed, wide eyes, shocked expression, panting, messy hair, sweat, blush, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S09_bath",
+      "genre": "人妻",
+      "type": "sensitive",
+      "subtype": "bath",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, bathing, wet hair, wet skin, steam, relaxed, gentle smile, blush, soap bubbles, bathtub, bathroom, candles, warm water lighting"
+      }
+    },
+    {
+      "id": "0216b_S10a_toy",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "toy",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, lying on bed, vibrator, sex toy, spread legs, biting lip, embarrassed, blush, panting, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S10b_toy_orgasm",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, vibrator, orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, arched back, trembling, sweat, blush, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S11_lactation",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "lactation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, lactation, breast milk, milk dripping, large breasts, squeezing breast, embarrassed, blush, sitting on bed, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S12a_before",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "pre_insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, cowgirl position, girl on top, straddling, 1boy, grabbing penis, eager, wet pussy, dripping, seductive smile, licking lips, hungry eyes, blush, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S12b_insert",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, cowgirl position, girl on top, straddling, sex, vaginal, slamming down, moaning, open mouth, love juice, wet, blush, sweat, bedroom, warm lighting, soft shadows, from below"
+      }
+    },
+    {
+      "id": "0216b_S12c_quick_org",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, cowgirl position, girl on top, sex, vaginal, instant orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, female ejaculation, addicted, arched back, drooling, sweat, wet sheets, bedroom, warm lighting, soft shadows, from below"
+      }
+    },
+    {
+      "id": "0216b_S12d_pos1",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, cowgirl position, girl on top, bouncing, sex, vaginal, riding aggressively, large breasts, bouncing breasts, fucked silly, drooling, love juice, wet thighs, insatiable, panting, sweat, bedroom, warm lighting, soft shadows, from below"
+      }
+    },
+    {
+      "id": "0216b_S12e_pos2",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, sitting sex, face to face, straddling lap, sex, vaginal, deep penetration, grinding, embrace, tongue out, saliva trail, kiss, sweat, love juice dripping, desperate, wanting more, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S12f_almost",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, cowgirl position, sex, vaginal, about to orgasm, fucked silly, trembling, drooling, tongue out, cross-eyed, begging, sweat, love juice, wet everywhere, bedroom, warm lighting, soft shadows, from below"
+      }
+    },
+    {
+      "id": "0216b_S12g_climax",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, cowgirl position, sex, vaginal, simultaneous orgasm, fucked silly, ahegao, rolling eyes, tongue out, drooling, squirting, female ejaculation, cum, creampie, cum overflow, arched back, convulsing, sweat, wet sheets, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S12h_after",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "afterglow",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, nude, lying on bed, after sex, cum overflow, cum dripping, cum on thighs, cum on stomach, cum on breasts, love juice, wet everywhere, fucked silly, dazed, satisfied grin, tongue out, drooling, wanting more, messy hair, sweat, ruined sheets, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S13_pregnant",
+      "genre": "人妻",
+      "type": "sensitive",
+      "subtype": "pregnant",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, pregnant, large belly, hand on belly, loose dress, belly visible, gentle smile, blush, standing, bedroom, warm lighting, soft shadows, window, morning light"
+      }
+    },
+    {
+      "id": "0216b_S14_preg_sex",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, 1boy, pregnant, large belly, sex, vaginal, from behind, gentle, blush, panting, embarrassed, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "0216b_S15_birth",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "birth",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, pregnant, huge belly, lying on bed, labor, spread legs, panting, sweat, flushed, determined expression, gripping sheets, hospital bed, bright overhead light"
+      }
+    },
+    {
+      "id": "0216b_S16_future",
+      "genre": "人妻",
+      "type": "safe",
+      "subtype": "standing_portrait",
+      "content": {
+        "default": "sfw, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, mature, adult, casual dress, cardigan, warm smile, gentle smile, holding child hand, outdoor, garden, sunlight, flowers, warm tones"
+      }
+    },
+    {
+      "id": "0216b_S99_bonus",
+      "genre": "人妻",
+      "type": "sensitive",
+      "subtype": "bonus",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, towel, towel wrap, wet skin, large breasts, cleavage, wet skin, smile, looking at viewer, wind, floating hair, onsen, hot spring, outdoor bath, mountains, steam"
+      }
+    }
+  ]
+}

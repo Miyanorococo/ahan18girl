@@ -1,0 +1,437 @@
+{
+  "_meta": {
+    "description": "イラストノベル - Book 0216c - ナース恋愛ストーリー（ピンク髪）",
+    "book_id": "0216c",
+    "book_theme": "ナース恋愛ストーリー（ピンク髪）",
+    "seeds": [
+      42,
+      123,
+      456
+    ]
+  },
+  "negative_common": {
+    "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, ",
+    "safe": "",
+    "realistic_safe": "flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_explicit": "censored, mosaic censoring, bar censor, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_sensitive": "censored, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, "
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": [
+        "wai-nsfw-illustrious-v16",
+        "wai-nsfw-illustrious-v11",
+        "wai-branch-rouwei",
+        "wai-nsfw-illustrious-v12"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "B_nova": {
+      "models": [
+        "nova-anime-xl-il"
+      ],
+      "cfg": 5,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "D_animagine": {
+      "models": [
+        "animagine-xl-4.0"
+      ],
+      "cfg": 5,
+      "steps": 28,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers",
+      "strip_tags": [
+        "warm lighting",
+        "soft lighting",
+        "soft shadows",
+        "afternoon light",
+        "classroom light",
+        "golden hour light",
+        "candlelight",
+        "warm candlelight",
+        "bioluminescent glow",
+        "afternoon sunlight",
+        "golden hour",
+        "from front",
+        "from above",
+        "from below",
+        "from side",
+        "from behind",
+        "dynamic angle",
+        "low angle",
+        "close-up",
+        "cowboy shot",
+        "full body",
+        "upper body",
+        "dynamic pose",
+        "dynamic_pose",
+        "dynamic_angle",
+        "smooth skin",
+        "wet skin",
+        "glistening skin",
+        "detailed skin",
+        "skin texture",
+        "subsurface scattering",
+        "natural skin texture",
+        "skin pores"
+      ]
+    },
+    "E_femix": {
+      "models": [
+        "femix-hassakuxl"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits"
+    }
+  },
+  "prompts": [
+    {
+      "id": "0216c_S00_cover",
+      "genre": "ナース",
+      "type": "sensitive",
+      "subtype": "cover",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nurse uniform, white uniform, nurse cap, thighhighs, standing, wind, floating hair, looking at viewer, smile, blush, hospital entrance, cherry blossoms, morning light"
+      }
+    },
+    {
+      "id": "0216c_S01_standing",
+      "genre": "ナース",
+      "type": "sensitive",
+      "subtype": "standing_portrait",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nurse uniform, white uniform, nurse cap, thighhighs, standing, arms crossed, looking away, slight frown, cool expression, nurse station, hospital corridor, fluorescent light"
+      }
+    },
+    {
+      "id": "0216c_S02_date1",
+      "genre": "ナース",
+      "type": "safe",
+      "subtype": "date",
+      "content": {
+        "default": "sfw, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, casual clothes, blouse, skirt, cardigan, smile, blush, outdoor, park, lunch break, sunlight, bench, looking at viewer, wind, floating hair"
+      }
+    },
+    {
+      "id": "0216c_S03_date2",
+      "genre": "ナース",
+      "type": "safe",
+      "subtype": "date",
+      "content": {
+        "default": "sfw, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, off-shoulder top, jeans, casual, relaxed, holding hands, pov, smile, shy, blush, outdoor, rooftop, hospital rooftop, sunset, orange sky"
+      }
+    },
+    {
+      "id": "0216c_S04_flirting",
+      "genre": "ナース",
+      "type": "sensitive",
+      "subtype": "flirting",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, oversized shirt, no pants, bare legs, sitting on bed, leaning forward, cleavage, shy smile, blush, looking at viewer, on-call room, single bed, warm lighting, evening"
+      }
+    },
+    {
+      "id": "0216c_S05_kiss",
+      "genre": "ナース",
+      "type": "sensitive",
+      "subtype": "kiss",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, hetero, kiss, french kiss, closed eyes, blush, tears of joy, embrace, on-call room, single bed, warm lighting, close-up"
+      }
+    },
+    {
+      "id": "0216c_S06a_finger",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "fingering",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, lying on bed, spread legs, fingering, 1boy, hand between legs, blush, embarrassed, looking away, panting, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S06b_squirt",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, lying on bed, spread legs, fingering, squirting, female ejaculation, 1boy, arched back, ahegao, tongue out, blush, sweat, wet sheets, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S07a_oral",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "oral",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, fellatio, oral, penis, kneeling, looking up at viewer, blush, embarrassed, saliva, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S07b_oral_cum",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, fellatio, cum in mouth, cum on face, facial, cum dripping, cross-eyed, dazed, blush, kneeling, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S08a_before",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "pre_insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, lying on back, spread legs, 1boy, penis, about to penetrate, nervous, blush, embarrassed, biting lip, looking away, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S08b_insert",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, sex, vaginal, missionary, lying on back, penetration, spread legs, surprised, open mouth, gasp, blush, gripping sheets, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S08c_pos1",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, sex, vaginal, missionary, lying on back, legs wrapped, surprised pleasure, wide eyes, blush, panting, sweat, confused expression, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S08d_pos2",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, sex, vaginal, from behind, doggystyle, twisted torso, looking back, shocked, blush, panting, sweat, covering mouth, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S08e_almost",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, sex, vaginal, missionary, arched back, trembling, about to orgasm, eyes wide, panting, sweat, blush, gripping sheets, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S08f_climax",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, sex, vaginal, orgasm, ahegao, rolling eyes, tongue out, surprised by own orgasm, cum, creampie, arched back, trembling, tears of pleasure, sweat, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S08g_after",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "afterglow",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, lying on bed, after sex, cum overflow, cum on thighs, dazed, wide eyes, shocked expression, panting, messy hair, sweat, blush, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S09_bath",
+      "genre": "ナース",
+      "type": "sensitive",
+      "subtype": "bath",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, bathing, wet hair, wet skin, steam, relaxed, gentle smile, blush, soap bubbles, shower room, hospital shower, steam, warm water lighting"
+      }
+    },
+    {
+      "id": "0216c_S10a_toy",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "toy",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, lying on bed, vibrator, sex toy, spread legs, biting lip, embarrassed, blush, panting, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S10b_toy_orgasm",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, vibrator, orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, arched back, trembling, sweat, blush, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S11_lactation",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "lactation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, lactation, breast milk, milk dripping, large breasts, squeezing breast, embarrassed, blush, sitting on bed, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S12a_before",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "pre_insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, cowgirl position, girl on top, straddling, 1boy, grabbing penis, eager, wet pussy, dripping, seductive smile, licking lips, hungry eyes, blush, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S12b_insert",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, cowgirl position, girl on top, straddling, sex, vaginal, slamming down, moaning, open mouth, love juice, wet, blush, sweat, on-call room, single bed, warm lighting, from below"
+      }
+    },
+    {
+      "id": "0216c_S12c_quick_org",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, cowgirl position, girl on top, sex, vaginal, instant orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, female ejaculation, addicted, arched back, drooling, sweat, wet sheets, on-call room, single bed, warm lighting, from below"
+      }
+    },
+    {
+      "id": "0216c_S12d_pos1",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, cowgirl position, girl on top, bouncing, sex, vaginal, riding aggressively, large breasts, bouncing breasts, fucked silly, drooling, love juice, wet thighs, insatiable, panting, sweat, on-call room, single bed, warm lighting, from below"
+      }
+    },
+    {
+      "id": "0216c_S12e_pos2",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, sitting sex, face to face, straddling lap, sex, vaginal, deep penetration, grinding, embrace, tongue out, saliva trail, kiss, sweat, love juice dripping, desperate, wanting more, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S12f_almost",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, cowgirl position, sex, vaginal, about to orgasm, fucked silly, trembling, drooling, tongue out, cross-eyed, begging, sweat, love juice, wet everywhere, on-call room, single bed, warm lighting, from below"
+      }
+    },
+    {
+      "id": "0216c_S12g_climax",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, cowgirl position, sex, vaginal, simultaneous orgasm, fucked silly, ahegao, rolling eyes, tongue out, drooling, squirting, female ejaculation, cum, creampie, cum overflow, arched back, convulsing, sweat, wet sheets, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S12h_after",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "afterglow",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, nude, lying on bed, after sex, cum overflow, cum dripping, cum on thighs, cum on stomach, cum on breasts, love juice, wet everywhere, fucked silly, dazed, satisfied grin, tongue out, drooling, wanting more, messy hair, sweat, ruined sheets, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S13_pregnant",
+      "genre": "ナース",
+      "type": "sensitive",
+      "subtype": "pregnant",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, pregnant, large belly, hand on belly, maternity dress, belly visible, gentle smile, blush, standing, on-call room, single bed, warm lighting, window, morning light"
+      }
+    },
+    {
+      "id": "0216c_S14_preg_sex",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, 1boy, pregnant, large belly, sex, vaginal, from behind, gentle, blush, panting, embarrassed, on-call room, single bed, warm lighting"
+      }
+    },
+    {
+      "id": "0216c_S15_birth",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "birth",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, pregnant, huge belly, lying on bed, labor, spread legs, panting, sweat, flushed, determined expression, gripping sheets, delivery room, hospital bed, bright overhead light"
+      }
+    },
+    {
+      "id": "0216c_S16_future",
+      "genre": "ナース",
+      "type": "safe",
+      "subtype": "standing_portrait",
+      "content": {
+        "default": "sfw, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, mature, adult, white blouse, long skirt, wedding ring, gentle smile, gentle smile, holding child hand, outdoor, park, spring, cherry blossoms, sunlight"
+      }
+    },
+    {
+      "id": "0216c_S99_bonus",
+      "genre": "ナース",
+      "type": "sensitive",
+      "subtype": "bonus",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, solo, nurse, large breasts, pink hair, short hair, green eyes, fair skin, slender, bikini, pink bikini, large breasts, cleavage, wet skin, smile, looking at viewer, wind, floating hair, beach, ocean, summer, sunlight, sand"
+      }
+    }
+  ]
+}
