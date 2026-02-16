@@ -122,7 +122,7 @@ function bookMixin() {
       // Sort by date desc, then prefix
       books.sort((a, b) => {
         const d = b.date.localeCompare(a.date);
-        return d !== 0 ? d : a.prefix.localeCompare(b.prefix);
+        return d !== 0 ? d : a.bookId.localeCompare(b.bookId);
       });
 
       this.book.books = books;
