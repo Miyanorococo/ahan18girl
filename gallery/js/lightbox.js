@@ -83,12 +83,16 @@ function lightboxMixin() {
     _animateSlide() {
       const center = document.querySelector('.lb-center');
       if (!center) { this._updateLightboxImage(); return; }
-      const dir = this._slideDirection || 'left';
-      center.classList.add('slide-' + dir);
+      // Step 1: fade out
+      center.classList.add('slide-fade-out');
       setTimeout(() => {
+        // Step 2: swap image while hidden
         this._updateLightboxImage();
-        center.classList.remove('slide-' + dir);
-      }, 150);
+        center.classList.remove('slide-fade-out');
+        // Step 3: fade in
+        center.classList.add('slide-fade-in');
+        setTimeout(() => center.classList.remove('slide-fade-in'), 200);
+      }, 120);
     },
 
     _updateLightboxImage() {

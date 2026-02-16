@@ -982,10 +982,11 @@ body {
 
 /* Slide animation */
 .lb-center > img {
-  transition: opacity 0.2s ease-out, transform 0.25s ease-out;
+  transition: opacity 0.15s ease-out;
 }
-.lb-center.slide-left > img { opacity: 0; transform: translateX(-40px); }
-.lb-center.slide-right > img { opacity: 0; transform: translateX(40px); }
+.lb-center.slide-fade-out > img { opacity: 0; }
+.lb-center.slide-fade-in > img { animation: fade-in 0.2s ease-out; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
 /* === Evaluation Panel (in lightbox) === */
 .eval-panel {
