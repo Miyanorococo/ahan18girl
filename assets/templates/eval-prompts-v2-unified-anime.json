@@ -13,7 +13,7 @@
       1024
     ],
     "total_images": "122 prompts × 5 seeds × 13 models = 7,930 images",
-    "note": "v2.5: added fucked_silly to orgasm, cross-eyed to sex (human review confirmed quality)",
+    "note": "v2.6: dynamic test results - twisted_torso for from_behind sex, leaning_forward for sensitive, strip dynamic_pose from Animagine",
     "version": "v2-unified"
   },
   "negative_common": {
@@ -137,7 +137,10 @@
         "close-up",
         "cowboy shot",
         "full body",
-        "upper body"
+        "upper body",
+        "dynamic pose",
+        "dynamic_pose",
+        "dynamic_angle"
       ]
     },
     "E_femix": {
@@ -289,7 +292,7 @@
       "genre": "JK/学園",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1boy, 1girl, sex, vaginal, hetero, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, sex from behind, bent over desk, skirt lifted, panties around thighs, classroom, chalkboard, after school, sunset, orange light, cross-eyed, blush, drooling, gripping desk edge, sweat, trembling legs"
+        "default": "nsfw, explicit, 1boy, 1girl, sex, vaginal, hetero, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, sex twisted torso, looking back, from behind, bent over desk, skirt lifted, panties around thighs, classroom, chalkboard, after school, sunset, orange light, cross-eyed, blush, drooling, gripping desk edge, sweat, trembling legs"
       },
       "subtype": "sex"
     },
@@ -458,7 +461,7 @@
       "genre": "百合",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, 2girls, yuri, forehead touch, holding hands, interlocked fingers, blonde hair, floating_hair, black hair, long hair, matching lingerie, lace bra, see-through, cleavage, sitting face to face, blushing, half-closed eyes, romantic, bedroom, candle light, shy smile, rose petals on bed, intimate atmosphere"
+        "default": "nsfw, 2girls, yuri, forehead touch, holding hands, interlocked fingers, blonde hair, floating_hair, black hair, long hair, matching lingerie, lace bra, see-through, cleavage, sitting face to face, blushing, half-closed eyes, romantic, bedroom, candle light, leaning forward, shy smile, rose petals on bed, intimate atmosphere"
       }
     },
     {
@@ -548,7 +551,7 @@
       "genre": "おねショタ",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, 1girl, solo focus, mature female, large breasts, red hair, floating_hair, wavy hair, ara ara, gentle smile, half-closed eyes, camisole, cleavage, sitting on bed, patting lap, inviting gesture, bedroom, warm lighting, soft focus, maternal expression, embarrassed, bare shoulders, lace trim"
+        "default": "nsfw, 1girl, solo focus, mature female, large breasts, red hair, floating_hair, wavy hair, ara ara, gentle smile, half-closed eyes, camisole, cleavage, sitting on bed, patting lap, inviting gesture, bedroom, warm lighting, soft focus, maternal expression, embarrassed, leaning forward, bare shoulders, lace trim"
       }
     },
     {
@@ -636,7 +639,7 @@
       "genre": "NTR",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, 1girl, solo, married woman, wedding ring, guilty expression, messy hair, floating_hair, brown hair, blush, flustered, biting lip, clothes in disarray, open shirt, bra visible, skirt pulled up, thighhighs, hotel room, sitting on bed, looking at viewer, text message from husband on phone, warm lighting, used condom on nightstand"
+        "default": "nsfw, 1girl, solo, married woman, wedding ring, guilty expression, messy hair, floating_hair, brown hair, leaning forward, blush, flustered, biting lip, clothes in disarray, open shirt, bra visible, skirt pulled up, thighhighs, hotel room, sitting on bed, looking at viewer, text message from husband on phone, warm lighting, used condom on nightstand"
       }
     },
     {
@@ -644,7 +647,7 @@
       "genre": "NTR",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1boy, 1girl, sex, vaginal, from behind, doggystyle, married woman, wedding ring, brown hair, arched_back, messy hair, cross-eyed, blush, panting with pleasure, conflicted expression, biting pillow, large breasts, sweat, love bites, grabbing sheets, hotel bed, warm lighting, phone ringing on nightstand, guilt, betrayal"
+        "default": "nsfw, explicit, 1boy, 1girl, sex, vaginal, twisted torso, looking back, from behind, doggystyle, married woman, wedding ring, brown hair, arched_back, messy hair, cross-eyed, blush, panting with pleasure, conflicted expression, biting pillow, large breasts, sweat, love bites, grabbing sheets, hotel bed, warm lighting, phone ringing on nightstand, guilt, betrayal"
       },
       "subtype": "sex"
     },
@@ -725,7 +728,7 @@
       "genre": "fantasy",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, sensitive, 1girl, elf, pointy ears, green eyes, silver hair, floating_hair, long hair, fantasy armor, cleavage, midriff, thigh gap, sitting, crossed legs, throne room, stone pillars, torchlight, warm lighting, shy smile, cowboy shot, from below"
+        "default": "nsfw, sensitive, 1girl, elf, pointy ears, green eyes, silver hair, floating_hair, long hair, fantasy armor, cleavage, midriff, thigh gap, sitting, crossed legs, throne room, stone pillars, torchlight, warm lighting, leaning forward, shy smile, cowboy shot, from below"
       },
       "subtype": "sensitive_clothed"
     },
@@ -815,7 +818,7 @@
       "genre": "ryoujoku",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, sensitive, 1girl, black hair, floating_hair, white dress, restrained, rope, bondage, bound wrists, kneeling, indoor, prison cell, iron bars, wet floor, torn stockings, cleavage, frightened, looking away, warm lighting, cowboy shot, from above"
+        "default": "nsfw, sensitive, 1girl, black hair, floating_hair, white dress, restrained, rope, bondage, bound wrists, kneeling, indoor, prison cell, iron bars, wet floor, torn stockings, cleavage, frightened, looking away, warm lighting, leaning forward, cowboy shot, from above"
       },
       "subtype": "sensitive_clothed"
     },
@@ -905,7 +908,7 @@
       "genre": "futanari",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, sensitive, 1girl, futanari, pink hair, floating_hair, short hair, athletic build, toned body, abs, sports bra, bike shorts, bulge, midriff, sweat, embarrassed, stretching, arms up, outdoor track, sunset, golden hour lighting, lens flare, cowboy shot, from side"
+        "default": "nsfw, sensitive, 1girl, futanari, pink hair, floating_hair, short hair, athletic build, toned body, abs, sports bra, bike shorts, bulge, midriff, sweat, embarrassed, stretching, arms up, outdoor track, sunset, golden hour lighting, lens flare, leaning forward, cowboy shot, from side"
       },
       "subtype": "sensitive_clothed"
     },
