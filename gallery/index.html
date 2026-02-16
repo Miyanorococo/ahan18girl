@@ -409,9 +409,9 @@
                               :class="{'high': getAestheticScore(getCardImage(card)) >= 0.7, 'low': getAestheticScore(getCardImage(card)) < 0.4}"
                               x-text="'AI ' + ((getAestheticScore(getCardImage(card)) || 0) * 100).toFixed(0)"></span>
                       </div>
-                      <!-- Prompt -->
+                      <!-- Prompt (full) -->
                       <div class="mg-prompt" x-show="card.detail?.metadata?.prompt?.positive"
-                           x-text="(card.detail?.metadata?.prompt?.positive || '').slice(0, 120) + '...'"></div>
+                           x-text="card.detail?.metadata?.prompt?.positive || ''"></div>
                     </div>
                   </template>
                   <template x-if="!getCardImage(card)">
