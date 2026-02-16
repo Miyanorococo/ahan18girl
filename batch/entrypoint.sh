@@ -68,8 +68,9 @@ if [ "${READY}" != "true" ]; then
 fi
 
 # ---- Download latest prompts from S3 (override baked-in version) ----
-log "Downloading latest eval-prompts from S3..."
-aws s3 cp "s3://${S3_BUCKET}/eval-scripts/eval-prompts.json" \
+PROMPTS_S3_KEY="${PROMPTS_FILE:-eval-scripts/eval-prompts.json}"
+log "Downloading prompts from S3: ${PROMPTS_S3_KEY}"
+aws s3 cp "s3://${S3_BUCKET}/${PROMPTS_S3_KEY}" \
     /opt/eval/assets/templates/eval-prompts.json \
     --region "${REGION}" --only-show-errors 2>/dev/null || \
     log "WARNING: Could not download prompts from S3, using baked-in version"
