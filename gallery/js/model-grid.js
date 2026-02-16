@@ -62,15 +62,15 @@ function modelGridMixin() {
         if (!pid) continue;
 
         const runDate = extractRunDate(exp);
-        const pMatch = pid.match(/^U?P(\d+)_(.+)$/);
+        const pMatch = pid.match(/^([A-Z]+)(\d+)_(.+)$/);
 
         let key, themeNum, themeName, scene, sceneLabel;
 
         if (pMatch) {
-          // Structured eval format: P01_ex
+          // Structured eval format: P01_ex, UP01_ex, TN01_ex, RG01_nude_bedroom
           key = runDate + '/' + pid;
-          themeNum = pMatch[1];
-          scene = pMatch[2];
+          themeNum = pMatch[1] + pMatch[2];
+          scene = pMatch[3];
           sceneLabel = SCENE_LABELS[scene] || scene;
           themeName = extractThemeName(exp.prompt_summary);
         } else {
@@ -131,22 +131,23 @@ function modelGridMixin() {
         });
       }
 
-      // Sort by theme number → scene name
+      // Sort by theme name → scene name
       allGroups.sort((a, b) => {
-        const t = a.themeNum.localeCompare(b.themeNum);
+        const t = a.themeName.localeCompare(b.themeName);
         return t !== 0 ? t : a.scene.localeCompare(b.scene);
       });
 
-      // Build theme list
+      // Build theme list (group by display name, not prefix+number)
       const themeMap = {};
       for (const g of allGroups) {
-        if (!themeMap[g.themeNum]) {
-          themeMap[g.themeNum] = { id: g.themeNum, name: g.themeName, count: 0 };
+        const tname = g.themeName;
+        if (!themeMap[tname]) {
+          themeMap[tname] = { id: tname, name: tname, count: 0 };
         }
-        themeMap[g.themeNum].count++;
+        themeMap[tname].count++;
       }
 
-      this.modelGrid.themes = Object.values(themeMap).sort((a, b) => a.id.localeCompare(b.id));
+      this.modelGrid.themes = Object.values(themeMap).sort((a, b) => a.name.localeCompare(b.name));
       this.modelGrid.groups = allGroups;
 
       // Reset
@@ -163,7 +164,7 @@ function modelGridMixin() {
     getFilteredGroups() {
       const t = this.modelGrid.selectedTheme;
       if (!t) return this.modelGrid.groups;
-      return this.modelGrid.groups.filter((g) => g.themeNum === t);
+      return this.modelGrid.groups.filter((g) => g.themeName === t);
     },
 
     /**

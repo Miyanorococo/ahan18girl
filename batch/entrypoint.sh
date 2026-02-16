@@ -67,6 +67,13 @@ if [ "${READY}" != "true" ]; then
     exit 1
 fi
 
+# ---- Download latest prompts from S3 (override baked-in version) ----
+log "Downloading latest eval-prompts from S3..."
+aws s3 cp "s3://${S3_BUCKET}/eval-scripts/eval-prompts.json" \
+    /opt/eval/assets/templates/eval-prompts.json \
+    --region "${REGION}" --only-show-errors 2>/dev/null || \
+    log "WARNING: Could not download prompts from S3, using baked-in version"
+
 # ---- Run generation ----
 EVAL_ARGS="--models ${MODEL_NAME}"
 if [ "${DRY_RUN:-}" = "true" ]; then

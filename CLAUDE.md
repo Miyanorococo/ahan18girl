@@ -59,7 +59,7 @@ ComfyUIおよびカスタムノード群（ControlNet, ADetailer, IP-Adapter, Pu
 
 #### バッチ評価（13モデル並列） — AWS Batch + Step Functions
 
-EC2 Fleet + bash スクリプトの問題（UserData二重base64、ドライバ欠如、孤立EBS、手動リトライ等）を構造的に解決。
+EC2 Fleet + bash スクリプトの問題（UserData二重base64、ドライバ欠如、孤立EBS、手動リトライ等）を構造的に解決。**本番稼働中（2026-02-16テスト成功、13モデル並列 SUCCEEDED）。**
 
 **アーキテクチャ**:
 ```
@@ -73,9 +73,21 @@ Step Functions (r18-anime-eval)
 ```
 
 **Docker**: `r18-anime-eval` (ECR) — CUDA 12.4 + ComfyUI + generate-eval.py
+**プロンプト**: S3から動的ダウンロード（`s3://r18-anime-assets/eval-scripts/eval-prompts.json`）
 **モデルファイル**: S3から実行時にダウンロード（EFS/EBS不要、孤立リスクゼロ）
 **リトライ**: Batch自動5回（Spot中断、OOM対応）+ generate-eval.pyのS3レジュームで重複なし
 **ドライバ**: `ECS_AL2_NVIDIA` AMI自動選択（ドライバ問題を根絶）
+**注意**: Docker再ビルド時は `onnxruntime` を追加すること（aesthetic scorer用、現在未対応）
+
+**実行手順（プロンプト切り替え → 生成）**:
+```bash
+# 1. プロンプトファイルを切り替え
+cp assets/templates/eval-prompts-v4-tentacle.json assets/templates/eval-prompts.json
+# 2. S3にアップロード
+aws s3 cp assets/templates/eval-prompts.json s3://r18-anime-assets/eval-scripts/eval-prompts.json --region us-east-1
+# 3. Step Functions実行
+./scripts/start-batch-eval.sh
+```
 
 **コマンド**:
 ```bash

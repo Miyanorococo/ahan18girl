@@ -19,7 +19,7 @@
     "A_illustrious": {
       "models": [
         "wai-nsfw-illustrious-v16",
-        "wai-nsfw-illustrious-v14"
+        "wai-branch-rouwei"
       ],
       "cfg": 7,
       "steps": 25,
@@ -51,22 +51,22 @@
       "quality_suffix": "",
       "negative": "(worst quality:1.2), bad anatomy, bad hands, extra digits, fewer digits"
     },
-    "C_pony": {
+    "B_nova": {
       "models": [
-        "pony-diffusion-v6-xl"
+        "nova-anime-xl-il"
       ],
       "cfg": 7,
       "steps": 25,
       "sampler": "euler_ancestral",
-      "scheduler": "normal",
+      "scheduler": "sgm_uniform",
       "clip_skip": 2,
       "resolution": {
         "width": 1024,
         "height": 1536
       },
-      "quality_prefix": "score_9, score_8_up, score_7_up, ",
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
       "quality_suffix": "",
-      "negative": "(worst quality:1.2), illustration, 3d, 2d, painting, bad anatomy, bad hands"
+      "negative": "bad quality, worst quality, bad anatomy, bad hands"
     }
   },
   "prompts": [
