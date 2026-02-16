@@ -100,7 +100,15 @@
         "close-up",
         "cowboy shot",
         "full body",
-        "upper body"
+        "upper body",
+        "smooth skin",
+        "wet skin",
+        "glistening skin",
+        "detailed skin",
+        "skin texture",
+        "subsurface scattering",
+        "natural skin texture",
+        "skin pores"
       ]
     },
     "E_femix": {

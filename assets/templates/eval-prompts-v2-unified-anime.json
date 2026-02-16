@@ -103,7 +103,15 @@
         "upper body",
         "dynamic pose",
         "dynamic_pose",
-        "dynamic_angle"
+        "dynamic_angle",
+        "smooth skin",
+        "wet skin",
+        "glistening skin",
+        "detailed skin",
+        "skin texture",
+        "subsurface scattering",
+        "natural skin texture",
+        "skin pores"
       ]
     },
     "E_femix": {
