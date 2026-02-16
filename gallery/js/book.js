@@ -183,28 +183,41 @@ function bookMixin() {
         return na.localeCompare(nb);
       });
 
-      // Load details
+      // Load all experiment details in parallel (fast)
+      const allLoadTasks = [];
+      for (const pid of sortedScenes) {
+        for (const [model, exp] of Object.entries(sceneMap[pid].models)) {
+          allLoadTasks.push({ pid, model, exp });
+        }
+      }
+
+      const loadResults = await Promise.allSettled(
+        allLoadTasks.map(async ({ pid, model, exp }) => {
+          const detail = await this._loadExperimentCached(exp.id);
+          return { pid, model, exp, detail };
+        })
+      );
+
+      // Build pages from loaded results
+      const pageMap = {};
+      for (const result of loadResults) {
+        if (result.status !== 'fulfilled' || !result.value.detail) continue;
+        const { pid, model, exp, detail } = result.value;
+        const images = (detail.images || []).map((img, idx) => ({
+          ...img, _index: idx,
+          _seed: this._extractSeed(img.name),
+          _model: model, _experiment: detail, _mgExperiment: detail,
+        }));
+        for (const img of images) {
+          if (img._seed) seedSet.add(img._seed);
+        }
+        if (!pageMap[pid]) pageMap[pid] = [];
+        pageMap[pid].push({ model, experiment: exp, detail, images });
+      }
+
       const pages = [];
       for (const pid of sortedScenes) {
-        const scene = sceneMap[pid];
-        const pageModels = [];
-
-        for (const [model, exp] of Object.entries(scene.models)) {
-          try {
-            const detail = await this._loadExperimentCached(exp.id);
-            if (!detail) continue;
-            const images = (detail.images || []).map((img, idx) => ({
-              ...img, _index: idx,
-              _seed: this._extractSeed(img.name),
-              _model: model, _experiment: detail, _mgExperiment: detail,
-            }));
-            for (const img of images) {
-              if (img._seed) seedSet.add(img._seed);
-            }
-            pageModels.push({ model, experiment: exp, detail, images });
-          } catch (e) { /* skip */ }
-        }
-
+        const pageModels = pageMap[pid] || [];
         if (pageModels.length > 0) {
           pageModels.sort((a, b) => a.model.localeCompare(b.model));
           pages.push({
