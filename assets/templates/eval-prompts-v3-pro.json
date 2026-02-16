@@ -116,14 +116,14 @@
       "models": [
         "femix-hassakuxl"
       ],
-      "cfg": 6,
+      "cfg": 7,
       "steps": 25,
-      "sampler": "dpmpp_2m",
-      "scheduler": "karras",
-      "clip_skip": 1,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
       "resolution": {
-        "width": 832,
-        "height": 1216
+        "width": 1024,
+        "height": 1536
       },
       "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
       "quality_suffix": "",
