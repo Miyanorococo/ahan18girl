@@ -1,0 +1,23 @@
+{
+  "name": "人妻（茶髪お団子）",
+  "genre": "人妻",
+  "char_tags": "1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring",
+  "char_outfit": "1girl, solo, mature female, housewife, large breasts, brown hair, hair bun, brown eyes, fair skin, wide hips, thick thighs, wedding ring, apron, casual dress",
+  "seeds": [42, 123, 456],
+  "locations": {
+    "bedroom": "bedroom, warm lighting, soft shadows",
+    "date1": "outdoor, cafe terrace, afternoon, sunlight",
+    "date2": "outdoor, park bench, evening, street lights, warm tones",
+    "school": "front door, house entrance, warm lighting",
+    "bath": "bathtub, bathroom, candles, warm water lighting",
+    "hospital": "hospital bed, bright overhead light",
+    "future": "outdoor, garden, sunlight, warm tones",
+    "bonus": "onsen, hot spring, outdoor bath, mountains, steam"
+  },
+  "date1_outfit": "casual dress, cardigan, sun hat",
+  "date2_outfit": "elegant dress, necklace, light makeup",
+  "casual_outfit": "naked apron, apron only",
+  "future_outfit": "casual dress, cardigan, gentle smile",
+  "bonus_outfit": "towel, towel wrap, wet skin",
+  "maternity_outfit": "loose dress, belly visible"
+}

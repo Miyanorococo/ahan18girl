@@ -1,0 +1,113 @@
+{
+  "_meta": {
+    "description": "モジュラーストーリーブロック。組み合わせて作品を構成する",
+    "usage": "intro(1) + middle(3-5) + sex_pattern(1-2) + ending(1) + bonus(0-1)"
+  },
+
+  "intro": {
+    "cool_meeting": {
+      "name": "クールな出会い",
+      "scenes": ["S00_cover", "S01_standing"],
+      "description": "最初はクールで距離がある"
+    },
+    "childhood_friend": {
+      "name": "幼馴染の再会",
+      "scenes": ["S00_cover", "S01_standing"],
+      "note": "S01を笑顔+懐かしい表情に変更"
+    },
+    "isekai": {
+      "name": "異世界転移",
+      "scenes": ["S00_cover", "S01_standing"],
+      "note": "S00をファンタジー背景に"
+    }
+  },
+
+  "development": {
+    "date_outdoor": {
+      "name": "屋外デート",
+      "scenes": ["S02_date1", "S03_date2"],
+      "description": "公園→海辺で距離が縮まる"
+    },
+    "flirting": {
+      "name": "いちゃいちゃ→キス",
+      "scenes": ["S04_flirting", "S05_kiss"],
+      "description": "部屋で距離ゼロに"
+    },
+    "fingering": {
+      "name": "手マン（普通→潮吹き）",
+      "scenes": ["S06a_finger_normal", "S06b_finger_squirt"]
+    },
+    "oral": {
+      "name": "フェラ（普通→射精）",
+      "scenes": ["S07a_oral_normal", "S07b_oral_cum"]
+    },
+    "bath": {
+      "name": "入浴",
+      "scenes": ["S09_bath"]
+    },
+    "toy": {
+      "name": "おもちゃ（普通→イク）",
+      "scenes": ["S10a_toy_normal", "S10b_toy_orgasm"]
+    },
+    "lactation": {
+      "name": "母乳",
+      "scenes": ["S11_lactation"]
+    }
+  },
+
+  "sex_patterns": {
+    "first_time_surprise": {
+      "name": "初体験 — 驚きの快楽",
+      "scenes": ["S08a_sex1_before", "S08b_sex1_insert", "S08c_sex1_pos1", "S08d_sex1_pos2", "S08e_sex1_almost", "S08f_sex1_climax", "S08g_sex1_after"],
+      "description": "予想外の快楽に戸惑う。恥じらい→驚き→アクシデンタルahegao"
+    },
+    "addicted_cowgirl": {
+      "name": "快楽を貪る — 騎乗位中心",
+      "scenes": ["S12a_sex2_before", "S12b_sex2_insert", "S12c_sex2_quick_orgasm", "S12d_sex2_pos1", "S12e_sex2_pos2", "S12f_sex2_almost", "S12g_sex2_climax", "S12h_sex2_after"],
+      "description": "自分から求める。汁多め、fucked silly、insatiable"
+    }
+  },
+
+  "endings": {
+    "pregnancy_birth": {
+      "name": "妊娠→出産→未来",
+      "scenes": ["S13_pregnant", "S14_pregnant_sex", "S15_birth", "S16_future"],
+      "description": "妊娠→妊婦Sex→出産→3年後の幸せ"
+    },
+    "cohabitation": {
+      "name": "同棲（妊娠なし）",
+      "scenes": ["S16_future"],
+      "note": "S16を同棲バージョンに変更"
+    },
+    "separation": {
+      "name": "別れ（切ない）",
+      "scenes": ["S16_future"],
+      "note": "S16を別れのシーンに変更"
+    }
+  },
+
+  "bonus": {
+    "swimsuit": {
+      "name": "水着",
+      "scenes": ["S99_bonus_swimsuit"]
+    }
+  },
+
+  "example_compositions": {
+    "vanilla_jk": {
+      "name": "王道JK恋愛（現行）",
+      "blocks": ["cool_meeting", "date_outdoor", "flirting", "fingering", "oral", "first_time_surprise", "bath", "toy", "lactation", "addicted_cowgirl", "pregnancy_birth", "swimsuit"],
+      "total_scenes": 34
+    },
+    "short_wife": {
+      "name": "人妻短編（20枚）",
+      "blocks": ["cool_meeting", "flirting", "oral", "first_time_surprise", "bath", "swimsuit"],
+      "total_scenes": 20
+    },
+    "fantasy_elf": {
+      "name": "エルフファンタジー（28枚）",
+      "blocks": ["isekai", "date_outdoor", "flirting", "fingering", "first_time_surprise", "bath", "addicted_cowgirl", "cohabitation"],
+      "total_scenes": 28
+    }
+  }
+}

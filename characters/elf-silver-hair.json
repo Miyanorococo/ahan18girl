@@ -1,0 +1,23 @@
+{
+  "name": "エルフ（銀髪）",
+  "genre": "fantasy",
+  "char_tags": "1girl, solo, elf, pointy ears, large breasts, silver hair, long hair, green eyes, fair skin, slender, tall",
+  "char_outfit": "1girl, solo, elf, pointy ears, large breasts, silver hair, long hair, green eyes, fair skin, slender, tall, fantasy armor, white cape, leather corset",
+  "seeds": [42, 123, 456],
+  "locations": {
+    "bedroom": "elven bedroom, wooden interior, moonlight, vines, warm candlelight",
+    "date1": "enchanted forest, glowing mushrooms, sunlight through canopy",
+    "date2": "crystal lake, waterfall, sunset, magical particles",
+    "school": "elven city gate, ancient trees, morning light",
+    "bath": "forest hot spring, outdoor, steam, moonlight, fireflies",
+    "hospital": "elven healer room, soft glow, herbs, crystals",
+    "future": "elven garden, flowers, sunlight, ancient tree",
+    "bonus": "waterfall, natural pool, nude bathing, sunlight"
+  },
+  "date1_outfit": "white dress, flower crown, barefoot",
+  "date2_outfit": "elegant elven robe, silver accessories",
+  "casual_outfit": "sheer nightgown, see-through",
+  "future_outfit": "white elven robe, circlet, gentle smile",
+  "bonus_outfit": "nude, flower petals on body",
+  "maternity_outfit": "flowing white dress, belly visible"
+}
