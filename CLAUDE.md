@@ -270,6 +270,70 @@ r18_anime/
 - 最低解像度: 1024x1536（SDXLネイティブ）→ SUPIRで2倍以上にアップスケール
 - 1作品あたり最低20枚（サンプル5枚 + 本編15枚以上）
 
+## イラストノベル制作
+
+### 制作方式（A/B/C）
+
+**A. テンプレート量産**: 同じストーリー骨格 × キャラ差し替え。高速。
+**B. モジュラー構成**: ストーリーブロックを組み合わせ。バリエーション豊富。推奨メイン。
+**C. フルオリジナル**: ストーリーから毎回設計。差別化作品向け。
+
+### 制作フロー
+
+```
+1. ユーザーがキャラ+ストーリー方針を指示
+2. Claudeがプロンプトファイル（eval-prompts-prod-xxx.json）を直接生成
+3. S3アップロード → Batch実行（7モデル並列）
+4. ギャラリーで全モデル比較 → シーンごとにベスト画像選択
+5. 選択画像をproductions/に保存 → テキスト配置 → 出版
+```
+
+### 使用モデル（7モデル、全モデルで生成→ベスト選択）
+
+| モデル | 設定 | 備考 |
+|--------|------|------|
+| WAI v16, v12, v11, Rouwei | euler_a, sgm_uniform, cfg7, clip2, 1024×1536 | Illustrious系共通設定 |
+| Animagine XL 4.0 | euler_a, normal, cfg7, clip2, 1024×1536 | **strip_tags 33個**（ライティング/アングル/skin除外） |
+| Nova Anime XL | euler_a, sgm_uniform, cfg7, clip2, 1024×1536 | Illustrious系設定 |
+| FeMix HassakuXL | euler_a, sgm_uniform, cfg7, clip2, 1024×1536 | Illustrious系設定 |
+
+### プロンプト設計原則
+
+- タグ20-25個以下（過密→破綻）
+- 明るい環境（dungeon/dark禁止 → warm lighting, bedroom）
+- ポジティブ/ニュートラル感情（screaming/crying禁止 → panting, blush）
+- Animagineはライティング/アングル/skin指定不要（strip_tagsで自動除外）
+- シーン別ライティング: school=afternoon light, fantasy=candlelight, 室内=warm lighting
+
+### Sex①とSex②の描写差
+
+| 要素 | Sex①（初体験） | Sex②（2回目以降） |
+|------|---------------|-------------------|
+| 主体 | 受け身、驚き | 自分から求める |
+| 感情 | surprised, confused, embarrassed | eager, insatiable, addicted |
+| 表情 | wide eyes, covering mouth | fucked silly, ahegao, drooling |
+| 体位 | 正常位→バック（受け身） | 騎乗位中心（自分が動く） |
+| 体液 | cum, creampie（控えめ） | squirting, cum overflow, love juice, wet everywhere |
+
+### 表現タグリファレンス
+
+| シーン | 推奨タグ |
+|--------|---------|
+| orgasm | `fucked silly, ahegao, rolling eyes, tongue out` |
+| sex中 | `fucked silly` + 体位タグ |
+| 射精後 | `cross-eyed, dazed` + `cum overflow` |
+| 潮吹き | `squirting, female ejaculation` |
+| バック | `twisted torso, looking back, from behind` |
+| sensitive | `leaning forward` + `floating hair` |
+| 恥じらい | `embarrassed, shy, bashful`（シーンに合わせ使い分け） |
+
+### 参照ファイル
+
+- `characters/` — キャラ定義JSON + ストーリーブロック定義
+- `assets/templates/eval-prompts-prod-*.json` — 本番プロンプトファイル
+- Obsidian `29_イラストノベルJKストーリー.md` — ストーリー構成+全プロンプト
+- Obsidian `31_イラストノベル量産方針.md` — A/B/C方式詳細
+
 ## コスト
 
 ### 月間コスト（AWS、us-east-1）
@@ -317,25 +381,24 @@ Obsidian: `/Users/rkuros/Obsidian/AWS/AWS/AI出版戦略/` に以下のファイ
 
 ## 前回セッション要約（2026-02-16）
 
-### 主な変更
-- ギャラリー: 5軸評価→4段階(★5/♥2/👎-1)、カルーセルライトボックス、クロスモデルGridナビ
-- AI自動スコアリング: anime-aesthetic ONNX (Lambda 3GB)、全1651件スコア済み、Zip展開時自動実行
+### 主な成果
+- ギャラリー全面改修（4段階評価、カルーセルLB、クロスモデルGrid、AIスコア表示）
+- AI自動スコアリング実装（anime-aesthetic ONNX、Lambda 3GB、全件完了）
 - **AI score ≠ 人間評価（逆相関）** → AIは破綻フィルターとしてのみ使用
-- プロンプト: v2.4（暗→明、ネガ→ポジ、恥じらい追加、dynamic追加）+ v3-pro作成
-- テスト: fucked_silly(13モデル完了)、dynamic(4モデル実行中)
+- プロンプト全面レビュー（122件、設計3原則確立、fucked_silly/dynamic/恥じらい追加）
+- **7モデル確定**: Animagine, Nova, Rouwei, v16, v12, v11, FeMix
+- **FeMix設定修正**: euler_a/sgm_uniform/clip2/1024×1536に統一（旧設定で破綻していた）
+- Animagine strip_tags: 33タグ除外（ライティング/アングル/skin不要）
+- テスト実験: fucked_silly, dynamic, squirting, cowgirl → 結果レビュー済み
+- **本番JK制作開始**: 34シーン × 3seed × 7モデル = 714枚 Batch実行
+- 量産方式確立: A(テンプレート)/B(モジュラー)/C(オリジナル)
+- ストーリーブロック定義 + キャラ定義JSON（JK/人妻/エルフ）
 
-### モデル暫定選定（手動評価433枚）
-- **Nova Anime XL**: ★率18% → 本編メイン候補A
-- **Animagine XL 4.0**: ★率21% → 本編メイン候補B（NSFW表現力は要確認）
-- **WAI Branch-Rouwei**: ★率9% → NSFW特化候補
-- Pony/Illustrij/SD1.5系: ★0% → 候補外
-- birth系タイプ: ★0,👎53% → 全廃推奨
-
-### 次のアクション（優先度順）
-1. 残り画像を♥スキャン（433/7000+枚=6%）
-2. birth系プロンプト削除
-3. Nova+Animagineでキャラ一貫性テスト(#10)
-4. DashboardヒートマップをAI→手動評価に切替
+### 進行中タスク
+- prod-jk v2 Batch（714枚生成中）
+- prod-jk v3（Sex①②修正版）→ v2完了後に自動起動
 
 ### 詳細ログ
-Obsidian: `AI出版戦略/28_セッションログ_20260216.md`
+- Obsidian: `28_セッションログ_20260216.md`（全実施内容）
+- Obsidian: `29_イラストノベルJKストーリー.md`（ストーリー+プロンプト）
+- Obsidian: `31_イラストノベル量産方針.md`（A/B/C方式）
