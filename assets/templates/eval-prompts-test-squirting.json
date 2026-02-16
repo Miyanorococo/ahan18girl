@@ -1,0 +1,205 @@
+{
+  "_meta": {
+    "description": "潮吹き (squirting) test - 8 genres × 7 models",
+    "created": "2026-02-16",
+    "version": "test-squirting",
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ]
+  },
+  "negative_common": {
+    "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, ",
+    "safe": "",
+    "realistic_safe": "flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_explicit": "censored, mosaic censoring, bar censor, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_sensitive": "censored, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, "
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": [
+        "wai-nsfw-illustrious-v16",
+        "wai-nsfw-illustrious-v11",
+        "wai-branch-rouwei",
+        "wai-nsfw-illustrious-v12"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "B_nova": {
+      "models": [
+        "nova-anime-xl-il"
+      ],
+      "cfg": 5,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "D_animagine": {
+      "models": [
+        "animagine-xl-4.0"
+      ],
+      "cfg": 5,
+      "steps": 28,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers",
+      "strip_tags": [
+        "warm lighting",
+        "soft lighting",
+        "soft shadows",
+        "afternoon light",
+        "classroom light",
+        "golden hour light",
+        "candlelight",
+        "warm candlelight",
+        "bioluminescent glow",
+        "afternoon sunlight",
+        "golden hour",
+        "from front",
+        "from above",
+        "from below",
+        "from side",
+        "from behind",
+        "dynamic angle",
+        "low angle",
+        "close-up",
+        "cowboy shot",
+        "full body",
+        "upper body",
+        "dynamic pose",
+        "dynamic_pose",
+        "dynamic_angle",
+        "smooth skin",
+        "wet skin",
+        "glistening skin",
+        "detailed skin",
+        "skin texture",
+        "subsurface scattering",
+        "natural skin texture",
+        "skin pores"
+      ]
+    },
+    "E_femix": {
+      "models": [
+        "femix-hassakuxl"
+      ],
+      "cfg": 6,
+      "steps": 25,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "clip_skip": 1,
+      "resolution": {
+        "width": 832,
+        "height": 1216
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    }
+  },
+  "prompts": [
+    {
+      "id": "SQ01_nurse",
+      "genre": "ナース",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, nurse, nurse cap, white uniform, open clothes, large breasts, brown hair, ponytail, squirting, female ejaculation, orgasm, spread legs, lying on examination table, wet, blush, ahegao, rolling eyes, panting, hospital room, warm lighting, from front"
+      }
+    },
+    {
+      "id": "SQ02_sm",
+      "genre": "SMプレイ",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, black hair, long hair, collar, bondage, rope, arms behind back, squirting, female ejaculation, orgasm, spread legs, vibrator, forced orgasm, trembling, blush, fucked silly, sweat, bedroom, red lighting, candles, from front"
+      }
+    },
+    {
+      "id": "SQ03_tentacle",
+      "genre": "触手",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, tentacles, tentacle sex, restrained by tentacles, lifted, spread legs, squirting, female ejaculation, orgasm, blonde hair, long hair, nude, large breasts, ahegao, tongue out, blush, sweat, dark cave, bioluminescent glow, from below"
+      }
+    },
+    {
+      "id": "SQ04_wife",
+      "genre": "人妻",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, squirting, female ejaculation, orgasm, spread legs, lying on bed, vibrator, wet sheets, blush, embarrassed, panting, bedroom, warm lighting, soft shadows"
+      }
+    },
+    {
+      "id": "SQ05_jk",
+      "genre": "JK/学園",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, solo, school uniform, sailor uniform, blue skirt, skirt lifted, thighhighs, black hair, ponytail, squirting, female ejaculation, orgasm, spread legs, sitting on chair, classroom, embarrassed, covering mouth, blush, sweat, afternoon light"
+      }
+    },
+    {
+      "id": "SQ06_ntr",
+      "genre": "NTR",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, 1boy, married woman, wedding ring, brown hair, messy hair, sex, vaginal, from behind, squirting, female ejaculation, orgasm, fucked silly, ahegao, tongue out, hotel bed, messy sheets, warm lighting, blush, sweat"
+      }
+    },
+    {
+      "id": "SQ07_fantasy",
+      "genre": "fantasy",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, elf, pointy ears, silver hair, long hair, green eyes, nude, squirting, female ejaculation, orgasm, spread legs, arched back, lying on altar, enchanted forest, moonlight, glowing flowers, blush, panting, trembling"
+      }
+    },
+    {
+      "id": "SQ08_monster",
+      "genre": "monster girl (lamia)",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, monster girl, lamia, snake tail, scales, purple hair, long hair, yellow slit eyes, nude, large breasts, squirting, female ejaculation, orgasm, spread legs, tail coiled, arched back, ahegao, blush, underground den, warm candlelight, from front"
+      }
+    }
+  ]
+}
