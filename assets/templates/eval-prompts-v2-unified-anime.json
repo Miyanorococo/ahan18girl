@@ -13,7 +13,7 @@
       1024
     ],
     "total_images": "122 prompts × 5 seeds × 13 models = 7,930 images",
-    "note": "v2.2: global prompt quality pass - lighting, emotions, dedup, tag limit",
+    "note": "v2.3: added embarrassment expressions to 適切なシーン",
     "version": "v2-unified"
   },
   "negative_common": {
@@ -159,7 +159,7 @@
       "genre": "人妻",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked, nude, spread legs, lying on bed, bedroom, indoor, warm lighting, soft shadows, blush, sweat, looking at viewer, navel, thick thighs, areolae, nipples"
+        "default": "nsfw, explicit, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked, nude, spread legs, lying on bed, bedroom, indoor, warm lighting, soft shadows, blush, embarrassed, sweat, looking at viewer, navel, thick thighs, areolae, nipples"
       }
     },
     {
@@ -167,7 +167,7 @@
       "genre": "人妻",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked apron, apron, sideboob, no bra, no panties, kitchen, indoor, morning light, blush, smile, cooking, steam, cleavage, thighs, bare shoulders"
+        "default": "nsfw, sensitive, 1girl, solo, mature female, housewife, wedding ring, large breasts, brown hair, hair bun, naked apron, apron, sideboob, no bra, no panties, kitchen, indoor, morning light, blush, shy smile, smile, cooking, steam, cleavage, thighs, bare shoulders"
       },
       "subtype": "sensitive着衣"
     },
@@ -283,7 +283,7 @@
       "genre": "JK/学園",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, vibrator, sex toy, vibrator under panties, remote control vibrator, sitting in chair, library, bookshelves, quiet setting, afternoon light, blush, biting lip, clenched thighs, fidgeting, sweat, trying to stay quiet, skirt tented"
+        "default": "nsfw, explicit, 1girl, school uniform, sailor uniform, blue skirt, thighhighs, black hair, ponytail, vibrator, sex toy, vibrator under panties, remote control vibrator, sitting in chair, library, bookshelves, quiet setting, afternoon light, blush, embarrassed, biting lip, clenched thighs, fidgeting, sweat, trying to stay quiet, skirt tented"
       },
       "subtype": "toy"
     },
@@ -426,7 +426,7 @@
       "genre": "百合",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 2girls, yuri, kiss, french kiss, saliva trail, mutual embrace, intertwined legs, nude, lying on bed, white sheets, blonde hair, black hair, long hair, closed eyes, blushing, hand on breast, intimate, soft lighting, bedroom, from above"
+        "default": "nsfw, explicit, 2girls, yuri, kiss, french kiss, saliva trail, mutual embrace, intertwined legs, nude, lying on bed, white sheets, blonde hair, black hair, long hair, closed eyes, blushing, hand on breast, intimate, soft lighting, shy, bedroom, from above"
       }
     },
     {
@@ -434,7 +434,7 @@
       "genre": "百合",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, 2girls, yuri, forehead touch, holding hands, interlocked fingers, blonde hair, black hair, long hair, matching lingerie, lace bra, see-through, cleavage, sitting face to face, blushing, half-closed eyes, romantic, bedroom, candle light, rose petals on bed, intimate atmosphere"
+        "default": "nsfw, 2girls, yuri, forehead touch, holding hands, interlocked fingers, blonde hair, black hair, long hair, matching lingerie, lace bra, see-through, cleavage, sitting face to face, blushing, half-closed eyes, romantic, bedroom, candle light, shy smile, rose petals on bed, intimate atmosphere"
       }
     },
     {
@@ -453,7 +453,7 @@
       "type": "explicit",
       "note": "百合のためstrap-onを使用した構図",
       "content": {
-        "default": "nsfw, explicit, 2girls, yuri, strap-on, dildo, sex from behind, blonde hair, black hair, long hair, nude, doggy style, grabbing hips, moaning, open mouth, blushing, sweat, blush of pleasure, on bed, white sheets, warm lighting, bedroom, from side"
+        "default": "nsfw, explicit, 2girls, yuri, strap-on, dildo, sex from behind, blonde hair, black hair, long hair, nude, doggy style, grabbing hips, moaning, open mouth, blushing, sweat, embarrassed, blush of pleasure, on bed, white sheets, warm lighting, bedroom, from side"
       },
       "subtype": "strap-on"
     },
@@ -462,7 +462,7 @@
       "genre": "百合",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 2girls, yuri, vibrator, sex toy, blonde hair, black hair, long hair, nude, lying side by side, mutual masturbation, shared vibrator, blushing, moaning, open mouth, hand holding, intertwined fingers, sweat, on bed, white sheets, soft lighting, bedroom, from above"
+        "default": "nsfw, explicit, 2girls, yuri, vibrator, sex toy, blonde hair, black hair, long hair, nude, lying side by side, mutual masturbation, shared vibrator, blushing, moaning, open mouth, hand holding, intertwined fingers, sweat, flustered, on bed, white sheets, soft lighting, bedroom, from above"
       },
       "subtype": "toy"
     },
@@ -489,7 +489,7 @@
       "genre": "百合",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 2girls, yuri, lactation, breast milk, breastfeeding, sucking breast, blonde hair, black hair, long hair, nude, large breasts, milk dripping, lying on side, cradling, blushing, closed eyes, peaceful expression, sweat, on bed, white sheets, warm lighting, bedroom, intimate"
+        "default": "nsfw, explicit, 2girls, yuri, lactation, breast milk, breastfeeding, sucking breast, blonde hair, black hair, long hair, nude, large breasts, milk dripping, lying on side, cradling, blushing, closed eyes, peaceful expression, sweat, embarrassed, on bed, white sheets, warm lighting, bedroom, intimate"
       },
       "subtype": "lactation"
     },
@@ -516,7 +516,7 @@
       "genre": "おねショタ",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo focus, mature female, large breasts, red hair, wavy hair, seductive smile, half-closed eyes, nude, lying on back, on bed, spread legs, beckoning, sweat, blushing, warm lighting, bedroom, from above, pillow"
+        "default": "nsfw, explicit, 1girl, solo focus, mature female, large breasts, red hair, wavy hair, seductive smile, half-closed eyes, nude, lying on back, on bed, spread legs, beckoning, sweat, bashful, blushing, warm lighting, bedroom, from above, pillow"
       }
     },
     {
@@ -524,7 +524,7 @@
       "genre": "おねショタ",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, 1girl, solo focus, mature female, large breasts, red hair, wavy hair, ara ara, gentle smile, half-closed eyes, camisole, cleavage, sitting on bed, patting lap, inviting gesture, bedroom, warm lighting, soft focus, maternal expression, bare shoulders, lace trim"
+        "default": "nsfw, 1girl, solo focus, mature female, large breasts, red hair, wavy hair, ara ara, gentle smile, half-closed eyes, camisole, cleavage, sitting on bed, patting lap, inviting gesture, bedroom, warm lighting, soft focus, maternal expression, embarrassed, bare shoulders, lace trim"
       }
     },
     {
@@ -541,7 +541,7 @@
       "genre": "おねショタ",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1boy, 1girl, penis, erection, paizuri, breast sandwich, mature female, large breasts, red hair, wavy hair, seductive smile, looking up at viewer, tongue out, licking tip, kneeling, between breasts, sweat, saliva, blushing, pov, bedroom, warm lighting"
+        "default": "nsfw, explicit, 1boy, 1girl, penis, erection, paizuri, breast sandwich, mature female, large breasts, red hair, wavy hair, seductive smile, looking up at viewer, tongue out, licking tip, kneeling, between breasts, sweat, embarrassed, saliva, blushing, pov, bedroom, warm lighting"
       },
       "subtype": "penis"
     },
@@ -550,7 +550,7 @@
       "genre": "おねショタ",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, mature female, large breasts, red hair, wavy hair, vibrator, sex toy, insertion, spread legs, sitting on chair, leaning back, moaning, open mouth, blushing, sweat, half-closed eyes, seductive, hand between legs, bedroom, warm lighting, candlesing, from front"
+        "default": "nsfw, explicit, 1girl, solo, mature female, large breasts, red hair, wavy hair, vibrator, sex toy, insertion, spread legs, sitting on chair, leaning back, moaning, open mouth, blushing, sweat, biting lip, half-closed eyes, seductive, hand between legs, bedroom, warm lighting, candlesing, from front"
       },
       "subtype": "toy"
     },
@@ -604,7 +604,7 @@
       "genre": "NTR",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, married woman, wedding ring, nude, lying on hotel bed, messy hair, brown hair, blush, panting, ahegao, tongue out, sweat, love bite on neck, hickey, disheveled, phone showing husband photo, guilt, hotel room, warm lighting, curtains"
+        "default": "nsfw, explicit, 1girl, solo, married woman, wedding ring, nude, lying on hotel bed, messy hair, brown hair, blush, embarrassed, panting, ahegao, tongue out, sweat, love bite on neck, hickey, disheveled, phone showing husband photo, guilt, hotel room, warm lighting, curtains"
       }
     },
     {
@@ -612,7 +612,7 @@
       "genre": "NTR",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, 1girl, solo, married woman, wedding ring, guilty expression, messy hair, brown hair, blush, biting lip, clothes in disarray, open shirt, bra visible, skirt pulled up, thighhighs, hotel room, sitting on bed, looking at viewer, text message from husband on phone, warm lighting, used condom on nightstand"
+        "default": "nsfw, 1girl, solo, married woman, wedding ring, guilty expression, messy hair, brown hair, blush, flustered, biting lip, clothes in disarray, open shirt, bra visible, skirt pulled up, thighhighs, hotel room, sitting on bed, looking at viewer, text message from husband on phone, warm lighting, used condom on nightstand"
       }
     },
     {
@@ -629,7 +629,7 @@
       "genre": "NTR",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1boy, 1girl, penis, erection, fellatio, oral, married woman, wedding ring, brown hair, messy hair, blush, looking up at viewer, reluctant expression, guilt, hand on penis, kneeling, saliva, drooling, blushing, sweat, hotel room, warm lighting, wedding ring hand gripping shaft"
+        "default": "nsfw, explicit, 1boy, 1girl, penis, erection, fellatio, oral, married woman, wedding ring, brown hair, messy hair, blush, shy, looking up at viewer, reluctant expression, guilt, hand on penis, kneeling, saliva, drooling, blushing, sweat, hotel room, warm lighting, wedding ring hand gripping shaft"
       },
       "subtype": "penis"
     },
@@ -638,7 +638,7 @@
       "genre": "NTR",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, solo, married woman, wedding ring, vibrator, sex toy, remote controlled vibrator, brown hair, messy hair, blush, biting lip, trying to suppress moans, spread legs, sitting on couch, living room, husband sleeping in background, guilt, phone with lover message, warm lighting, candlesing, trembling, sweat"
+        "default": "nsfw, explicit, 1girl, solo, married woman, wedding ring, vibrator, sex toy, remote controlled vibrator, brown hair, messy hair, blush, embarrassed, biting lip, trying to suppress moans, spread legs, sitting on couch, living room, husband sleeping in background, guilt, phone with lover message, warm lighting, candlesing, trembling, sweat"
       },
       "subtype": "toy"
     },
@@ -692,7 +692,7 @@
       "genre": "fantasy",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, armor removed, nude, medium breasts, navel, standing, looking at viewer, enchanted forest, glowing mushrooms, moonlight, volumetric lighting, full body, from front"
+        "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, armor removed, nude, medium breasts, navel, standing, looking at viewer, embarrassed, enchanted forest, glowing mushrooms, moonlight, volumetric lighting, full body, from front"
       },
       "subtype": "explicit_solo"
     },
@@ -701,7 +701,7 @@
       "genre": "fantasy",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, sensitive, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, cleavage, midriff, thigh gap, sitting, crossed legs, throne room, stone pillars, torchlight, warm lighting, cowboy shot, from below"
+        "default": "nsfw, sensitive, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, cleavage, midriff, thigh gap, sitting, crossed legs, throne room, stone pillars, torchlight, warm lighting, shy smile, cowboy shot, from below"
       },
       "subtype": "sensitive_clothed"
     },
@@ -719,7 +719,7 @@
       "genre": "fantasy",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, 1boy, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, handjob, penis, erection, kneeling, forest clearing, fairy lights, night sky, starry sky, blush, looking at penis, close-up, from side"
+        "default": "nsfw, explicit, 1girl, 1boy, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, handjob, penis, erection, kneeling, forest clearing, fairy lights, night sky, starry sky, blush, embarrassed, looking at penis, close-up, from side"
       },
       "subtype": "penis_visible"
     },
@@ -728,7 +728,7 @@
       "genre": "fantasy",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, nude, dildo, crystal dildo, insertion, vaginal object insertion, sitting, spread legs, enchanted spring, glowing water, crystal formations, magical aura, blush, half-closed eyes, steam, medium shot, from front"
+        "default": "nsfw, explicit, 1girl, elf, pointy ears, green eyes, silver hair, long hair, fantasy armor, nude, dildo, crystal dildo, insertion, vaginal object insertion, sitting, spread legs, enchanted spring, glowing water, crystal formations, magical aura, blush, flustered, half-closed eyes, steam, medium shot, from front"
       },
       "subtype": "toy"
     },
@@ -782,7 +782,7 @@
       "genre": "ryoujoku",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, restrained, chains, nude, exposed breasts, bedroom, warm lighting, soft shadows, scared expression, blush, standing, arms above head, full body, from front"
+        "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, restrained, chains, nude, exposed breasts, bedroom, warm lighting, soft shadows, scared expression, blush, shy, standing, arms above head, full body, from front"
       },
       "subtype": "explicit_solo"
     },
@@ -809,7 +809,7 @@
       "genre": "ryoujoku",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, 1boy, black hair, white dress, torn clothes, restrained, collar, leash, kneeling, fellatio, penis, oral, forced oral, blush, mascara blush, indoor, bedroom wall, shackles, dim candlelight, saliva, close-up, from side"
+        "default": "nsfw, explicit, 1girl, 1boy, black hair, white dress, torn clothes, restrained, collar, leash, kneeling, fellatio, penis, oral, forced oral, blush, shy, mascara blush, indoor, bedroom wall, shackles, dim candlelight, saliva, close-up, from side"
       },
       "subtype": "penis_visible"
     },
@@ -818,7 +818,7 @@
       "genre": "ryoujoku",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, lying on bed, relaxed pose, vibrator, vibrator on nipple, dildo, vaginal object insertion, blindfold, pleasure, bedroom, silk sheets, soft lighting, candlelight, sweat, trembling, blush, full body, from front"
+        "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, lying on bed, relaxed pose, vibrator, vibrator on nipple, dildo, vaginal object insertion, blindfold, pleasure, bedroom, silk sheets, soft lighting, candlelight, sweat, biting lip, trembling, blush, full body, from front"
       },
       "subtype": "toy"
     },
@@ -845,7 +845,7 @@
       "genre": "ryoujoku",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, restrained, stocks, lactation, breast milk, milking, large breasts, breast squeeze, forced, nude, indoor, wooden stocks, bucket, warm lighting, humiliation, panting, blush, upper body, from front"
+        "default": "nsfw, explicit, 1girl, black hair, white dress, torn clothes, restrained, stocks, lactation, breast milk, milking, large breasts, breast squeeze, forced, nude, indoor, wooden stocks, bucket, warm lighting, humiliation, panting, flustered, blush, upper body, from front"
       },
       "subtype": "lactation"
     },
@@ -872,7 +872,7 @@
       "genre": "futanari",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, penis, erection, testicles, medium breasts, standing, confident smile, gym, locker room, fluorescent lighting, mirror reflection, full body, from front"
+        "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, penis, erection, testicles, medium breasts, standing, confident smile, gym, locker room, fluorescent lighting, mirror reflection, bashful, full body, from front"
       },
       "subtype": "explicit_solo"
     },
@@ -881,7 +881,7 @@
       "genre": "futanari",
       "type": "sensitive",
       "content": {
-        "default": "nsfw, sensitive, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, sports bra, bike shorts, bulge, midriff, sweat, stretching, arms up, outdoor track, sunset, golden hour lighting, lens flare, cowboy shot, from side"
+        "default": "nsfw, sensitive, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, sports bra, bike shorts, bulge, midriff, sweat, embarrassed, stretching, arms up, outdoor track, sunset, golden hour lighting, lens flare, cowboy shot, from side"
       },
       "subtype": "sensitive_clothed"
     },
@@ -908,7 +908,7 @@
       "genre": "futanari",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, vibrator, cock ring, vibrator on penis, masturbation, lying on bed, spread legs, penis, erection, bedroom, neon lights, purple ambient light, sweat, panting, blush, medium shot"
+        "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, nude, vibrator, cock ring, vibrator on penis, masturbation, lying on bed, spread legs, penis, erection, bedroom, neon lights, purple ambient light, sweat, embarrassed, panting, blush, medium shot"
       },
       "subtype": "toy"
     },
@@ -935,7 +935,7 @@
       "genre": "futanari",
       "type": "explicit",
       "content": {
-        "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, lactation, breast milk, large breasts, dripping, nude, penis, semi-erect, sitting, couch, living room, warm lighting, table lamp, relaxed, half-closed eyes, upper body, from front"
+        "default": "nsfw, explicit, 1girl, futanari, pink hair, short hair, athletic build, toned body, abs, lactation, breast milk, large breasts, dripping, nude, penis, semi-erect, sitting, couch, living room, warm lighting, table lamp, relaxed, half-closed eyes, shy, upper body, from front"
       },
       "subtype": "lactation"
     },
@@ -1061,7 +1061,7 @@
       "genre": "generic character (school uniform)",
       "type": "sensitive",
       "content": {
-        "default": "1girl, long hair, grey hair, green eyes, red bowtie, school uniform, white shirt, pleated skirt, standing, hair blowing, gentle smile, looking at viewer, grass field, blue sky, white clouds, wind, cherry blossoms, natural lighting, soft focus background, full body, solo"
+        "default": "1girl, long hair, grey hair, green eyes, red bowtie, school uniform, white shirt, pleated skirt, standing, hair blowing, gentle smile, looking at viewer, shy smile, grass field, blue sky, white clouds, wind, cherry blossoms, natural lighting, soft focus background, full body, solo"
       },
       "subtype": "sensitive clothed (safe standing portrait)"
     },
