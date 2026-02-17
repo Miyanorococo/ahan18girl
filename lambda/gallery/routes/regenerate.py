@@ -117,7 +117,7 @@ def _detect_next_generation(s3, book_id):
     Returns 2 if no regen generations exist yet (R1 = original, R2 = first regen).
     """
 
-    max_gen = 1  # Start at 1 so first regen is R2 (R1 = original display name)
+    max_gen = 0  # Start at 0 so first regen is R1
     prefix = "gallery/experiments/"
 
     try:
