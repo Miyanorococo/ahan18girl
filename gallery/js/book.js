@@ -591,7 +591,7 @@ function bookMixin() {
         name: img.name,
       };
       event.dataTransfer.setData('text/plain', JSON.stringify(data));
-      event.dataTransfer.effectAllowed = 'copy';
+      event.dataTransfer.effectAllowed = 'all';
 
       // Create a small drag ghost from the thumbnail
       const ghost = document.createElement('img');
@@ -616,7 +616,7 @@ function bookMixin() {
         fromIdx: pageIdx,
       };
       event.dataTransfer.setData('text/plain', JSON.stringify(data));
-      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.effectAllowed = 'all';
     },
 
     /** Handle drop on a timeline slot (swap/select only; inserts go through insert zones) */
@@ -751,8 +751,6 @@ function bookMixin() {
     /** Drag over handler for timeline slots - swap only (insert via dedicated zones) */
     bookTimelineDragOver(event, slotIdx) {
       event.preventDefault();
-      // Allow all drop effects (copy for candidates, move for timeline reorder)
-      event.dataTransfer.dropEffect = 'move';
     },
 
     /** Get a short display name for a page ID */
