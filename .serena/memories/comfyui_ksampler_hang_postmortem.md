@@ -33,7 +33,16 @@ python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch &
 - 基本CUDA操作（torch.randn）は正常動作
 - ComfyUI がプロンプトを受け取り、モデルをロードするが、KSampler の実行が始まらない
 - **未解決**: Fleet の --models と --layer2-test の差が何を引き起こすか不明
-- **次のステップ**: Fleet ワーカーで --layer2-test を直接実行して比較（parallel-eval.sh 経由）
+- **次のステップ**: ComfyUI バージョンダウングレードまたは新規 AMI 作成
+
+## 追加調査結果（2026-02-17 夜）
+- parallel-eval.sh 経由で --models (Fleet コードパス) を実行 → 同じハング
+- v1 AMI + 古いスナップショット + オリジナルコードでも失敗
+- v2 AMI + systemctl stop + --disable-cuda-malloc でも失敗
+- ポート競合（errno 98）は v1 AMI の systemd が原因で確認されたが、ハングの根本原因ではない
+- 全ての修正を適用しても ComfyUI 0.13.0 の KSampler がハングする
+- **可能性**: 以前の成功は特定のインスタンスタイプ/AZ/タイミングの偶然。再現性が低い
+- **推奨**: ComfyUI のバージョンを 0.12.x にダウングレードするか、新しい AMI をゼロから構築
 
 ## 成功パターン（唯一の64枚バッチ成功）
 1. boto3 install

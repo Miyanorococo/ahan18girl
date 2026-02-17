@@ -111,6 +111,27 @@ assets/templates/ に6バージョン保存:
 | ADetailer | 1 | △要追加 |
 | Upscale | 2 | △要追加 |
 
+## 2026-02-17 夜追加セッション（最終）
+
+### KSampler ハング — 全修正失敗
+試した修正と結果:
+- systemd disabled (AMI v2) → ❌
+- --disable-cuda-malloc → ❌
+- systemctl stop in UserData → ❌
+- 古いスナップショット (Impact-Subpack なし) → ❌
+- v1 AMI + 古いスナップショット → ❌
+- Fleet コードパス (--models) → ❌
+- ポート競合 (errno 98) を発見・修正したがハング解消せず
+
+### 真の根本原因（未確定）
+ComfyUI 0.13.0 の KSampler が UserData 経由の実行でハングする。
+以前の成功は特定条件の偶然の可能性。
+推奨: ComfyUI 0.12.x ダウングレード or AMI ゼロから再構築。
+
+### parallel-eval.sh への修正（保持すべき）
+- `systemctl stop comfyui` を ComfyUI 起動前に追加（ポート競合防止）
+- `--disable-cuda-malloc` は効果なしだが害もなし
+
 ## Docker再ビルド時の注意
 - onnxruntimeをDockerfileに追加すること（aesthetic scorer用）
 - 現在のイメージにはonnxruntime未インストール
