@@ -2383,6 +2383,50 @@ body {
   }
 }
 
+/* === Filter Button (used across Book, KB, etc.) === */
+.filter-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: var(--radius-badge);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.15s, color 0.15s;
+}
+.filter-btn:hover { background: rgba(255, 255, 255, 0.1); }
+.filter-btn.active {
+  background: rgba(233, 69, 96, 0.15);
+  color: var(--accent);
+  border-color: rgba(233, 69, 96, 0.3);
+}
+
+/* === Section Header === */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.section-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* === Action Button (KB) === */
+.action-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius-badge);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.15s;
+}
+.action-btn:hover { background: rgba(255, 255, 255, 0.12); }
+
 /* === Book View === */
 .book-view { max-width: 1100px; margin: 0 auto; }
 

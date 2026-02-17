@@ -996,7 +996,7 @@
                 <span x-text="'Shelf (' + book.shelf.length + ' items) ' + (book.shelfOpen ? '\u25B2' : '\u25BC')"></span>
               </div>
               <div class="be-shelf-items" x-show="book.shelfOpen">
-                <template x-for="(item, idx) in book.shelf" :key="'bs-' + item.id">
+                <template x-for="(item, idx) in book.shelf" :key="'bsh-' + item.id">
                   <div class="be-shelf-item" draggable="true" @dragstart="bookDragStartShelf($event, idx)">
                     <img :src="bookShelfThumb(item)" :alt="item.id" loading="lazy">
                     <span class="be-shelf-label" x-text="bookShortPageId(item.id)"></span>

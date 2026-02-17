@@ -47,7 +47,7 @@ function bookMixin() {
 
       // Generation versioning (Feature 5)
       generations: [],        // ['R0', 'R2', 'R3'] - detected from loaded pages
-      selectedGen: 'all',     // 'all' | 'R0' | 'R0' | 'R2' etc.
+      selectedGen: 'all',     // 'all' | 'R0' | 'R1' | 'R2' etc.
 
       // Undo/Redo
       _undoStack: [],         // Array of state snapshots
@@ -374,9 +374,11 @@ function bookMixin() {
       this.book.editorMode = !this.book.editorMode;
     },
 
-    /** Select an image for a specific page in the editor */
-    bookSelectImage(pageId, model, seed, img) {
-      this.bookPushUndo();
+    /** Select an image for a specific page in the editor.
+     *  Set _skipUndo = true when calling from batch operations that manage their own undo.
+     */
+    bookSelectImage(pageId, model, seed, img, _skipUndo = false) {
+      if (!_skipUndo) this.bookPushUndo();
       this.book.selections = {
         ...this.book.selections,
         [pageId]: {
@@ -515,9 +517,10 @@ function bookMixin() {
         }
 
         if (bestImg) {
-          this.bookSelectImage(page.id, bestModel, bestImg._seed || '', bestImg);
+          this.bookSelectImage(page.id, bestModel, bestImg._seed || '', bestImg, true);
         }
       }
+      this.bookSaveSelections();
     },
 
     /** Clear all selections for the current book */
@@ -896,12 +899,12 @@ function bookMixin() {
 
     /** Extract the generation from a pageId/prompt_id.
      *  "0216a_R1_S08f_climax" -> "R1"
-     *  "0216a_S08f_climax" -> "R1"
+     *  "0216a_S08f_climax"    -> "R0" (no Rn prefix = original)
      */
     bookGetGeneration(pageId) {
       if (!pageId) return 'R0';
       const match = pageId.match(/_R(\d+)_/);
-      // No prefix = R1 (original), R2 in S3 = R2 display, R3 in S3 = R3 display
+      // No Rn_ prefix = R0 (original), R1/R2/R3 etc. = regen version
       return match ? `R${match[1]}` : 'R0';
     },
 
@@ -1171,6 +1174,7 @@ function bookMixin() {
     /** Apply the suggested model to all unselected pages */
     bookApplySuggestion() {
       if (!this.book.suggestion) return;
+      this.bookPushUndo();
       const model = this.book.suggestion.model;
 
       for (const page of this.book.pages) {
@@ -1194,9 +1198,10 @@ function bookMixin() {
         }
 
         if (bestImg) {
-          this.bookSelectImage(page.id, model, bestImg._seed || '', bestImg);
+          this.bookSelectImage(page.id, model, bestImg._seed || '', bestImg, true);
         }
       }
+      this.bookSaveSelections();
 
       this.book.suggestion = null;
     },
