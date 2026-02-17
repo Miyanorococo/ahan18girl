@@ -932,7 +932,8 @@
                        'active': idx === book.currentPage,
                        'selected': !!bookGetSelection(page.id),
                        'multi-selected': bookIsMultiSelected(idx),
-                       'regen-flagged': bookIsRegenFlagged(page.id)
+                       'regen-flagged': bookIsRegenFlagged(page.id),
+                       'has-regen': bookPageHasRegen(page)
                      }"
                      @click="bookTimelineClick($event, idx)" draggable="true"
                      @dragstart="bookDragStartTimeline($event, idx)"

@@ -2806,3 +2806,7 @@ body {
 .be-preview-rating.rating-star { color: #ffd700; }
 .be-preview-rating.rating-heart { color: #e94560; }
 .be-preview-rating.rating-bad { color: #f44336; }
+
+/* Timeline: page has regen candidates */
+.be-timeline-slot.has-regen { border-color: #9c27b0; box-shadow: 0 0 6px rgba(156,39,176,0.4); }
+.be-timeline-slot.has-regen::after { content: 'R'; position: absolute; top: -3px; left: -3px; background: #9c27b0; color: white; font-size: 0.5rem; font-weight: 700; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 3; }

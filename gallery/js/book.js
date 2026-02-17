@@ -465,6 +465,12 @@ function bookMixin() {
       }));
     },
 
+    /** Check if a page has regen candidates (R1, R2, etc.) */
+    bookPageHasRegen(page) {
+      if (!page || !page.models) return false;
+      return page.models.some(m => m._generation && m._generation !== 'original');
+    },
+
     /** Get the thumbnail for a timeline slot (selected image or first available) */
     bookTimelineThumb(page) {
       const sel = this.book.selections[page.id];
@@ -893,24 +899,21 @@ function bookMixin() {
 
       const selectedGen = this.book.selectedGen;
 
-      return page.models.map(modelData => {
-        const filteredImages = modelData.images.filter(img => {
-          if (selectedGen === 'all') return true;
-          const exp = img._mgExperiment;
-          const pid = exp?.prompt_id || page.id;
-          const gen = this.bookGetGeneration(pid);
-          return gen === selectedGen;
-        });
-        return {
+      // Filter by generation using modelData._generation (set during openBook)
+      const filtered = selectedGen === 'all'
+        ? page.models
+        : page.models.filter(m => (m._generation || 'original') === selectedGen);
+
+      return filtered.map(modelData => ({
+        model: modelData.model,
+        generation: modelData._generation || 'original',
+        images: modelData.images.map(img => ({
           model: modelData.model,
-          images: filteredImages.map(img => ({
-            model: modelData.model,
-            seed: img._seed || '?',
-            img,
-            detail: modelData.detail,
-          })),
-        };
-      }).filter(group => group.images.length > 0);
+          seed: img._seed || '?',
+          img,
+          detail: modelData.detail,
+        })),
+      })).filter(group => group.images.length > 0);
     },
 
     // ==========================================
@@ -1339,24 +1342,27 @@ function bookMixin() {
 
     /** Fetch an image and return as a data URL */
     async _fetchImageAsDataURL(url) {
-      // Use Image element to convert to canvas dataURL (avoids CORS/fetch issues)
+      // Fetch image as blob, convert to object URL, draw on canvas
+      const response = await fetch(url, { credentials: 'same-origin' });
+      if (!response.ok) throw new Error(`Fetch failed: ${response.status} ${url}`);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
       return new Promise((resolve, reject) => {
         const img = new Image();
-        img.crossOrigin = 'use-credentials';
         img.onload = () => {
           const canvas = document.createElement('canvas');
           canvas.width = img.naturalWidth;
           canvas.height = img.naturalHeight;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          try {
-            resolve(canvas.toDataURL('image/jpeg', 0.95));
-          } catch (e) {
-            reject(new Error('Canvas toDataURL failed (CORS): ' + url));
-          }
+          canvas.getContext('2d').drawImage(img, 0, 0);
+          URL.revokeObjectURL(objectUrl);
+          resolve(canvas.toDataURL('image/jpeg', 0.92));
         };
-        img.onerror = () => reject(new Error('Image load failed: ' + url));
-        img.src = url;
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error('Image load failed: ' + url));
+        };
+        img.src = objectUrl;
       });
     },
 
