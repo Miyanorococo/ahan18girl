@@ -1476,9 +1476,9 @@ function bookMixin() {
       if (window.jspdf) return;
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';
-        script.onload = resolve;
-        script.onerror = reject;
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to load script'));
         document.head.appendChild(script);
       });
     },
@@ -1489,8 +1489,8 @@ function bookMixin() {
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-        script.onload = resolve;
-        script.onerror = reject;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to load script'));
         document.head.appendChild(script);
       });
     },
