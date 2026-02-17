@@ -925,6 +925,78 @@ def run_layer2_tests(checkpoint="wai-nsfw-illustrious-v16.safetensors"):
                     "depth_ref.png", "controlnet-union-sdxl.safetensors", 0.5)
                 run_one(wf, f"L2B_depth_{name}_s{seed}")
 
+    # === #12 ADetailer: 5 face corrections ===
+    log.info("--- #12 ADetailer ---")
+    face_prompts = [
+        ("1girl, close up face, smile, brown hair, school uniform", 100),
+        ("1girl, full body, standing, looking away, brown hair, casual", 200),
+        ("1girl, upper body, winking, peace sign, brown hair, cafe", 300),
+        ("nsfw, 1girl, close up face, ahegao, blush, brown hair", 400),
+        ("1girl, side view, profile, brown hair, sunset background", 500),
+    ]
+    for prompt, seed in face_prompts:
+        # Generate base image
+        pos = f"masterpiece, best quality, {prompt}"
+        neg = "bad quality, worst quality, bad anatomy"
+        base_wf = build_txt2img_workflow(checkpoint, pos, neg, seed, W, H,
+            25, 7, "euler_ancestral", "sgm_uniform", clip_skip)
+        base_local = run_one(base_wf, f"L2B_ad_base_s{seed}")
+        if base_local:
+            shutil.copy2(base_local, f"/data/ComfyUI/input/ad_input_{seed}.png")
+            # Apply FaceDetailer
+            ad_wf = {
+                "1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": checkpoint}},
+                "2": {"class_type": "CLIPSetLastLayer", "inputs": {"clip": ["1", 1], "stop_at_clip_layer": -clip_skip}},
+                "3": {"class_type": "CLIPTextEncode", "inputs": {"text": "masterpiece, best quality, beautiful detailed face, detailed eyes", "clip": ["2", 0]}},
+                "4": {"class_type": "CLIPTextEncode", "inputs": {"text": "bad quality, worst quality", "clip": ["2", 0]}},
+                "10": {"class_type": "LoadImage", "inputs": {"image": f"ad_input_{seed}.png"}},
+                "11": {"class_type": "UltralyticsDetectorProvider", "inputs": {"model_name": "bbox/face_yolov8m.pt"}},
+                "12": {"class_type": "SAMLoader", "inputs": {"model_name": "sam_vit_b_01ec64.pth", "device_mode": "AUTO"}},
+                "13": {"class_type": "FaceDetailer", "inputs": {
+                    "image": ["10", 0], "model": ["1", 0], "clip": ["2", 0], "vae": ["1", 2],
+                    "positive": ["3", 0], "negative": ["4", 0],
+                    "bbox_detector": ["11", 0], "sam_model_opt": ["12", 0],
+                    "guide_size": 512, "guide_size_for": True, "max_size": 1024,
+                    "seed": seed, "steps": 20, "cfg": 7,
+                    "sampler_name": "euler_ancestral", "scheduler": "sgm_uniform",
+                    "denoise": 0.4, "feather": 5, "noise_mask": True,
+                    "force_inpaint": True, "bbox_threshold": 0.5,
+                    "bbox_dilation": 10, "bbox_crop_factor": 3.0,
+                    "sam_detection_hint": "center-1", "sam_dilation": 0,
+                    "sam_threshold": 0.93, "sam_bbox_expansion": 0,
+                    "sam_mask_hint_threshold": 0.7, "sam_mask_hint_use_negative": "False",
+                    "drop_size": 10, "wildcard": "", "cycle": 1}},
+                "8": {"class_type": "SaveImage", "inputs": {"images": ["13", 0], "filename_prefix": f"L2B_adetailer_s{seed}"}},
+            }
+            run_one(ad_wf, f"L2B_adetailer_s{seed}")
+
+    # === #13 Upscale: 3 refs × 2 denoise ===
+    log.info("--- #13 Upscale ---")
+    for ref_name in ["ref_stand", "ref_sit", "ref_nsfw"]:
+        for denoise in [0.15, 0.3]:
+            prefix = f"L2B_upscale_{ref_name}_d{str(denoise).replace('.','')}"
+            up_wf = {
+                "1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": checkpoint}},
+                "2": {"class_type": "CLIPSetLastLayer", "inputs": {"clip": ["1", 1], "stop_at_clip_layer": -clip_skip}},
+                "3": {"class_type": "CLIPTextEncode", "inputs": {"text": "masterpiece, best quality, highly detailed", "clip": ["2", 0]}},
+                "4": {"class_type": "CLIPTextEncode", "inputs": {"text": "bad quality, worst quality", "clip": ["2", 0]}},
+                "10": {"class_type": "LoadImage", "inputs": {"image": f"{ref_name}.png"}},
+                "11": {"class_type": "UpscaleModelLoader", "inputs": {"model_name": "4x_foolhardy_Remacri.pth"}},
+                "12": {"class_type": "UltimateSDUpscale", "inputs": {
+                    "upscale_by": 2.0, "seed": 42, "steps": 15, "cfg": 7,
+                    "sampler_name": "euler_ancestral", "scheduler": "sgm_uniform",
+                    "denoise": denoise, "mode_type": "Linear",
+                    "tile_width": 512, "tile_height": 512,
+                    "mask_blur": 8, "tile_padding": 32,
+                    "seam_fix_mode": "None", "seam_fix_denoise": 1.0,
+                    "seam_fix_width": 64, "seam_fix_mask_blur": 8, "seam_fix_padding": 16,
+                    "force_uniform_tiles": True, "tiled_decode": False, "batch_size": 1,
+                    "image": ["10", 0], "model": ["1", 0], "positive": ["3", 0],
+                    "negative": ["4", 0], "vae": ["1", 2], "upscale_model": ["11", 0]}},
+                "8": {"class_type": "SaveImage", "inputs": {"images": ["12", 0], "filename_prefix": prefix}},
+            }
+            run_one(up_wf, prefix)
+
     log.info("=== Layer 2 COMPLETE: %d generated, %d failed ===", generated, failed)
     # Upload summary
     summary = f"COMPLETE: {generated} generated, {failed} failed"
