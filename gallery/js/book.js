@@ -898,23 +898,47 @@ function bookMixin() {
       const page = this.bookCurrentPage();
       if (!page) return [];
 
-      const selectedGen = this.book.selectedGen;
+      // Group by model name, each model has generations as sub-groups
+      const modelMap = {};
+      for (const modelData of page.models) {
+        const name = modelData.model;
+        const gen = modelData._generation || 'original';
+        if (!modelMap[name]) {
+          modelMap[name] = { model: name, generations: {}, activeGen: null };
+        }
+        modelMap[name].generations[gen] = modelData;
+      }
 
-      // Filter by generation using modelData._generation (set during openBook)
-      const filtered = selectedGen === 'all'
-        ? page.models
-        : page.models.filter(m => (m._generation || 'original') === selectedGen);
+      // Set activeGen per model: use stored preference or default to original
+      if (!this.book._modelGenPrefs) this.book._modelGenPrefs = {};
+      for (const [name, group] of Object.entries(modelMap)) {
+        const gens = Object.keys(group.generations);
+        const pref = this.book._modelGenPrefs[name];
+        group.activeGen = (pref && gens.includes(pref)) ? pref : (gens.includes('original') ? 'original' : gens[0]);
+        group.availableGens = gens;
+      }
 
-      return filtered.map(modelData => ({
-        model: modelData.model,
-        generation: modelData._generation || 'original',
-        images: modelData.images.map(img => ({
-          model: modelData.model,
-          seed: img._seed || '?',
-          img,
-          detail: modelData.detail,
-        })),
-      })).filter(group => group.images.length > 0);
+      return Object.values(modelMap).map(group => {
+        const activeData = group.generations[group.activeGen];
+        if (!activeData) return null;
+        return {
+          model: group.model,
+          activeGen: group.activeGen,
+          availableGens: group.availableGens,
+          images: activeData.images.map(img => ({
+            model: group.model,
+            seed: img._seed || '?',
+            img,
+            detail: activeData.detail,
+          })),
+        };
+      }).filter(g => g && g.images.length > 0);
+    },
+
+    /** Switch the active generation for a specific model in candidates */
+    bookSwitchModelGen(model, gen) {
+      if (!this.book._modelGenPrefs) this.book._modelGenPrefs = {};
+      this.book._modelGenPrefs = { ...this.book._modelGenPrefs, [model]: gen };
     },
 
     // ==========================================
