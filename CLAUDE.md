@@ -421,8 +421,20 @@ Obsidian: `/Users/rkuros/Obsidian/AWS/AWS/AI出版戦略/` に以下のファイ
 - ストーリーブロック定義 + キャラ定義JSON（JK/人妻/エルフ）
 
 ### 進行中タスク
-- prod-jk v2 Batch（714枚生成中）
-- prod-jk v3（Sex①②修正版）→ v2完了後に自動起動
+- UI再生成機能（エージェント実装中）— Lambda + Step Functions連携でブラウザから直接再生成
+
+### 完了タスク（2026-02-17早朝）
+- 3冊同時生成完了: 0216a(JK), 0216b(人妻), 0216c(ナース) × 34シーン × 7モデル = 2,142枚
+- AIスコアリング全件完了（709件追加）
+- Book Editor実装（タイムライン、候補グリッド、Auto Select、PDF/ZIP出力）
+- ドラッグ&ドロップ（候補→スロット、スロット入替）
+- Batch Rate（Shift+クリック→一括評価）
+- Smart Suggest（★付与→同モデル推薦）
+- Before/After（プロンプト編集→フラグ→再生成）
+- gallery-new全機能移植（Alpine.js + サイドバーUI）
+- FeMix設定修正（sampler/scheduler/clip_skip）
+- Book ID命名規則（MMDD+letter）
+- Seed: プロンプト生成時にランダム書き込み方式
 
 ### 詳細ログ
 - Obsidian: `28_セッションログ_20260216.md`（全実施内容）
