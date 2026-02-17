@@ -1000,7 +1000,7 @@
               <div class="be-shelf-items" style="min-height:60px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px dashed rgba(255,255,255,0.1);padding:8px"
                    @dragover.prevent="$event.dataTransfer.dropEffect='copy'; $event.currentTarget.style.borderColor='#4caf50'"
                    @dragleave="$event.currentTarget.style.borderColor='rgba(255,255,255,0.1)'"
-                   @drop="$event.currentTarget.style.borderColor='rgba(255,255,255,0.1)'"
+                   @drop="$event.currentTarget.style.borderColor='rgba(255,255,255,0.1)'">
                 <template x-for="(item, idx) in book.shelf" :key="'bsh-' + item.id">
                   <div class="be-shelf-item" draggable="true" @dragstart="bookDragStartShelf($event, idx)">
                     <img :src="bookShelfThumb(item)" :alt="item.id" loading="lazy">
