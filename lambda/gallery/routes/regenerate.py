@@ -275,10 +275,8 @@ def start_regeneration(event):
         s3.put_json(regen_key, prompt_file)
         logger.info("Uploaded regen prompts to %s", regen_key)
 
-        # Copy to eval-prompts.json so batch workers pick it up
-        active_key = "eval-scripts/eval-prompts.json"
-        s3.put_json(active_key, prompt_file)
-        logger.info("Copied regen prompts to %s", active_key)
+        # No longer copy to shared eval-prompts.json (causes conflicts)
+        # Batch workers will use PROMPTS_FILE env var via Step Functions
     except Exception as e:
         logger.error("Failed to upload prompt file: %s", e)
         return _response(500, {"error": f"Failed to upload prompt file: {e}"})
@@ -293,7 +291,10 @@ def start_regeneration(event):
         ]
 
         exec_name = f"regen-{book_id}-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
-        sfn_input = json.dumps({"models": models_input})
+        sfn_input = json.dumps({
+            "promptsFile": regen_key,
+            "models": models_input,
+        })
 
         result = sfn.start_execution(
             stateMachineArn=STATE_MACHINE_ARN,
