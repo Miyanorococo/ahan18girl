@@ -956,7 +956,7 @@
                 <span class="be-insert-plus">+</span>
               </div>
               <template x-for="(page, idx) in book.pages" :key="'bt-' + idx">
-                <div style="display:contents">
+                <div style="display:contents" @dragover.prevent>
                   <div class="be-timeline-slot"
                        :class="{
                          'active': idx === book.currentPage,

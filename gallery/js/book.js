@@ -751,9 +751,8 @@ function bookMixin() {
     /** Drag over handler for timeline slots - swap only (insert via dedicated zones) */
     bookTimelineDragOver(event, slotIdx) {
       event.preventDefault();
-      try {
-        event.dataTransfer.dropEffect = event.dataTransfer.effectAllowed === 'copy' ? 'copy' : 'move';
-      } catch {}
+      // Allow all drop effects (copy for candidates, move for timeline reorder)
+      event.dataTransfer.dropEffect = 'move';
     },
 
     /** Get a short display name for a page ID */
