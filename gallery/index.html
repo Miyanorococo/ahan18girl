@@ -888,11 +888,11 @@
               <div class="be-candidates">
                 <div style="font-weight:600;font-size:0.85rem;margin-bottom:8px">Candidates</div>
                 <div class="be-candidates-scroll">
-                  <template x-for="group in bookFilteredCandidatesByModel()" :key="'beg-' + group.model + '-' + book.currentPage">
+                  <template x-for="(group, gi) in bookFilteredCandidatesByModel()" :key="'beg-' + gi + '-' + book.currentPage">
                     <div style="margin-bottom:12px">
                       <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px" x-text="displayModelName(group.model)"></div>
                       <div style="display:flex;flex-wrap:wrap;gap:6px">
-                        <template x-for="cand in group.images" :key="'bec-' + cand.img.name + '-' + book.currentPage">
+                        <template x-for="(cand, ci) in group.images" :key="'bec-' + gi + '-' + ci + '-' + book.currentPage">
                           <div class="be-candidate" :class="{'be-candidate-selected': bookIsSelectedCandidate(book.pages[book.currentPage]?.id, cand.model, cand.seed)}"
                                @click="bookSelectImage(book.pages[book.currentPage]?.id, cand.model, cand.seed, cand.img)"
                                draggable="true" @dragstart="bookDragStartCandidate($event, cand.model, cand.seed, cand.img)">
