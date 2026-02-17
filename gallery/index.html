@@ -844,7 +844,7 @@
                   <button class="btn-ghost" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1" style="padding:4px 8px">&rarr;</button>
                 </div>
                 <div class="be-preview-image" @dragover.prevent="$event.dataTransfer.dropEffect='copy'" @dragenter="bookDragEnter($event)" @dragleave="bookDragLeave($event)" @drop="bookHandlePreviewDrop($event)">
-                  <img :src="bookEditorPreviewImage()?.full_url || bookEditorPreviewImage()?.thumb_url || ''" alt="Preview">
+                  <img :src="(() => { const p = book.pages[book.currentPage]; if (!p) return ''; const sel = book.selections[p.id]; if (sel) return sel.full_url || sel.thumb_url; const md = p.models.find(m => m.model === book.selectedModel) || p.models[0]; if (!md) return ''; const si = md.images.find(i => i._seed === book.selectedSeed) || md.images[0]; return si?.full_url || si?.thumb_url || ''; })()" alt="Preview">
                   <!-- Rating overlay on main preview -->
                   <div class="be-preview-rating"
                        x-show="getImageRating(bookEditorPreviewImage())"
