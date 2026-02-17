@@ -533,7 +533,21 @@ function bookMixin() {
         const stored = JSON.parse(localStorage.getItem('book_selections') || '{}');
         const bookKey = this.book.currentBook?.id;
         if (bookKey && stored[bookKey]) {
-          this.book.selections = stored[bookKey];
+          // Migrate R2→R1 references (from old naming)
+          const sel = stored[bookKey];
+          const migrated = {};
+          for (const [k, v] of Object.entries(sel)) {
+            const newKey = k.replace('_R2_', '_R1_');
+            const newVal = { ...v };
+            if (newVal.full_url) newVal.full_url = newVal.full_url.replace('_R2_', '_R1_');
+            if (newVal.thumb_url) newVal.thumb_url = newVal.thumb_url.replace('_R2_', '_R1_');
+            if (newVal.name) newVal.name = newVal.name.replace('_R2_', '_R1_');
+            migrated[newKey] = newVal;
+          }
+          this.book.selections = migrated;
+          // Save migrated version
+          stored[bookKey] = migrated;
+          localStorage.setItem('book_selections', JSON.stringify(stored));
         } else {
           this.book.selections = {};
         }
