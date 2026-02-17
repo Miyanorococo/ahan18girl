@@ -1599,13 +1599,9 @@ function bookMixin() {
             pdf.addPage('a4', orientation);
           }
 
-          // White background (avoids black line artifacts from jsPDF rect precision)
-          pdf.setFillColor(255, 255, 255);
-          pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-
-          // Add image (fill entire page, no margins)
+          // Add image full page, no background, no margins
           const format = dataUrl.includes('data:image/png') ? 'PNG' : 'JPEG';
-          pdf.addImage(dataUrl, format, imgX, imgY, imgW, imgH);
+          pdf.addImage(dataUrl, format, 0, 0, pageWidth, pageHeight);
         }
 
         this.book.exportProgress = 'Generating PDF...';
