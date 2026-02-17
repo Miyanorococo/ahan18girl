@@ -73,9 +73,12 @@ upload_scripts_to_s3() {
     log "Uploading scripts and prompts to S3..."
     aws s3 cp "${REPO_ROOT}/scripts/generate-eval.py" \
         "s3://${S3_BUCKET}/eval-scripts/generate-eval.py" --region "${REGION}"
+    # Use unique S3 key per run to prevent concurrent overwrites
+    PROMPTS_S3_KEY="eval-scripts/eval-prompts-$(date +%Y%m%d-%H%M%S).json"
     aws s3 cp "${REPO_ROOT}/assets/templates/eval-prompts.json" \
-        "s3://${S3_BUCKET}/eval-scripts/eval-prompts.json" --region "${REGION}"
+        "s3://${S3_BUCKET}/${PROMPTS_S3_KEY}" --region "${REGION}"
     log "Scripts uploaded to s3://${S3_BUCKET}/eval-scripts/"
+    log "Prompts key: ${PROMPTS_S3_KEY}"
 }
 
 # =============================================================================
@@ -266,7 +269,16 @@ fi
 # --- Download scripts from S3 ---
 mkdir -p /tmp/eval-work/scripts /tmp/eval-work/assets/templates
 aws s3 cp "s3://${S3_BUCKET}/eval-scripts/generate-eval.py" /tmp/eval-work/scripts/ --region ${REGION}
-aws s3 cp "s3://${S3_BUCKET}/eval-scripts/eval-prompts.json" /tmp/eval-work/assets/templates/ --region ${REGION}
+
+# Read per-run prompts S3 key from instance tag (prevents concurrent overwrites)
+PROMPTS_KEY=$(aws ec2 describe-tags --region ${REGION} \
+    --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=EvalPromptsKey" \
+    --query 'Tags[0].Value' --output text 2>/dev/null || echo "eval-scripts/eval-prompts.json")
+if [[ -z "$PROMPTS_KEY" || "$PROMPTS_KEY" == "None" ]]; then
+    PROMPTS_KEY="eval-scripts/eval-prompts.json"
+fi
+echo "Downloading prompts from: ${PROMPTS_KEY}"
+aws s3 cp "s3://${S3_BUCKET}/${PROMPTS_KEY}" /tmp/eval-work/assets/templates/eval-prompts.json --region ${REGION}
 
 # --- Run generation ---
 # Check EvalMode tag for special modes (layer2-test, etc.)
@@ -479,6 +491,7 @@ launch_worker_fleet() {
         --tags "Key=Name,Value=r18-eval-${name}" \
                "Key=EvalModel,Value=${models}" \
                "Key=EvalWorker,Value=${name}" \
+               "Key=EvalPromptsKey,Value=${PROMPTS_S3_KEY}" \
                "Key=Purpose,Value=eval-batch" \
                "Key=Pricing,Value=${pricing}"
 
