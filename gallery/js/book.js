@@ -103,6 +103,10 @@ function bookMixin() {
             _exps: [],
           };
         }
+        // Keep earliest date (original creation, not regen date)
+        if (date < bookMap[bookKey].date) {
+          bookMap[bookKey].date = date;
+        }
         bookMap[bookKey]._models.add(exp.model);
         bookMap[bookKey]._scenes.add(pid);
         bookMap[bookKey]._exps.push(exp);
