@@ -51,7 +51,7 @@ document.addEventListener('alpine:init', () => {
     async init() {
       // Load ratings from localStorage (with v2 migration)
       try {
-        const stored = JSON.parse(localStorage.getItem('gallery_ratings') || '{}');
+        let stored = JSON.parse(localStorage.getItem('gallery_ratings') || '{}');
         // Migrate R2→R1 in rating keys (one-time fix)
         const raw = JSON.stringify(stored);
         if (raw.includes('_R2_')) {

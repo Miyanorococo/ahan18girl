@@ -224,8 +224,8 @@ function lightboxMixin() {
         this._favSaving = true;
         try {
           const metadata = {
-            scores: entry.scores || {},
-            comment: entry.comment || '',
+            scores: updated.scores || {},
+            comment: updated.comment || '',
           };
           await GalleryAPI.saveToTraining(
             exp.id,
