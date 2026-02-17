@@ -711,7 +711,14 @@
 
       <!-- Book DETAIL (book selected) -->
       <template x-if="!book.loading && book.currentBook">
-        <div class="book-view" :class="{'book-editor-active': book.editorMode}">
+        <div class="book-view" :class="{'book-editor-active': book.editorMode}"
+             @keydown.window="(() => {
+               if (!book.editorMode || $event.target.matches('input,textarea')) return;
+               const k = $event.key, ctrl = $event.ctrlKey || $event.metaKey;
+               if ((k === 'Delete' || k === 'Backspace') && !book.editingPrompt) { bookRemovePage(book.currentPage); }
+               else if (ctrl && k === 'z' && !$event.shiftKey) { $event.preventDefault(); bookUndo(); }
+               else if (ctrl && (k === 'y' || (k === 'z' && $event.shiftKey) || (k === 'Z'))) { $event.preventDefault(); bookRedo(); }
+             })()"
           <!-- Header -->
           <div class="book-header">
             <button class="btn-ghost" @click="closeBook()">&larr; Books</button>
@@ -723,7 +730,7 @@
           </div>
 
           <!-- ===== VIEW MODE ===== -->
-          <template x-if="!book.editorMode"><div>
+          <div x-show="!book.editorMode">
             <div class="book-top-bar">
               <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
               <div class="book-models">
@@ -770,17 +777,10 @@
                 </div>
               </template>
             </div>
-          </div></template>
+          </div>
 
           <!-- ===== EDITOR MODE ===== -->
-          <template x-if="book.editorMode"><div
-               @keydown.window="(() => {
-                 if (!book.editorMode || $event.target.matches('input,textarea')) return;
-                 const k = $event.key, ctrl = $event.ctrlKey || $event.metaKey;
-                 if ((k === 'Delete' || k === 'Backspace') && !book.editingPrompt) { bookRemovePage(book.currentPage); }
-                 else if (ctrl && k === 'z' && !$event.shiftKey) { $event.preventDefault(); bookUndo(); }
-                 else if (ctrl && (k === 'y' || (k === 'z' && $event.shiftKey) || (k === 'Z'))) { $event.preventDefault(); bookRedo(); }
-               })()"
+          <div x-show="book.editorMode" x-cloak style="display:none"
             <div class="be-toolbar">
               <div class="be-progress">
                 <span x-text="bookSelectionCount() + ' / ' + book.pages.length + ' pages'"></span>
@@ -988,7 +988,7 @@
                 </template>
               </div>
             </div>
-          </div></template>
+          </div>
         </div>
       </template>
     </div>
