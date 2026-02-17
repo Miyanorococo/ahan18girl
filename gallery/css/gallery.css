@@ -2595,6 +2595,27 @@ body {
   opacity: 0.95;
 }
 
+/* === Book Editor: Generation Versioning (Feature 5) === */
+.be-gen-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+  flex-wrap: wrap;
+}
+.be-gen-tabs .filter-btn {
+  font-size: 0.75rem;
+  padding: 4px 12px;
+}
+
+.be-cand-gen {
+  font-size: 0.55rem;
+  color: var(--accent);
+  background: rgba(233, 69, 96, 0.15);
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 /* Regeneration spinner */
 .be-regen-spinner {
   display: inline-block;

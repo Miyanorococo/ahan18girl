@@ -808,6 +808,17 @@
               </div>
             </div>
 
+            <!-- Generation filter tabs (Feature 5) -->
+            <div class="be-gen-tabs" x-show="book.generations.length > 1" x-cloak>
+              <button class="filter-btn" :class="{'active': book.selectedGen === 'all'}"
+                      @click="book.selectedGen = 'all'">All</button>
+              <template x-for="gen in book.generations" :key="'gen-' + gen">
+                <button class="filter-btn" :class="{'active': book.selectedGen === gen}"
+                        @click="book.selectedGen = gen"
+                        x-text="gen === 'original' ? 'Original' : gen"></button>
+              </template>
+            </div>
+
             <!-- Smart Suggest bar (Feature 2) -->
             <div class="be-suggestion" x-show="book.suggestion" x-cloak>
               <span x-text="book.suggestion?.message || ''"></span>
@@ -864,7 +875,7 @@
               <div class="be-candidates">
                 <div style="font-weight:600;font-size:0.85rem;margin-bottom:8px">Candidates</div>
                 <div class="be-candidates-scroll">
-                  <template x-for="group in bookEditorCandidatesByModel()" :key="'beg-' + group.model">
+                  <template x-for="group in bookFilteredCandidatesByModel()" :key="'beg-' + group.model">
                     <div style="margin-bottom:12px">
                       <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px" x-text="displayModelName(group.model)"></div>
                       <div style="display:flex;flex-wrap:wrap;gap:6px">
@@ -875,10 +886,12 @@
                             <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:80px;height:auto;display:block;border-radius:4px">
                             <div style="display:flex;gap:4px;font-size:0.6rem;color:var(--text-muted);margin-top:2px">
                               <span x-text="'s:' + cand.seed"></span>
+                              <span class="be-cand-gen" x-show="book.generations.length > 1 && book.selectedGen === 'all'"
+                                    x-text="bookGetGeneration(cand.img._mgExperiment?.prompt_id || bookCurrentPage()?.id)"></span>
                               <span x-show="getImageRating(cand.img)" x-text="getImageRating(cand.img) >= 5 ? '★' : getImageRating(cand.img) >= 2 ? '♥' : '👎'"></span>
                               <span x-show="getAestheticScore(cand.img)" :class="{'high': getAestheticScore(cand.img) >= 0.7}" x-text="((getAestheticScore(cand.img)||0)*100).toFixed(0)"></span>
                             </div>
-                            <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">✓</div>
+                            <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">&#10003;</div>
                           </div>
                         </template>
                       </div>

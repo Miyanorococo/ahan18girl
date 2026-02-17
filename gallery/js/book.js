@@ -44,6 +44,10 @@ function bookMixin() {
       regenCompleted: false,
       regenArn: '',
       regenPollTimer: null,
+
+      // Generation versioning (Feature 5)
+      generations: [],        // ['original', 'R1', 'R2'] - detected from loaded pages
+      selectedGen: 'all',     // 'all' | 'original' | 'R1' | 'R2' etc.
     },
 
     /**
@@ -266,6 +270,9 @@ function bookMixin() {
       // Load saved selections and regen flags for this book
       this.bookLoadSelections();
       this._loadRegenFlags();
+
+      // Detect generations from loaded pages
+      this.bookDetectGenerations();
     },
 
     /** Back to book list */
@@ -282,6 +289,8 @@ function bookMixin() {
       this.book.regenCompleted = false;
       this.book.regenStatus = '';
       this.book.regenArn = '';
+      this.book.generations = [];
+      this.book.selectedGen = 'all';
     },
 
     /** Get current page object */
@@ -643,9 +652,91 @@ function bookMixin() {
 
     /** Get a short display name for a page ID */
     bookShortPageId(pageId) {
+      // "0216a_R1_S08f_climax" -> "R1:S08f"
       // "0216a_S00_cover" -> "S00"
-      const match = pageId.match(/(S\d+[a-z]?)/i);
-      return match ? match[1] : pageId.slice(-6);
+      const gen = this.bookGetGeneration(pageId);
+      const sceneMatch = pageId.match(/(S\d+[a-z]?)/i);
+      const scene = sceneMatch ? sceneMatch[1] : pageId.slice(-6);
+      if (gen !== 'original') {
+        return `${gen}:${scene}`;
+      }
+      return scene;
+    },
+
+    // ==========================================
+    // Generation Versioning (Feature 5)
+    // ==========================================
+
+    /** Extract the generation from a pageId/prompt_id.
+     *  "0216a_R1_S08f_climax" -> "R1"
+     *  "0216a_S08f_climax" -> "original"
+     */
+    bookGetGeneration(pageId) {
+      if (!pageId) return 'original';
+      const match = pageId.match(/_R(\d+)_/);
+      return match ? `R${match[1]}` : 'original';
+    },
+
+    /** Extract the scene part from a pageId, stripping bookId and generation prefix.
+     *  "0216a_R1_S08f_climax" -> "S08f_climax"
+     *  "0216a_S08f_climax" -> "S08f_climax"
+     */
+    bookGetSceneId(pageId) {
+      if (!pageId) return '';
+      // Remove bookId prefix (e.g. "0216a_")
+      let rest = pageId.replace(/^\d{4}[a-z]_/, '');
+      // Remove generation prefix (e.g. "R1_")
+      rest = rest.replace(/^R\d+_/, '');
+      return rest;
+    },
+
+    /** Scan all pages and build the generations list. Called after openBook() loads pages. */
+    bookDetectGenerations() {
+      const genSet = new Set();
+      for (const page of this.book.pages) {
+        const gen = this.bookGetGeneration(page.id);
+        genSet.add(gen);
+      }
+      // Sort: 'original' first, then R1, R2, R3...
+      const gens = [...genSet].sort((a, b) => {
+        if (a === 'original') return -1;
+        if (b === 'original') return 1;
+        const na = parseInt(a.replace('R', ''));
+        const nb = parseInt(b.replace('R', ''));
+        return na - nb;
+      });
+      this.book.generations = gens;
+      this.book.selectedGen = 'all';
+    },
+
+    /** Get candidates filtered by the selected generation.
+     *  When selectedGen is 'all', returns all candidates with generation info.
+     *  When selectedGen is specific, filters to only that generation's candidates.
+     */
+    bookFilteredCandidatesByModel() {
+      const page = this.bookCurrentPage();
+      if (!page) return [];
+
+      const selectedGen = this.book.selectedGen;
+
+      return page.models.map(modelData => {
+        const filteredImages = modelData.images.filter(img => {
+          if (selectedGen === 'all') return true;
+          const exp = img._mgExperiment;
+          const pid = exp?.prompt_id || page.id;
+          const gen = this.bookGetGeneration(pid);
+          return gen === selectedGen;
+        });
+        return {
+          model: modelData.model,
+          images: filteredImages.map(img => ({
+            model: modelData.model,
+            seed: img._seed || '?',
+            img,
+            detail: modelData.detail,
+          })),
+        };
+      }).filter(group => group.images.length > 0);
     },
 
     // ==========================================

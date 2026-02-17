@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 from datetime import datetime, timezone
 
 import boto3
@@ -108,6 +109,69 @@ def _now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _detect_next_generation(s3, book_id):
+    """Scan existing experiments for this book to find the highest R{n} prefix, return n+1.
+
+    Looks at experiment directories under experiments/ in S3 to find prompt_ids
+    that contain R{n}_ prefixes for this book.
+    Returns 1 if no regen generations exist yet.
+    """
+
+    max_gen = 0
+    prefix = "gallery/experiments/"
+
+    try:
+        # List all experiment directories
+        s3_client = boto3.client("s3", region_name=REGION)
+        bucket = s3.bucket
+
+        paginator = s3_client.get_paginator("list_objects_v2")
+        # Look for metadata.json files that might contain R{n}_ prompt_ids
+        for page in paginator.paginate(
+            Bucket=bucket, Prefix=prefix, Delimiter="/"
+        ):
+            for cp in page.get("CommonPrefixes", []):
+                dir_name = cp["Prefix"].replace(prefix, "").rstrip("/")
+                # Check if directory name contains the book_id and R{n}_ pattern
+                # Experiment dir format: "20260216_model/prompt_id"
+                # The prompt_id part might be like "0216a_R1_S08f_climax"
+                rn_match = re.search(
+                    rf"{re.escape(book_id)}_R(\d+)_", dir_name
+                )
+                if rn_match:
+                    gen_num = int(rn_match.group(1))
+                    if gen_num > max_gen:
+                        max_gen = gen_num
+
+        # Also scan inside experiment directories for prompt_ids in metadata
+        # by listing objects that match the bookId pattern more broadly
+        for page in paginator.paginate(
+            Bucket=bucket, Prefix=prefix
+        ):
+            for obj in page.get("Contents", []):
+                key = obj["Key"]
+                if not key.endswith("metadata.json"):
+                    continue
+                # Check if the path contains R{n}_ for this book
+                rn_match = re.search(
+                    rf"{re.escape(book_id)}_R(\d+)_", key
+                )
+                if rn_match:
+                    gen_num = int(rn_match.group(1))
+                    if gen_num > max_gen:
+                        max_gen = gen_num
+
+    except Exception as e:
+        logger.warning("Failed to scan for existing generations: %s", e)
+
+    next_gen = max_gen + 1
+    logger.info(
+        "Book %s: highest existing generation = R%d, next = R%d",
+        book_id, max_gen, next_gen,
+    )
+    return next_gen
+
+
 def start_regeneration(event):
     """POST /api/regenerate - Build prompt file, upload to S3, start Step Functions."""
     body = event.get("body", "{}")
@@ -130,7 +194,14 @@ def start_regeneration(event):
     if not book_id:
         return _response(400, {"error": "bookId is required"})
 
-    # Build prompts array from flagged pages
+    s3 = S3Client()
+
+    # Auto-detect next generation number
+    generation = _detect_next_generation(s3, book_id)
+    gen_prefix = f"R{generation}"
+    logger.info("Using generation prefix: %s", gen_prefix)
+
+    # Build prompts array from flagged pages, prefixing each pageId with R{n}_
     prompts = []
     for page in pages:
         page_id = page.get("pageId", "")
@@ -141,8 +212,19 @@ def start_regeneration(event):
         if not page_id or not prompt_text:
             continue
 
+        # Prefix the page_id: "0216a_S08f_climax" -> "0216a_R1_S08f_climax"
+        # Insert R{n}_ after the bookId prefix
+        regen_id = re.sub(
+            rf"^({re.escape(book_id)})_",
+            rf"\1_{gen_prefix}_",
+            page_id,
+        )
+        # If the page_id didn't start with bookId_ (legacy), just prepend
+        if regen_id == page_id:
+            regen_id = f"{book_id}_{gen_prefix}_{page_id}"
+
         prompts.append({
-            "id": page_id,
+            "id": regen_id,
             "genre": genre,
             "type": prompt_type,
             "subtype": "regen",
@@ -174,19 +256,18 @@ def start_regeneration(event):
     # Build the prompt file (same format as eval-prompts-prod-*.json)
     prompt_file = {
         "_meta": {
-            "description": f"Regeneration for book {book_id}",
+            "description": f"Regeneration for book {book_id} (Gen {generation})",
             "created": _now_iso(),
-            "version": f"regen-{book_id}",
+            "version": f"regen-{book_id}-R{generation}",
             "seeds": seeds,
-            "note": f"UI-triggered regeneration: {len(prompts)} pages",
+            "note": f"UI-triggered regeneration: {len(prompts)} pages (generation {generation})",
             "book_id": book_id,
+            "generation": generation,
         },
         "negative_common": NEGATIVE_COMMON,
         "model_groups": model_groups,
         "prompts": prompts,
     }
-
-    s3 = S3Client()
 
     try:
         # Upload the regen prompt file
@@ -233,6 +314,7 @@ def start_regeneration(event):
             "models": all_models,
             "promptCount": len(prompts),
             "seeds": seeds,
+            "generation": generation,
         })
     except Exception as e:
         logger.error("Failed to start Step Functions: %s", e)
