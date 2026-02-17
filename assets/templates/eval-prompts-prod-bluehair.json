@@ -1,0 +1,438 @@
+{
+  "_meta": {
+    "description": "イラストノベル - Book 0218a - 青髪サイドブレイド日本人女子",
+    "book_id": "0218a",
+    "book_theme": "青髪サイドブレイド 朝のまどろみ",
+    "seeds": [
+      974592,
+      427904,
+      556469
+    ],
+    "character": "青髪ロング サイドブレイド、琥珀色の目、巨乳、20歳日本人、白Tシャツ"
+  },
+  "negative_common": {
+    "_comment": "タイプ別の共通ネガティブ。model_groups.negativeと結合して使用する",
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, ",
+    "safe": "",
+    "realistic_safe": "flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_explicit": "censored, mosaic censoring, bar censor, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, ",
+    "realistic_sensitive": "censored, flat_color, anime_coloring, cel_shading, cartoon, 2d, simple_background, painting, sketch, "
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": [
+        "wai-nsfw-illustrious-v16",
+        "wai-nsfw-illustrious-v11",
+        "wai-branch-rouwei",
+        "wai-nsfw-illustrious-v12"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "B_nova": {
+      "models": [
+        "nova-anime-xl-il"
+      ],
+      "cfg": 5,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "D_animagine": {
+      "models": [
+        "animagine-xl-4.0"
+      ],
+      "cfg": 5,
+      "steps": 28,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers",
+      "strip_tags": [
+        "warm lighting",
+        "soft lighting",
+        "soft shadows",
+        "afternoon light",
+        "classroom light",
+        "golden hour light",
+        "candlelight",
+        "warm candlelight",
+        "bioluminescent glow",
+        "afternoon sunlight",
+        "golden hour",
+        "from front",
+        "from above",
+        "from below",
+        "from side",
+        "from behind",
+        "dynamic angle",
+        "low angle",
+        "close-up",
+        "cowboy shot",
+        "full body",
+        "upper body",
+        "dynamic pose",
+        "dynamic_pose",
+        "dynamic_angle",
+        "smooth skin",
+        "wet skin",
+        "glistening skin",
+        "detailed skin",
+        "skin texture",
+        "subsurface scattering",
+        "natural skin texture",
+        "skin pores"
+      ]
+    },
+    "E_femix": {
+      "models": [
+        "femix-hassakuxl"
+      ],
+      "cfg": 7,
+      "steps": 25,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "clip_skip": 2,
+      "resolution": {
+        "width": 1024,
+        "height": 1536
+      },
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits"
+    }
+  },
+  "prompts": [
+    {
+      "id": "0218a_S00_cover",
+      "genre": "日常/同棲",
+      "type": "sensitive",
+      "subtype": "cover",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, oversized white t-shirt, bare legs, sitting on bed, white sheets, pillows, morning, messy hair, sleepy expression, stretching, yawning, looking at viewer, bare shoulders, collarbone, thighs, cozy bedroom, morning, natural window light, warm tones, white sheets"
+      }
+    },
+    {
+      "id": "0218a_S01_standing",
+      "genre": "日常/同棲",
+      "type": "sensitive",
+      "subtype": "standing_portrait",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, casual clothes, denim shorts, crop top, standing, arms crossed, looking away, cool expression, apartment, living room, afternoon light, warm tones"
+      }
+    },
+    {
+      "id": "0218a_S02_date1",
+      "genre": "日常/同棲",
+      "type": "safe",
+      "subtype": "date",
+      "content": {
+        "default": "sfw, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, white sundress, flower hairpin, smile, blush, holding hands, pov, wind, floating hair, outdoor, shrine, cherry blossoms, spring, morning light"
+      }
+    },
+    {
+      "id": "0218a_S03_date2",
+      "genre": "日常/同棲",
+      "type": "safe",
+      "subtype": "date",
+      "content": {
+        "default": "sfw, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, off-shoulder sweater, long skirt, smile, shy, blush, leaning on shoulder, outdoor, riverside, sunset, golden hour, warm breeze"
+      }
+    },
+    {
+      "id": "0218a_S04_flirting",
+      "genre": "日常/同棲",
+      "type": "sensitive",
+      "subtype": "flirting",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, oversized white t-shirt, no bra, sitting on bed, leaning forward, cleavage, shy smile, blush, looking at viewer, cozy bedroom, warm tones, natural window light, soft shadows, evening"
+      }
+    },
+    {
+      "id": "0218a_S05_kiss",
+      "genre": "日常/同棲",
+      "type": "sensitive",
+      "subtype": "kiss",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, hetero, kiss, french kiss, closed eyes, blush, tears of joy, embrace, cozy bedroom, warm tones, natural window light, soft shadows, close-up"
+      }
+    },
+    {
+      "id": "0218a_S06a_finger",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "fingering",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, lying on bed, spread legs, fingering, 1boy, hand between legs, blush, embarrassed, looking away, panting, white sheets, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S06b_squirt",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "squirting",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, lying on bed, spread legs, fingering, squirting, female ejaculation, 1boy, arched back, ahegao, tongue out, blush, sweat, wet sheets, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S07a_oral",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "oral",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, fellatio, oral, penis, kneeling, looking up at viewer, blush, embarrassed, saliva, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S07b_oral_cum",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "ejaculation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, fellatio, cum in mouth, cum on face, facial, cum dripping, cross-eyed, dazed, blush, kneeling, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S08a_before",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "pre_insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, lying on back, spread legs, 1boy, penis, about to penetrate, nervous, blush, embarrassed, biting lip, looking away, white sheets, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S08b_insert",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, sex, vaginal, missionary, lying on back, penetration, spread legs, surprised, open mouth, gasp, blush, gripping sheets, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S08c_pos1",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, sex, vaginal, missionary, lying on back, legs wrapped, surprised pleasure, wide eyes, blush, panting, sweat, confused expression, unexpected pleasure, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S08d_pos2",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, sex, vaginal, from behind, doggystyle, twisted torso, looking back, shocked, blush, panting, sweat, covering mouth, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S08e_almost",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, sex, vaginal, missionary, arched back, trembling, about to orgasm, eyes wide, panting, sweat, blush, gripping sheets, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S08f_climax",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, sex, vaginal, orgasm, ahegao, rolling eyes, tongue out, surprised by own orgasm, cum, creampie, arched back, trembling, tears of pleasure, sweat, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S08g_after",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "afterglow",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, lying on bed, after sex, cum overflow, cum on thighs, dazed, wide eyes, shocked expression, panting, messy hair, sweat, blush, white sheets, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S09_bath",
+      "genre": "日常/同棲",
+      "type": "sensitive",
+      "subtype": "bath",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, bathing, wet hair, wet skin, steam, relaxed, gentle smile, blush, soap bubbles, bathroom, bathtub, steam, candles, warm water lighting"
+      }
+    },
+    {
+      "id": "0218a_S10a_toy",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "toy",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, lying on bed, vibrator, sex toy, spread legs, biting lip, embarrassed, blush, panting, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S10b_toy_org",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, vibrator, orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, arched back, trembling, sweat, blush, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S11_lactation",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "lactation",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, lactation, breast milk, milk dripping, large breasts, squeezing breast, embarrassed, blush, sitting on bed, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S12a_before",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "pre_insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, cowgirl position, girl on top, straddling, 1boy, grabbing penis, eager, wet pussy, dripping, seductive smile, licking lips, hungry eyes, blush, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S12b_insert",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "insertion",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, cowgirl position, girl on top, straddling, sex, vaginal, slamming down, moaning, open mouth, love juice, wet, blush, sweat, cozy bedroom, warm tones, natural window light, soft shadows, from below"
+      }
+    },
+    {
+      "id": "0218a_S12c_quick",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, cowgirl position, girl on top, sex, vaginal, instant orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, female ejaculation, addicted, arched back, drooling, sweat, wet sheets, cozy bedroom, warm tones, natural window light, soft shadows, from below"
+      }
+    },
+    {
+      "id": "0218a_S12d_pos1",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, cowgirl position, girl on top, bouncing, sex, vaginal, riding aggressively, large breasts, bouncing breasts, fucked silly, drooling, love juice, wet thighs, insatiable, panting, sweat, cozy bedroom, warm tones, natural window light, soft shadows, from below"
+      }
+    },
+    {
+      "id": "0218a_S12e_pos2",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, sitting sex, face to face, straddling lap, sex, vaginal, deep penetration, grinding, embrace, tongue out, saliva trail, kiss, sweat, love juice dripping, desperate, wanting more, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S12f_almost",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, cowgirl position, sex, vaginal, about to orgasm, fucked silly, trembling, drooling, tongue out, cross-eyed, begging, sweat, love juice, wet everywhere, cozy bedroom, warm tones, natural window light, soft shadows, from below"
+      }
+    },
+    {
+      "id": "0218a_S12g_climax",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "orgasm",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, cowgirl position, sex, vaginal, simultaneous orgasm, fucked silly, ahegao, rolling eyes, tongue out, drooling, squirting, female ejaculation, cum, creampie, cum overflow, arched back, convulsing, sweat, wet sheets, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S12h_after",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "afterglow",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, nude, lying on bed, after sex, cum overflow, cum dripping, cum on thighs, cum on stomach, cum on breasts, love juice, wet everywhere, fucked silly, dazed, satisfied grin, tongue out, drooling, wanting more, messy hair, sweat, ruined sheets, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S13_pregnant",
+      "genre": "日常/同棲",
+      "type": "sensitive",
+      "subtype": "pregnant",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, pregnant, large belly, hand on belly, loose white dress, gentle smile, blush, standing, cozy bedroom, warm tones, natural window light, soft shadows, window, morning light"
+      }
+    },
+    {
+      "id": "0218a_S14_preg_sex",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "sex",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, 1boy, pregnant, large belly, sex, vaginal, from behind, gentle, blush, panting, embarrassed, cozy bedroom, warm tones, natural window light, soft shadows"
+      }
+    },
+    {
+      "id": "0218a_S15_birth",
+      "genre": "日常/同棲",
+      "type": "explicit",
+      "subtype": "birth",
+      "content": {
+        "default": "nsfw, explicit, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, pregnant, huge belly, lying on bed, labor, spread legs, panting, sweat, flushed, determined expression, gripping sheets, hospital bed, bright overhead light"
+      }
+    },
+    {
+      "id": "0218a_S16_future",
+      "genre": "日常/同棲",
+      "type": "safe",
+      "subtype": "standing_portrait",
+      "content": {
+        "default": "sfw, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, mature, casual clothes, cardigan, long skirt, wedding ring, gentle smile, holding child hand, outdoor, park, autumn leaves, warm sunlight, golden tones"
+      }
+    },
+    {
+      "id": "0218a_S99_bonus",
+      "genre": "日常/同棲",
+      "type": "sensitive",
+      "subtype": "bonus",
+      "content": {
+        "default": "nsfw, sensitive, 1girl, japanese girl, 20 years old, blue hair, long hair, side braid, bangs, amber eyes, large breasts, fair skin, slender, bikini, blue bikini, large breasts, cleavage, wet skin, smile, looking at viewer, wind, floating hair, beach, ocean, summer, golden hour, warm light, sand"
+      }
+    }
+  ]
+}
