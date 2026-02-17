@@ -69,7 +69,7 @@ def comfyui_api(path, method="GET", data=None):
 
 
 def check_status():
-    """Check ComfyUI is running and show system stats."""
+    """Check ComfyUI is running, GPU available, and KSampler node loaded."""
     try:
         stats = comfyui_api("/system_stats")
         devices = stats.get("devices", [])
@@ -78,6 +78,13 @@ def check_status():
             vram_total = d.get("vram_total", 0) / (1024**3)
             vram_free = d.get("vram_free", 0) / (1024**3)
             log.info("GPU: %s  VRAM: %.1fGB / %.1fGB", name, vram_total - vram_free, vram_total)
+        # Verify KSampler node is available (custom nodes fully initialized)
+        try:
+            node_info = comfyui_api("/object_info/KSampler")
+            if "KSampler" not in node_info:
+                log.warning("KSampler node not found in object_info - custom nodes may not be loaded")
+        except Exception:
+            log.warning("Could not verify KSampler availability")
         return True
     except Exception as e:
         log.error("ComfyUI not reachable: %s", e)
@@ -90,8 +97,16 @@ def queue_prompt(workflow_json):
     return resp.get("prompt_id")
 
 
+def clear_queue():
+    """Clear ComfyUI queue to prevent stale prompts from blocking."""
+    try:
+        comfyui_api("/queue", method="POST", data={"clear": True})
+    except Exception:
+        pass
+
+
 def wait_for_completion(prompt_id, timeout=300):
-    """Poll history until the prompt completes."""
+    """Poll history until the prompt completes. Clears queue on timeout."""
     start = time.time()
     while time.time() - start < timeout:
         try:
@@ -101,6 +116,9 @@ def wait_for_completion(prompt_id, timeout=300):
         except Exception:
             pass
         time.sleep(2)
+    # Clear queue to prevent stale prompts from blocking subsequent requests
+    log.warning("Timeout: clearing ComfyUI queue")
+    clear_queue()
     raise TimeoutError(f"Prompt {prompt_id} did not complete within {timeout}s")
 
 

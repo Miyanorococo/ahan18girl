@@ -220,19 +220,33 @@ if [ -d /data/ComfyUI/venv ]; then
     /data/ComfyUI/venv/bin/pip install boto3 Pillow 2>/dev/null || true
 fi
 
+# --- Ensure clean CUDA context (kill any existing ComfyUI) ---
+systemctl stop comfyui 2>/dev/null || true
+pkill -f "main.py.*8188" 2>/dev/null || true
+sleep 5
+
+# --- Wait for EBS snapshot initialization ---
+echo "Waiting for EBS initialization..."
+sleep 15
+
 # --- Start ComfyUI ---
 cd /data/ComfyUI
 source venv/bin/activate
-python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch &
+python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch --gpu-only &
 COMFYUI_PID=$!
 
 echo "Waiting for ComfyUI..."
 COMFYUI_READY=false
 for i in $(seq 1 90); do
     if curl -s http://127.0.0.1:8188/system_stats > /dev/null 2>&1; then
-        echo "ComfyUI ready after ${i}x5s"
-        COMFYUI_READY=true
-        break
+        # Also verify KSampler node is available (custom nodes fully loaded)
+        if curl -s http://127.0.0.1:8188/object_info/KSampler 2>/dev/null | grep -q "KSampler"; then
+            echo "ComfyUI + KSampler ready after ${i}x5s"
+            COMFYUI_READY=true
+            break
+        else
+            echo "  HTTP up but KSampler not yet loaded (${i}x5s)"
+        fi
     fi
     sleep 5
 done
