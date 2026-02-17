@@ -730,7 +730,7 @@
           </div>
 
           <!-- ===== VIEW MODE ===== -->
-          <div class="book-view-section" x-show="!book.editorMode">
+          <div class="book-view-section">
             <div class="book-top-bar">
               <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
               <div class="book-models">
@@ -780,7 +780,7 @@
           </div>
 
           <!-- ===== EDITOR MODE ===== -->
-          <div class="book-editor-section" x-show="book.editorMode"
+          <div class="book-editor-section"
             <div class="be-toolbar">
               <div class="be-progress">
                 <span x-text="bookSelectionCount() + ' / ' + book.pages.length + ' pages'"></span>

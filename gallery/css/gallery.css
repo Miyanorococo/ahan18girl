@@ -2811,7 +2811,7 @@ body {
 .be-timeline-slot.has-regen { border-color: #9c27b0; box-shadow: 0 0 6px rgba(156,39,176,0.4); }
 .be-timeline-slot.has-regen::after { content: 'R'; position: absolute; top: -3px; left: -3px; background: #9c27b0; color: white; font-size: 0.5rem; font-weight: 700; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 3; }
 
-/* Force hide editor by default - Alpine x-show will override when editorMode=true */
-.book-editor-section { display: none; }
-.book-editor-active .book-editor-section { display: block; }
-.book-editor-active .book-view-section { display: none; }
+/* Force hide editor by default - CSS only, no x-show dependency */
+.book-editor-section { display: none !important; }
+.book-editor-active .book-editor-section { display: block !important; }
+.book-editor-active .book-view-section { display: none !important; }
