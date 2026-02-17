@@ -2693,10 +2693,12 @@ body {
   transition: opacity 0.2s;
   cursor: pointer;
 }
-/* Show insert zones when any slot is being dragged */
-.be-timeline:has(.be-timeline-slot[draggable]) .be-timeline-insert-zone,
+/* Show insert zones on timeline hover or when a zone is active (being dragged over) */
+.be-timeline:hover .be-timeline-insert-zone {
+  opacity: 0.4;
+}
 .be-timeline-insert-zone.active {
-  opacity: 1;
+  opacity: 1 !important;
 }
 .be-insert-plus {
   width: 20px;
