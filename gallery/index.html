@@ -711,79 +711,151 @@
 
       <!-- Book DETAIL (book selected) -->
       <template x-if="!book.loading && book.currentBook">
-        <div class="book-view">
+        <div class="book-view" :class="{'book-editor-active': book.editorMode}">
           <!-- Header -->
           <div class="book-header">
             <button class="btn-ghost" @click="closeBook()">&larr; Books</button>
             <span class="book-title" x-text="'#' + (book.books.indexOf(book.currentBook) + 1) + ' ' + book.currentBook.theme + ' (' + book.currentBook.dateFormatted + ')'"></span>
+            <div style="margin-left:auto;display:flex;gap:4px">
+              <button class="filter-btn" :class="{'active': !book.editorMode}" @click="book.editorMode = false">View</button>
+              <button class="filter-btn" :class="{'active': book.editorMode}" @click="book.editorMode = true">Editor</button>
+            </div>
           </div>
 
-          <!-- Page info + Model selector -->
-          <div class="book-top-bar">
-            <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
-            <div class="book-models">
-              <template x-for="model in book.allModels" :key="'bm-' + model">
-                <button class="filter-btn"
-                        :class="{'active': book.selectedModel === model}"
-                        @click="bookSelectModel(model)"
-                        x-text="displayModelName(model)"></button>
+          <!-- ===== VIEW MODE ===== -->
+          <div x-show="!book.editorMode">
+            <div class="book-top-bar">
+              <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
+              <div class="book-models">
+                <template x-for="model in book.allModels" :key="'bm-' + model">
+                  <button class="filter-btn" :class="{'active': book.selectedModel === model}"
+                          @click="bookSelectModel(model)" x-text="displayModelName(model)"></button>
+                </template>
+              </div>
+            </div>
+            <div class="book-main">
+              <button class="book-side-btn" @click="bookPrev()" :disabled="book.currentPage <= 0">&larr;</button>
+              <div class="book-image" @click="bookOpenLightbox()">
+                <img :src="bookCurrentImage()?.full_url || bookCurrentImage()?.thumb_url" :alt="bookCurrentPage()?.scene">
+                <div class="book-rating-overlay" x-show="getImageRating(bookCurrentImage())">
+                  <span x-text="getImageRating(bookCurrentImage()) >= 5 ? '★' : getImageRating(bookCurrentImage()) >= 2 ? '♥' : getImageRating(bookCurrentImage()) < 0 ? '👎' : ''"></span>
+                </div>
+                <div class="book-ai-overlay" x-show="getAestheticScore(bookCurrentImage())"
+                     :class="{'high': getAestheticScore(bookCurrentImage()) >= 0.7, 'low': getAestheticScore(bookCurrentImage()) < 0.4}">
+                  <span x-text="'AI ' + ((getAestheticScore(bookCurrentImage()) || 0) * 100).toFixed(0)"></span>
+                </div>
+              </div>
+              <button class="book-side-btn" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1">&rarr;</button>
+            </div>
+            <div class="book-rate">
+              <button class="rate-btn rate-star" :class="{'active': getImageRating(bookCurrentImage()) === 5}" @click="quickRate(bookCurrentImage(), 5)">★</button>
+              <button class="rate-btn rate-heart" :class="{'active': getImageRating(bookCurrentImage()) === 2}" @click="quickRate(bookCurrentImage(), 2)">♥</button>
+              <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}" @click="quickRate(bookCurrentImage(), -1)">👎</button>
+            </div>
+            <div class="book-seeds">
+              <template x-for="img in bookSeedImages()" :key="'bs-' + img.name">
+                <div class="book-seed-thumb" :class="{'active': img._seed === book.selectedSeed}" @click="bookSelectSeed(img._seed)">
+                  <img :src="img.thumb_url" :alt="img._seed">
+                  <span class="book-seed-label" x-text="'seed ' + (img._seed || '?')"></span>
+                </div>
+              </template>
+            </div>
+            <div class="book-prompt" x-show="bookCurrentExperiment()?.metadata?.prompt?.positive"
+                 x-text="bookCurrentExperiment()?.metadata?.prompt?.positive || ''"></div>
+            <div class="book-pages">
+              <template x-for="(page, idx) in book.pages" :key="'bp-' + page.id">
+                <div class="book-page-thumb" :class="{'active': idx === book.currentPage}" @click="book.currentPage = idx">
+                  <img :src="(page.models.find(m => m.model === book.selectedModel)?.images[0]?.thumb_url) || (page.models[0]?.images[0]?.thumb_url) || ''" :alt="page.scene">
+                  <span class="book-page-label" x-text="page.id"></span>
+                </div>
               </template>
             </div>
           </div>
 
-          <!-- Main area: Prev | Image | Next -->
-          <div class="book-main">
-            <button class="book-side-btn" @click="bookPrev()" :disabled="book.currentPage <= 0">&larr;</button>
-            <div class="book-image" @click="bookOpenLightbox()">
-              <img :src="bookCurrentImage()?.full_url || bookCurrentImage()?.thumb_url" :alt="bookCurrentPage()?.scene">
-              <div class="book-rating-overlay" x-show="getImageRating(bookCurrentImage())">
-                <span x-text="getImageRating(bookCurrentImage()) >= 5 ? '★' : getImageRating(bookCurrentImage()) >= 2 ? '♥' : getImageRating(bookCurrentImage()) < 0 ? '👎' : ''"></span>
+          <!-- ===== EDITOR MODE ===== -->
+          <div x-show="book.editorMode" x-cloak>
+            <div class="be-toolbar">
+              <div class="be-progress">
+                <span x-text="bookSelectionCount() + ' / ' + book.pages.length + ' pages'"></span>
+                <div class="be-progress-bar"><div class="be-progress-fill" :style="'width:' + (book.pages.length ? (bookSelectionCount() / book.pages.length * 100) : 0) + '%'"></div></div>
               </div>
-              <div class="book-ai-overlay" x-show="getAestheticScore(bookCurrentImage())"
-                   :class="{'high': getAestheticScore(bookCurrentImage()) >= 0.7, 'low': getAestheticScore(bookCurrentImage()) < 0.4}">
-                <span x-text="'AI ' + ((getAestheticScore(bookCurrentImage()) || 0) * 100).toFixed(0)"></span>
+              <div class="be-actions">
+                <button class="btn-ghost" @click="bookAutoSelect()">Auto</button>
+                <button class="btn-ghost" @click="bookClearSelections()">Clear</button>
+                <button class="btn-ghost" @click="bookExportCurrentImage()">DL Current</button>
+                <button class="btn-ghost" @click="bookExportZip()" :disabled="book.exporting || bookSelectionCount() === 0">ZIP</button>
+                <button class="btn-primary" @click="bookExportPDF()" :disabled="book.exporting || bookSelectionCount() === 0">PDF</button>
               </div>
             </div>
-            <button class="book-side-btn" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1">&rarr;</button>
-          </div>
-
-          <!-- Quick rating -->
-          <div class="book-rate">
-            <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}"
-                    @click="quickRate(bookCurrentImage(), -1)">👎</button>
-            <button class="rate-btn rate-heart" :class="{'active': getImageRating(bookCurrentImage()) === 2}"
-                    @click="quickRate(bookCurrentImage(), 2)">♥</button>
-            <button class="rate-btn rate-star" :class="{'active': getImageRating(bookCurrentImage()) === 5}"
-                    @click="quickRate(bookCurrentImage(), 5)">★</button>
-          </div>
-
-          <!-- Seed thumbnails -->
-          <div class="book-seeds">
-            <template x-for="img in bookSeedImages()" :key="'bs-' + img.name">
-              <div class="book-seed-thumb"
-                   :class="{'active': img._seed === book.selectedSeed}"
-                   @click="bookSelectSeed(img._seed)">
-                <img :src="img.thumb_url" :alt="img._seed">
-                <span class="book-seed-label" x-text="'seed ' + (img._seed || '?')"></span>
+            <div class="be-export-overlay" x-show="book.exporting">
+              <div style="background:var(--bg-card);padding:24px;border-radius:12px;text-align:center">
+                <div>Exporting...</div>
+                <span x-text="book.exportProgress"></span>
               </div>
-            </template>
-          </div>
-
-          <!-- Prompt -->
-          <div class="book-prompt" x-show="bookCurrentExperiment()?.metadata?.prompt?.positive"
-               x-text="bookCurrentExperiment()?.metadata?.prompt?.positive || ''"></div>
-
-          <!-- Page strip -->
-          <div class="book-pages">
-            <template x-for="(page, idx) in book.pages" :key="'bp-' + page.id">
-              <div class="book-page-thumb"
-                   :class="{'active': idx === book.currentPage}"
-                   @click="book.currentPage = idx">
-                <img :src="(page.models.find(m => m.model === book.selectedModel)?.images[0]?.thumb_url) || (page.models[0]?.images[0]?.thumb_url) || ''"
-                     :alt="page.scene">
-                <span class="book-page-label" x-text="page.id"></span>
+            </div>
+            <div class="be-main">
+              <div class="be-preview">
+                <div class="be-preview-header">
+                  <button class="btn-ghost" @click="bookPrev()" :disabled="book.currentPage <= 0" style="padding:4px 8px">&larr;</button>
+                  <span x-text="bookShortPageId(bookCurrentPage()?.id || '') + ' — ' + (bookCurrentPage()?.summary || '')"></span>
+                  <button class="btn-ghost" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1" style="padding:4px 8px">&rarr;</button>
+                </div>
+                <div class="be-preview-image" @dragover.prevent="$event.dataTransfer.dropEffect='copy'" @dragenter="bookDragEnter($event)" @dragleave="bookDragLeave($event)" @drop="bookHandlePreviewDrop($event)">
+                  <img :src="bookEditorPreviewImage()?.full_url || bookEditorPreviewImage()?.thumb_url || ''" alt="Preview">
+                  <div class="be-preview-info" x-show="bookGetSelection(bookCurrentPage()?.id)">
+                    <span x-text="displayModelName(bookGetSelection(bookCurrentPage()?.id)?.model || '')"></span>
+                    <span x-text="'seed ' + (bookGetSelection(bookCurrentPage()?.id)?.seed || '')"></span>
+                  </div>
+                  <div class="be-preview-unselected" x-show="!bookGetSelection(bookCurrentPage()?.id)" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);color:var(--text-muted);font-size:0.8rem">
+                    No image selected
+                  </div>
+                </div>
+                <div class="book-rate" style="padding:8px 0">
+                  <button class="rate-btn rate-star" :class="{'active': getImageRating(bookCurrentImage()) === 5}" @click="quickRate(bookCurrentImage(), 5)">★</button>
+                  <button class="rate-btn rate-heart" :class="{'active': getImageRating(bookCurrentImage()) === 2}" @click="quickRate(bookCurrentImage(), 2)">♥</button>
+                  <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}" @click="quickRate(bookCurrentImage(), -1)">👎</button>
+                </div>
               </div>
-            </template>
+              <div class="be-candidates">
+                <div style="font-weight:600;font-size:0.85rem;margin-bottom:8px">Candidates</div>
+                <div class="be-candidates-scroll">
+                  <template x-for="group in bookEditorCandidatesByModel()" :key="'beg-' + group.model">
+                    <div style="margin-bottom:12px">
+                      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px" x-text="displayModelName(group.model)"></div>
+                      <div style="display:flex;flex-wrap:wrap;gap:6px">
+                        <template x-for="cand in group.images" :key="'bec-' + cand.img.name">
+                          <div class="be-candidate" :class="{'be-candidate-selected': bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)}"
+                               @click="bookSelectImage(bookCurrentPage()?.id, cand.model, cand.seed, cand.img)"
+                               draggable="true" @dragstart="bookDragStartCandidate($event, cand.model, cand.seed, cand.img)">
+                            <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:80px;height:auto;display:block;border-radius:4px">
+                            <div style="display:flex;gap:4px;font-size:0.6rem;color:var(--text-muted);margin-top:2px">
+                              <span x-text="'s:' + cand.seed"></span>
+                              <span x-show="getImageRating(cand.img)" x-text="getImageRating(cand.img) >= 5 ? '★' : getImageRating(cand.img) >= 2 ? '♥' : '👎'"></span>
+                              <span x-show="getAestheticScore(cand.img)" :class="{'high': getAestheticScore(cand.img) >= 0.7}" x-text="((getAestheticScore(cand.img)||0)*100).toFixed(0)"></span>
+                            </div>
+                            <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">✓</div>
+                          </div>
+                        </template>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+            <div class="be-timeline">
+              <template x-for="(page, idx) in book.pages" :key="'bt-' + page.id">
+                <div class="be-timeline-slot" :class="{'active': idx === book.currentPage, 'selected': !!bookGetSelection(page.id)}"
+                     @click="book.currentPage = idx" draggable="true"
+                     @dragstart="bookDragStartTimeline($event, idx)"
+                     @dragover.prevent="$event.dataTransfer.dropEffect='move'"
+                     @dragenter="bookDragEnter($event)" @dragleave="bookDragLeave($event)"
+                     @drop="bookHandleTimelineDrop($event, idx)">
+                  <img :src="bookTimelineThumb(page)" :alt="page.id" loading="lazy" style="width:50px;height:auto;display:block;border-radius:3px">
+                  <div x-show="bookGetSelection(page.id)" style="position:absolute;top:1px;right:1px;color:#4caf50;font-size:0.7rem">✓</div>
+                  <span style="font-size:0.5rem;color:var(--text-muted)" x-text="bookShortPageId(page.id)"></span>
+                </div>
+              </template>
+            </div>
           </div>
         </div>
       </template>
