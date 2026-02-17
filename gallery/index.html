@@ -723,7 +723,7 @@
           </div>
 
           <!-- ===== VIEW MODE ===== -->
-          <div x-show="!book.editorMode">
+          <div x-show="!book.editorMode" x-cloak>
             <div class="book-top-bar">
               <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
               <div class="book-models">
