@@ -916,11 +916,13 @@
                                @click="bookSelectImage(book.pages[book.currentPage]?.id, cand.model, cand.seed, cand.img)"
                                draggable="true" @dragstart="bookDragStartCandidate($event, cand.model, cand.seed, cand.img)">
                             <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:80px;height:auto;display:block;border-radius:4px">
-                            <div style="display:flex;gap:4px;font-size:0.6rem;color:var(--text-muted);margin-top:2px">
+                            <div class="be-cand-rating-overlay" x-show="getImageRating(cand.img)"
+                                 :class="{'rating-star': getImageRating(cand.img) >= 5, 'rating-heart': getImageRating(cand.img) >= 2 && getImageRating(cand.img) < 5, 'rating-bad': getImageRating(cand.img) < 0}"
+                                 x-text="getImageRating(cand.img) >= 5 ? '★' : getImageRating(cand.img) >= 2 ? '♥' : '👎'"></div>
+                            <div class="be-cand-info">
                               <span x-text="'s:' + cand.seed"></span>
                               <span class="be-cand-gen" x-show="book.generations.length > 1 && book.selectedGen === 'all'"
                                     x-text="bookGetGeneration(cand.img._mgExperiment?.prompt_id || bookCurrentPage()?.id)"></span>
-                              <span x-show="getImageRating(cand.img)" x-text="getImageRating(cand.img) >= 5 ? '★' : getImageRating(cand.img) >= 2 ? '♥' : '👎'"></span>
                               <span x-show="getAestheticScore(cand.img)" :class="{'high': getAestheticScore(cand.img) >= 0.7}" x-text="((getAestheticScore(cand.img)||0)*100).toFixed(0)"></span>
                             </div>
                             <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">&#10003;</div>

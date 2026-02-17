@@ -2872,3 +2872,16 @@ body {
 .book-editor-section { display: none !important; }
 .book-editor-active .book-editor-section { display: block !important; }
 .book-editor-active .book-view-section { display: none !important; }
+
+/* Candidate rating overlay on thumbnail */
+.be-cand-rating-overlay {
+  position: absolute; top: 4px; left: 4px;
+  font-size: 1.2rem; opacity: 0.5; transition: opacity 0.15s;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+.be-candidate:hover .be-cand-rating-overlay { opacity: 1; }
+.be-cand-rating-overlay.rating-star { color: #ffd700; }
+.be-cand-rating-overlay.rating-heart { color: #e94560; }
+.be-cand-rating-overlay.rating-bad { color: #f44336; }
+.be-cand-info { display: flex; gap: 4px; font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; }
