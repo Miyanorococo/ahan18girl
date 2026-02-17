@@ -92,7 +92,21 @@ python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch --gpu-only &
 # warmup_model() (64x64, 1-step dummy prompt)
 # Then normal generation
 ```
-L2W テスト 9/9 画像生成成功。問題は完全に解決。
+L2W テスト 9/9 画像生成成功（--models パス）。
+
+## AMI v4 (ami-008029be8d4ca532b) — 2026-02-18
+- kernel -1046 削除、GRUB -1045 にピン
+- unattended-upgrades masked（AMI レベル）
+- **カーネル/ドライバ問題は解決**
+- txt2img 3枚生成成功
+- ただし IP-Adapter/ControlNet ワークフローはまだタイムアウト
+- EBS スナップショットの初回 I/O が遅く、warmup が 600秒でタイムアウト
+- 次のセッション: warmup timeout 900秒 + Layer 2 ワークフロータイムアウト拡大
+
+## eval-prompts.json 共有問題 — 解決（2026-02-18）
+- 各 Fleet 実行で eval-prompts-{timestamp}.json のユニークキーを使用
+- EvalPromptsKey タグで各ワーカーが自分のファイルを DL
+- Regen API も per-book キーで分離済み
 
 ## 成功パターン（唯一の64枚バッチ成功）
 1. boto3 install
