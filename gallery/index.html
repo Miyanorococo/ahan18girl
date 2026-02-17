@@ -948,7 +948,7 @@
                  @dragover="$el.classList.add('dragging')"
                  @dragleave="if(!$el.contains($event.relatedTarget)) $el.classList.remove('dragging')"
                  @drop="$el.classList.remove('dragging')"
-                 @dragend.window="document.querySelectorAll('.be-timeline').forEach(t=>t.classList.remove('dragging'))"
+                 @dragend.window="document.querySelectorAll('.be-timeline').forEach(t=>t.classList.remove('dragging'))">
               <div class="be-timeline-insert-zone"
                    @dragover.prevent="$event.dataTransfer.dropEffect = 'copy'; $event.currentTarget.classList.add('active')"
                    @dragleave="$event.currentTarget.classList.remove('active')"
