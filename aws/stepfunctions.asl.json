@@ -7,6 +7,11 @@
       "MaxConcurrency": 13,
       "ItemsPath": "$.models",
       "ResultPath": "$.results",
+      "Parameters": {
+        "model.$": "$$.Map.Item.Value.model",
+        "jobName.$": "$$.Map.Item.Value.jobName",
+        "promptsFile.$": "$.promptsFile"
+      },
       "Iterator": {
         "StartAt": "SubmitBatchJob",
         "States": {
@@ -22,6 +27,10 @@
                   {
                     "Name": "MODEL_NAME",
                     "Value.$": "$.model"
+                  },
+                  {
+                    "Name": "PROMPTS_FILE",
+                    "Value.$": "$.promptsFile"
                   }
                 ]
               }
