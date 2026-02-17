@@ -630,6 +630,10 @@ function bookMixin() {
       } catch { return; }
 
       if (data.type === 'candidate') {
+        // Check insertion indicator: if insert-before or insert-after, treat as cross-page selection
+        const isInsertBefore = el.classList.contains('drag-insert-before');
+        const isInsertAfter = el.classList.contains('drag-insert-after');
+
         // Candidate dropped on timeline slot -> select image for that page
         const targetPage = this.book.pages[targetIdx];
         if (!targetPage) return;
@@ -638,6 +642,8 @@ function bookMixin() {
           thumb_url: data.thumb_url,
           name: data.name,
         });
+        // Navigate to the target page so user sees the result
+        this.book.currentPage = targetIdx;
       } else if (data.type === 'timeline') {
         // Timeline slot dropped on another slot -> insert (not swap)
         const fromIdx = data.fromIdx;
@@ -713,10 +719,9 @@ function bookMixin() {
     /** Drag over handler for timeline slots - shows insertion indicator */
     bookTimelineDragOver(event, slotIdx) {
       event.preventDefault();
-      let data;
       try {
-        const raw = event.dataTransfer.types.includes('text/plain') ? 'move' : 'copy';
-        event.dataTransfer.dropEffect = raw;
+        // Allow both copy (candidates) and move (timeline reorder)
+        event.dataTransfer.dropEffect = event.dataTransfer.effectAllowed === 'copy' ? 'copy' : 'move';
       } catch {}
       const el = event.currentTarget;
       const rect = el.getBoundingClientRect();
