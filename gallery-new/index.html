@@ -3,45 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gallery New</title>
+  <title>Gallery</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
-<body>
+
+<body x-data="gallery" x-init="init()">
   <div id="app">
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
-      <div class="brand">
+      <div class="brand" @click="navigate('experiments')" style="cursor:pointer">
         <span class="brand-icon">filter_drama</span>
         <h1>Gallery</h1>
       </div>
-      
+
       <nav class="nav-menu">
-        <button class="nav-item active" data-view="dashboard">
+        <button class="nav-item" :class="{'active': route === 'dashboard'}" @click="navigate('dashboard')">
           <span class="material-icons-round">dashboard</span>
           <span>Dashboard</span>
         </button>
-        <button class="nav-item" data-view="experiments">
+        <button class="nav-item" :class="{'active': route === 'experiments' || route === 'experiment'}" @click="navigate('experiments')">
           <span class="material-icons-round">science</span>
           <span>Experiments</span>
         </button>
-        <button class="nav-item" data-view="productions">
+        <button class="nav-item" :class="{'active': route === 'productions' || route === 'production'}" @click="navigate('productions')">
           <span class="material-icons-round">collections</span>
           <span>Productions</span>
         </button>
-        <button class="nav-item" data-view="compare">
+        <button class="nav-item" :class="{'active': route === 'compare'}" @click="navigate('compare')">
           <span class="material-icons-round">compare</span>
           <span>Compare</span>
+        </button>
+        <button class="nav-item" :class="{'active': route === 'model-grid'}" @click="navigate('model-grid')">
+          <span class="material-icons-round">grid_on</span>
+          <span>Grid</span>
+        </button>
+        <button class="nav-item" :class="{'active': route === 'book'}" @click="navigate('book')">
+          <span class="material-icons-round">menu_book</span>
+          <span>Book</span>
+        </button>
+        <button class="nav-item" :class="{'active': route === 'knowledge-base'}" @click="navigate('knowledge-base')">
+          <span class="material-icons-round">auto_stories</span>
+          <span>KB</span>
         </button>
       </nav>
 
       <div class="sidebar-footer">
-        <button class="theme-toggle" id="themeToggle">
-          <span class="material-icons-round">dark_mode</span>
+        <button class="nav-item nav-item-small" :class="{'active': blindMode}" @click="toggleBlindMode()">
+          <span class="material-icons-round" x-text="blindMode ? 'visibility_off' : 'visibility'"></span>
+          <span x-text="blindMode ? 'Blind ON' : 'Blind'"></span>
+        </button>
+        <button class="nav-item nav-item-small" x-show="blindMode" @click="revealBlindMode()">
+          <span class="material-icons-round">lock_open</span>
+          <span>Reveal</span>
+        </button>
+        <button class="nav-item nav-item-small" :class="{'active': autoAdvance}"
+                @click="autoAdvance = !autoAdvance; localStorage.setItem('gallery_auto_advance', autoAdvance)">
+          <span class="material-icons-round" x-text="autoAdvance ? 'skip_next' : 'pause'"></span>
+          <span>Auto</span>
         </button>
       </div>
     </aside>
@@ -51,85 +76,1194 @@
       <!-- Top Bar -->
       <header class="top-bar">
         <div class="breadcrumbs">
-          <span class="current-view-title">Dashboard</span>
+          <span class="current-view-title" x-text="route.charAt(0).toUpperCase() + route.slice(1).replace('-', ' ')"></span>
+          <span class="filter-count" x-show="route === 'experiments'"
+                x-text="filteredExperiments.length + ' / ' + experiments.length"></span>
         </div>
         <div class="top-actions">
-          <div class="search-bar">
+          <div class="search-bar" x-show="route === 'experiments'">
             <span class="material-icons-round">search</span>
-            <input type="text" placeholder="Search experiments..." id="globalSearch">
+            <input type="text" x-model="filters.search" @input.debounce.300ms="filterExperiments()" placeholder="Search experiments...">
           </div>
+          <button class="icon-btn" @click="reloadExperiments()" title="Reload" x-show="route === 'experiments'">
+            <span class="material-icons-round">refresh</span>
+          </button>
         </div>
       </header>
 
       <!-- View Container -->
-      <div id="view-container" class="view-container">
-        <!-- Dashboard View -->
-        <div class="view active" id="view-dashboard">
-          <div class="dashboard-grid">
-            <div class="kpi-card">
-              <h3>Total Experiments</h3>
-              <div class="value" id="kpi-total-exp">-</div>
-            </div>
-            <div class="kpi-card">
-              <h3>Total Images</h3>
-              <div class="value" id="kpi-total-img">-</div>
-            </div>
-             <div class="kpi-card">
-              <h3>Favorites</h3>
-              <div class="value" id="kpi-fav">-</div>
-            </div>
-          </div>
-          
-          <div class="section-title">Recent Experiments</div>
-          <div class="experiments-grid" id="dashboard-recent-grid">
-              <!-- JS will populate -->
-          </div>
-        </div>
+      <div class="view-container" :class="{'view-wide': route === 'model-grid' || route === 'dashboard' || route === 'knowledge-base' || route === 'book'}">
 
-        <!-- Experiments View -->
-        <div class="view" id="view-experiments">
+        <!-- ========== EXPERIMENTS LIST ========== -->
+        <div x-show="route === 'experiments'" x-cloak>
           <div class="filters-bar">
-             <select id="filter-model" class="filter-select"><option value="">All Models</option></select>
-             <select id="filter-genre" class="filter-select"><option value="">All Genres</option></select>
-             <div class="view-toggles">
-               <button class="icon-btn active" data-layout="grid"><span class="material-icons-round">grid_view</span></button>
-               <button class="icon-btn" data-layout="list"><span class="material-icons-round">view_list</span></button>
-             </div>
+            <select x-model="filters.model" @change="filterExperiments()" class="filter-select">
+              <option value="">All Models</option>
+              <template x-for="m in availableModels" :key="m">
+                <option :value="m" x-text="m"></option>
+              </template>
+            </select>
+            <select x-model="filters.pipeline" @change="filterExperiments()" class="filter-select">
+              <option value="">All Pipelines</option>
+              <template x-for="p in availablePipelines" :key="p">
+                <option :value="p" x-text="p"></option>
+              </template>
+            </select>
+            <select x-model="filters.genre" @change="filterExperiments()" class="filter-select">
+              <option value="">All Genres</option>
+              <template x-for="g in availableGenres" :key="'fg-' + g">
+                <option :value="g" x-text="g"></option>
+              </template>
+            </select>
+            <select x-model="filters.ratingStatus" @change="filterExperiments()" class="filter-select">
+              <option value="">All Status</option>
+              <option value="unrated">Unrated</option>
+              <option value="partial">Partially Rated</option>
+              <option value="rated">Fully Rated</option>
+              <option value="favorited">Has Favorites</option>
+            </select>
+            <select x-model="sortBy" @change="filterExperiments()" class="filter-select">
+              <option value="date-desc">Newest</option>
+              <option value="date-asc">Oldest</option>
+              <option value="model">Model</option>
+              <option value="rated">Most Rated</option>
+            </select>
+            <button class="icon-btn delete-btn"
+                    x-show="filteredExperiments.length > 0 && filteredExperiments.length < experiments.length"
+                    @click="bulkDeleteFiltered()"
+                    :title="'Delete ' + filteredExperiments.length + ' filtered'">
+              <span class="material-icons-round">delete_sweep</span>
+            </button>
           </div>
-          <div class="experiments-grid" id="experiments-grid">
-            <!-- JS will populate -->
+
+          <div x-show="loading" class="loading-spinner">Loading...</div>
+
+          <div class="experiments-grid" x-show="!loading">
+            <template x-for="exp in paginatedExperiments" :key="exp.id">
+              <div class="experiment-card" @click="openExperiment(exp.id)">
+                <div class="card-thumb" x-show="exp.thumbnail">
+                  <img :src="exp.thumbnail" :alt="exp.prompt_summary" loading="lazy">
+                  <button class="card-fav-btn"
+                          :class="{'active': _isExpFavorited(exp)}"
+                          @click.stop="_quickFavExperiment(exp)"
+                          x-text="_isExpFavorited(exp) ? '♥' : '♡'"
+                          title="Quick favorite"></button>
+                </div>
+                <div class="card-info">
+                  <div class="card-title" x-text="exp.prompt_summary || exp.id"></div>
+                  <div class="card-meta">
+                    <span class="badge model" x-text="displayModelName(exp.model)" x-show="exp.model"></span>
+                    <span class="badge genre" x-text="getExpGenre(exp)" x-show="getExpGenre(exp)"></span>
+                  </div>
+                  <div class="card-date" x-text="formatDate(exp.created_at || exp.date)"></div>
+                  <div class="card-bottom">
+                    <span class="card-count" x-text="(exp.image_count || 0) + ' images'"></span>
+                    <span class="card-aesthetic" x-show="exp.aesthetic_avg"
+                          :class="{'high': exp.aesthetic_avg >= 0.7, 'low': exp.aesthetic_avg < 0.4}"
+                          x-text="'AI ' + (exp.aesthetic_avg * 100).toFixed(0)"></span>
+                    <span class="card-rating-badge" x-show="_getExpRatedCount(exp) > 0"
+                          :class="{'complete': _getExpRatedCount(exp) >= (exp.image_count || 0)}"
+                          x-text="_getExpRatedCount(exp) + '/' + (exp.image_count || 0) + ' rated'"></span>
+                    <span class="card-fav-badge" x-show="_getExpFavCount(exp) > 0"
+                          x-text="'♥ ' + _getExpFavCount(exp)"></span>
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
-           <div class="pagination" id="experiments-pagination"></div>
-        </div>
-        
-        <!-- Experiment Detail View (Overlay or separate view) -->
-        <div class="view" id="view-detail">
-             <div class="detail-header">
-                 <button class="back-btn"><span class="material-icons-round">arrow_back</span> Back</button>
-                 <h2 id="detail-title">Experiment Title</h2>
-             </div>
-             <div class="detail-content">
-                 <div class="detail-sidebar">
-                     <div class="meta-group">
-                         <label>Model</label>
-                         <div id="detail-model"></div>
-                     </div>
-                      <div class="meta-group">
-                         <label>Prompt</label>
-                         <div id="detail-prompt" class="prompt-text"></div>
-                     </div>
-                 </div>
-                 <div class="detail-gallery" id="detail-gallery">
-                     <!-- Images -->
-                 </div>
-             </div>
+
+          <!-- Pagination -->
+          <div class="pagination" x-show="totalPages > 1">
+            <button @click="page = Math.max(1, page - 1)" :disabled="page <= 1">
+              <span class="material-icons-round">chevron_left</span> Prev
+            </button>
+            <span class="page-info" x-text="page + ' / ' + totalPages"></span>
+            <button @click="page = Math.min(totalPages, page + 1)" :disabled="page >= totalPages">
+              Next <span class="material-icons-round">chevron_right</span>
+            </button>
+          </div>
+
+          <div x-show="!loading && filteredExperiments.length === 0" class="empty-state">No experiments found</div>
         </div>
 
-      </div>
+        <!-- ========== EXPERIMENT DETAIL ========== -->
+        <div x-show="route === 'experiment'" x-cloak>
+          <div class="detail-header">
+            <button class="back-btn" @click="navigate('experiments')">
+              <span class="material-icons-round">arrow_back</span> Back
+            </button>
+            <h2 x-text="currentExperiment?.prompt_summary || currentExperiment?.id"></h2>
+            <button class="compare-btn" @click="addToCompare(currentExperiment?.id)">
+              <span class="material-icons-round">compare</span> Compare
+            </button>
+            <button class="delete-btn" @click="deleteExperiment(currentExperiment?.id)">
+              <span class="material-icons-round">delete</span> Delete
+            </button>
+          </div>
+
+          <!-- Genre tag editor -->
+          <div class="tag-editor">
+            <span class="tag-editor-label">Genre:</span>
+            <span class="tag-badge" x-text="getExpGenre(currentExperiment) || 'inferring...'"
+                  :class="{'tag-unset': !getExpGenre(currentExperiment)}"></span>
+            <template x-if="getExpTags(currentExperiment?.id)?.scene">
+              <span class="tag-scene" x-text="getExpTags(currentExperiment?.id)?.scene"></span>
+            </template>
+            <template x-if="getExpTags(currentExperiment?.id)?.nsfw_level">
+              <span class="tag-nsfw-level" :class="'nsfw-' + getExpTags(currentExperiment?.id)?.nsfw_level"
+                    x-text="getExpTags(currentExperiment?.id)?.nsfw_level"></span>
+            </template>
+            <select class="tag-select"
+                    :value="getExpGenre(currentExperiment)"
+                    @change="setExpTag(currentExperiment?.id, 'genre', $event.target.value)">
+              <option value="">-- Set genre --</option>
+              <template x-for="g in availableGenres" :key="'tg-' + g">
+                <option :value="g" x-text="g"></option>
+              </template>
+            </select>
+            <input type="text" class="tag-custom-input" placeholder="Custom genre..."
+                   @keydown.enter="setExpTag(currentExperiment?.id, 'genre', $event.target.value); $event.target.value=''"
+                   @keydown.stop>
+          </div>
+          <!-- LLM-inferred tags -->
+          <div class="tag-chips" x-show="(getExpTags(currentExperiment?.id)?.tags || []).length > 0">
+            <template x-for="tag in (getExpTags(currentExperiment?.id)?.tags || [])" :key="'tc-' + tag">
+              <span class="tag-chip" x-text="tag"></span>
+            </template>
+          </div>
+
+          <div class="detail-layout">
+            <!-- Sticky sidebar: metadata -->
+            <aside class="metadata-sidebar" x-show="currentExperiment?.metadata">
+              <div class="sidebar-section">
+                <div class="sidebar-label">Model</div>
+                <div class="sidebar-value" x-text="currentExperiment?.metadata?.model?.checkpoint || '—'"></div>
+              </div>
+              <div class="sidebar-section">
+                <div class="sidebar-label">Pipeline</div>
+                <div class="sidebar-value" x-text="currentExperiment?.metadata?.pipeline || '—'"></div>
+              </div>
+              <div class="sidebar-params">
+                <div class="sidebar-label">Parameters</div>
+                <div class="param-grid">
+                  <div class="param-item">
+                    <span class="param-key">Steps</span>
+                    <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.steps || '—'"></span>
+                  </div>
+                  <div class="param-item">
+                    <span class="param-key">CFG</span>
+                    <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.cfg_scale || '—'"></span>
+                  </div>
+                  <div class="param-item">
+                    <span class="param-key">Sampler</span>
+                    <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.sampler || '—'"></span>
+                  </div>
+                  <div class="param-item" x-show="currentExperiment?.metadata?.parameters?.scheduler">
+                    <span class="param-key">Scheduler</span>
+                    <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.scheduler"></span>
+                  </div>
+                  <div class="param-item" x-show="currentExperiment?.metadata?.parameters?.denoise">
+                    <span class="param-key">Denoise</span>
+                    <span class="param-val" x-text="currentExperiment?.metadata?.parameters?.denoise"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="sidebar-section">
+                <div class="sidebar-label">Prompt</div>
+                <div class="sidebar-prompt" x-text="currentExperiment?.metadata?.prompt?.positive || '—'"></div>
+              </div>
+              <div class="sidebar-section" x-show="currentExperiment?.metadata?.prompt?.negative">
+                <div class="sidebar-label">Negative</div>
+                <div class="sidebar-prompt negative" x-text="currentExperiment?.metadata?.prompt?.negative"></div>
+              </div>
+              <div class="sidebar-section" x-show="currentExperiment?.metadata?.seeds">
+                <div class="sidebar-label">Seeds</div>
+                <div class="sidebar-value seed-list" x-text="(currentExperiment?.metadata?.seeds || []).join(', ')"></div>
+              </div>
+              <div class="sidebar-stats">
+                <span x-text="(currentExperiment?.image_count || 0) + ' images'"></span>
+              </div>
+            </aside>
+
+            <!-- Main area: image grid -->
+            <div class="detail-main">
+              <div class="image-grid">
+                <template x-for="(img, idx) in currentExperiment?.images || []" :key="img.full_url || img.name">
+                  <div class="image-item" :class="{'selected': isSelected(img)}">
+                    <img :src="img.thumb_url" :alt="img.name" loading="lazy" @click="openLightbox(idx)">
+                    <div class="image-overlay">
+                      <div class="overlay-top-row">
+                        <span class="grid-fav" :class="{'active': isImageFavorited(img)}"
+                              @click.stop="toggleFavorite(img)"
+                              x-text="isImageFavorited(img) ? '♥' : '♡'"></span>
+                      </div>
+                      <div class="quick-rate-row" @click.stop>
+                        <span class="rate-icon-sm" :class="{'active': getImageRating(img) === 5}" @click="quickRate(img, 5)">★</span>
+                        <span class="rate-icon-sm" :class="{'active': getImageRating(img) === 2}" @click="quickRate(img, 2)">♥</span>
+                        <span class="rate-icon-sm" :class="{'active': getImageRating(img) === -1}" @click="quickRate(img, -1)">👎</span>
+                      </div>
+                      <label class="select-check" @click.stop>
+                        <input type="checkbox" :checked="isSelected(img)" @change="toggleSelect(img)">
+                      </label>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selection actions -->
+          <div class="selection-bar" x-show="selectedImages.length > 0" x-cloak>
+            <span x-text="selectedImages.length + ' selected'"></span>
+            <button @click="selectToProduction()">Copy to Production</button>
+          </div>
+        </div>
+
+        <!-- ========== COMPARE ========== -->
+        <div x-show="route === 'compare'" x-cloak>
+          <div class="compare-header">
+            <h2>Compare Experiments</h2>
+            <div class="compare-selectors">
+              <select x-model="compareLeft" @change="loadCompareExperiment('left')">
+                <option value="">Select left...</option>
+                <template x-for="exp in experiments" :key="'cl-' + exp.id">
+                  <option :value="exp.id" x-text="exp.prompt_summary || exp.id"></option>
+                </template>
+              </select>
+              <select x-model="compareRight" @change="loadCompareExperiment('right')">
+                <option value="">Select right...</option>
+                <template x-for="exp in experiments" :key="'cr-' + exp.id">
+                  <option :value="exp.id" x-text="exp.prompt_summary || exp.id"></option>
+                </template>
+              </select>
+            </div>
+          </div>
+          <div class="compare-panels">
+            <div class="compare-panel" id="compare-left">
+              <template x-for="img in compareLeftImages" :key="'cl-' + img.thumb_url">
+                <div class="compare-image">
+                  <img :src="img.thumb_url" loading="lazy" @click="openLightbox(img._index, 'left')">
+                </div>
+              </template>
+              <div x-show="compareLeft && compareLeftImages.length === 0" class="empty-state">No images</div>
+            </div>
+            <div class="compare-panel" id="compare-right">
+              <template x-for="img in compareRightImages" :key="'cr-' + img.thumb_url">
+                <div class="compare-image">
+                  <img :src="img.thumb_url" loading="lazy" @click="openLightbox(img._index, 'right')">
+                </div>
+              </template>
+              <div x-show="compareRight && compareRightImages.length === 0" class="empty-state">No images</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== PRODUCTIONS ========== -->
+        <div x-show="route === 'productions' || route === 'production'" x-cloak>
+          <h2>Productions</h2>
+          <div x-show="loading" class="loading-spinner">Loading...</div>
+          <div class="experiments-grid" x-show="!loading">
+            <template x-for="prod in productions" :key="prod.id">
+              <div class="experiment-card" @click="openProduction(prod.id)">
+                <div class="card-info">
+                  <div class="card-title" x-text="prod.id"></div>
+                  <div class="card-meta">
+                    <span class="badge" x-text="'Raw: ' + (prod.raw_count || 0)"></span>
+                    <span class="badge" x-text="'Selected: ' + (prod.selected_count || 0)"></span>
+                    <span class="badge" x-text="'Final: ' + (prod.final_count || 0)"></span>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+          <div x-show="!loading && productions.length === 0" class="empty-state">No productions found</div>
+        </div>
+
+        <!-- ========== MODEL GRID ========== -->
+        <div x-show="route === 'model-grid'" x-cloak>
+          <!-- Group selector -->
+          <div x-show="!modelGrid.selectedGroup">
+            <h2 class="section-title">Model Grid</h2>
+            <p class="mg-subtitle">Compare models by theme and scene</p>
+
+            <!-- Theme filter bar -->
+            <div class="mg-theme-bar" x-show="modelGrid.themes.length > 0">
+              <button class="mg-theme-btn" :class="{'active': !modelGrid.selectedTheme}"
+                      @click="modelGrid.selectedTheme = null">All</button>
+              <template x-for="theme in modelGrid.themes" :key="'theme-' + theme.id">
+                <button class="mg-theme-btn" :class="{'active': modelGrid.selectedTheme === theme.id}"
+                        @click="selectTheme(theme.id)"
+                        x-text="theme.name + ' (' + theme.count + ')'"></button>
+              </template>
+            </div>
+
+            <div x-show="modelGrid.groups.length === 0" class="empty-state">
+              No comparable groups found (need 2+ models)
+            </div>
+
+            <div class="experiments-grid">
+              <template x-for="group in getFilteredGroups()" :key="group.key">
+                <div class="experiment-card" @click="selectModelGroup(group)">
+                  <div class="card-info">
+                    <div class="card-title">
+                      <span x-text="group.themeName"></span>
+                      <span class="mg-scene-badge" x-text="group.sceneLabel"></span>
+                    </div>
+                    <div class="card-meta">
+                      <span class="badge" x-text="formatRunDate(group.runDate)"></span>
+                      <span class="badge model" x-text="group.models.length + ' models'"></span>
+                      <span class="badge" x-text="group.latestTime ? group.latestTime.slice(11,16) : ''" style="opacity:0.6"></span>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- Grid comparison -->
+          <div x-show="modelGrid.selectedGroup">
+            <div class="detail-header">
+              <button class="back-btn" @click="modelGrid.selectedGroup = null">
+                <span class="material-icons-round">arrow_back</span> Back
+              </button>
+              <h2 x-text="modelGrid.selectedGroup?.prompt"></h2>
+              <div class="mg-view-toggle">
+                <button :class="{'active': modelGrid.viewMode === 'single'}" @click="modelGrid.viewMode = 'single'">Single Seed</button>
+                <button :class="{'active': modelGrid.viewMode === 'all'}" @click="modelGrid.viewMode = 'all'">All Seeds</button>
+              </div>
+            </div>
+
+            <div x-show="modelGrid.loading" class="loading-spinner">Loading...</div>
+            <div class="mg-load-progress" x-show="!modelGrid.loading && modelGrid._loadedCount > 0 && modelGrid._loadedCount < modelGrid._totalCount"
+                 x-text="modelGrid._loadedCount + ' / ' + modelGrid._totalCount + ' models loaded'"></div>
+
+            <!-- Seed selector bar -->
+            <div class="mg-seed-bar" x-show="!modelGrid.loading && modelGrid.viewMode === 'single' && modelGrid.allSeeds.length > 0">
+              <span class="mg-seed-label">Seed:</span>
+              <div class="mg-seed-list">
+                <template x-for="seed in modelGrid.allSeeds" :key="'seed-' + seed">
+                  <button class="mg-seed-btn"
+                          :class="{'active': modelGrid.selectedSeed === seed}"
+                          @click="selectSeed(seed)"
+                          x-text="seed"></button>
+                </template>
+              </div>
+            </div>
+
+            <!-- N-model CSS grid -->
+            <div class="mg-grid" x-show="!modelGrid.loading">
+              <template x-for="card in modelGrid.modelCards" :key="'mc-' + card.model">
+                <div class="mg-card">
+                  <div class="mg-card-header">
+                    <span class="mg-model-name" x-text="displayModelName(card.model)"></span>
+                    <span class="mg-image-count" x-text="formatDate(card.experiment.created_at)"></span>
+                  </div>
+
+                  <!-- Single seed view -->
+                  <template x-if="modelGrid.viewMode === 'single'">
+                    <div class="mg-card-body">
+                      <template x-if="getCardImage(card)">
+                        <div>
+                          <div class="mg-image-wrap" @click="openModelGridLightbox(card)">
+                            <img :src="getCardImage(card).thumb_url" :alt="getCardImage(card).name" loading="lazy">
+                          </div>
+                          <div class="mg-image-info">
+                            <span class="mg-rating-badge" x-show="getImageRating(getCardImage(card))"
+                                  x-text="getImageRating(getCardImage(card)) >= 5 ? '★' : getImageRating(getCardImage(card)) >= 2 ? '♥' : getImageRating(getCardImage(card)) < 0 ? '👎' : ''"></span>
+                            <span class="mg-ai-score"
+                                  x-show="getAestheticScore(getCardImage(card))"
+                                  :class="{'high': getAestheticScore(getCardImage(card)) >= 0.7, 'low': getAestheticScore(getCardImage(card)) < 0.4}"
+                                  x-text="'AI ' + ((getAestheticScore(getCardImage(card)) || 0) * 100).toFixed(0)"></span>
+                          </div>
+                          <div class="mg-prompt" x-show="card.detail?.metadata?.prompt?.positive"
+                               x-text="card.detail?.metadata?.prompt?.positive || ''"></div>
+                        </div>
+                      </template>
+                      <template x-if="!getCardImage(card)">
+                        <div class="mg-no-image">No image for this seed</div>
+                      </template>
+
+                      <div class="mg-model-info">
+                        <div class="mg-verdict" x-show="getModelData(card.model).verdict">
+                          <span class="badge" :class="{
+                            'verdict-adopt': getModelData(card.model).verdict === 'adopt',
+                            'verdict-hold': getModelData(card.model).verdict === 'hold',
+                            'verdict-reject': getModelData(card.model).verdict === 'reject'
+                          }" x-text="getModelData(card.model).verdict"></span>
+                        </div>
+                        <div class="mg-model-comment" x-show="getModelData(card.model).comment"
+                             x-text="getModelData(card.model).comment"></div>
+                      </div>
+                    </div>
+                  </template>
+
+                  <!-- All seeds view -->
+                  <template x-if="modelGrid.viewMode === 'all'">
+                    <div class="mg-card-body mg-all-seeds">
+                      <template x-for="(img, idx) in getCardImages(card)" :key="'mga-' + card.model + '-' + idx">
+                        <div class="mg-mini-image"
+                             @click="openLightbox(img._index, 'model-grid', card.images, card.detail)">
+                          <img :src="img.thumb_url" :alt="img.name" loading="lazy">
+                          <div class="mg-mini-seed" x-show="img._seed" x-text="img._seed"></div>
+                          <div class="mg-mini-rating" x-show="getImageRating(img) > 0">
+                            <span class="star filled">★</span>
+                            <span x-text="getImageAvgScore(img)"></span>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== DASHBOARD ========== -->
+        <div x-show="route === 'dashboard'" x-cloak>
+          <div class="dash-header">
+            <h2>Dashboard</h2>
+            <div class="dash-actions">
+              <button class="back-btn" @click="exportMarkdown()">
+                <span class="material-icons-round">description</span> Export MD
+              </button>
+              <button class="back-btn" @click="exportJSON()">
+                <span class="material-icons-round">code</span> Export JSON
+              </button>
+            </div>
+          </div>
+
+          <div x-show="dashboard.loading" class="loading-spinner">Loading...</div>
+
+          <div x-show="!dashboard.loading && dashboard.modelStats.length === 0" class="empty-state">
+            No rating data. Please rate experiment images.
+          </div>
+
+          <div x-show="!dashboard.loading && dashboard.modelStats.length > 0">
+            <!-- KPI Summary Cards -->
+            <div class="kpi-row">
+              <div class="kpi-card">
+                <div class="kpi-value" x-text="dashboard.summary?.ratingProgress + '%'"></div>
+                <div class="kpi-label">Rating Progress</div>
+                <div class="kpi-sub" x-text="dashboard.summary?.totalRated + ' / ' + dashboard.summary?.totalImages + ' images'"></div>
+              </div>
+              <div class="kpi-card kpi-accent">
+                <div class="kpi-value" x-text="dashboard.modelStats[0]?.model || '—'"></div>
+                <div class="kpi-label">Top Model</div>
+                <div class="kpi-sub" x-text="dashboard.modelStats[0]?.overallAvg ? '★ ' + dashboard.modelStats[0].overallAvg.toFixed(1) : ''"></div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-value" x-text="dashboard.favorites?.total || 0"></div>
+                <div class="kpi-label">Favorites</div>
+                <div class="kpi-sub" x-text="dashboard.favorites?.byModel?.[0]?.[0] ? 'Top: ' + dashboard.favorites.byModel[0][0] : ''"></div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-value" x-text="dashboard.summary?.totalModels || 0"></div>
+                <div class="kpi-label">Models</div>
+                <div class="kpi-sub" x-text="dashboard.modelStats.filter(s => s.verdict).length + ' verdicts'"></div>
+              </div>
+              <div class="kpi-card kpi-action" @click="goToUnrated()" style="cursor:pointer">
+                <div class="kpi-value"><span class="material-icons-round" style="font-size:1.6rem">play_arrow</span></div>
+                <div class="kpi-label">Continue Rating</div>
+                <div class="kpi-sub">Open unrated</div>
+              </div>
+            </div>
+
+            <!-- Insights -->
+            <div class="dash-insights" x-show="dashboard.insights.length > 0">
+              <h3>Insights</h3>
+              <div class="insight-cards">
+                <template x-for="(ins, idx) in dashboard.insights" :key="'ins-' + idx">
+                  <div class="insight-card" :class="'insight-' + ins.type">
+                    <span x-text="ins.text"></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Heatmap -->
+            <div class="dash-heatmap" x-show="dashboard.heatmap && dashboard.heatmap.genres.length > 0">
+              <h3>Model x Genre Heatmap</h3>
+              <div class="heatmap-scroll">
+                <table class="heatmap-table">
+                  <thead>
+                    <tr>
+                      <th>Model</th>
+                      <th>Avg</th>
+                      <template x-for="genre in dashboard.heatmap?.genres || []" :key="'hg-' + genre">
+                        <th x-text="genre"></th>
+                      </template>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="row in dashboard.heatmap?.rows || []" :key="'hr-' + row.model">
+                      <tr>
+                        <td class="heatmap-model" x-text="row.displayName"></td>
+                        <td class="heatmap-cell heatmap-avg"
+                            :class="{'heat-5': row.avg >= 4.5, 'heat-4': row.avg >= 3.5, 'heat-3': row.avg >= 2.5}"
+                            x-text="row.avg?.toFixed(1) || '—'"></td>
+                        <template x-for="(cell, ci) in row.cells" :key="'hc-' + row.model + '-' + ci">
+                          <td class="heatmap-cell"
+                              :class="{
+                                'heat-5': cell.score >= 4.5,
+                                'heat-4': cell.score >= 3.5 && cell.score < 4.5,
+                                'heat-3': cell.score >= 2.5 && cell.score < 3.5,
+                                'heat-2': cell.score >= 1.5 && cell.score < 2.5,
+                                'heat-1': cell.score > 0 && cell.score < 1.5,
+                                'heat-none': cell.score === null
+                              }">
+                            <span x-show="cell.score !== null" x-text="cell.score?.toFixed(1)"></span>
+                          </td>
+                        </template>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Compact model cards -->
+            <div class="dash-model-cards">
+              <h3>Model Comparison</h3>
+              <div class="dash-cards-grid">
+                <template x-for="(stat, idx) in dashboard.modelStats" :key="'ds-' + stat.model">
+                  <div class="dash-card" :class="{'verdict-adopt': stat.verdict === 'adopt', 'verdict-reject': stat.verdict === 'reject'}">
+                    <div class="dc-header">
+                      <span class="dc-rank" x-text="idx + 1"></span>
+                      <span class="dc-name" x-text="displayModelName(stat.model)"></span>
+                      <span class="dc-avg" :class="{'high': stat.overallAvg >= 3, 'low': stat.overallAvg < 0}"
+                            x-text="stat.ratedCount > 0 ? stat.overallAvg.toFixed(1) : '—'"></span>
+                    </div>
+                    <div class="dc-tiers">
+                      <span class="dc-tier dc-star">★<b x-text="stat.tiers?.star || 0"></b></span>
+                      <span class="dc-tier dc-heart">♥<b x-text="stat.tiers?.heart || 0"></b></span>
+                      <span class="dc-tier dc-bad">👎<b x-text="stat.tiers?.bad || 0"></b></span>
+                      <span class="dc-imgs" x-text="stat.imageCount + ' imgs'"></span>
+                    </div>
+                    <div class="dc-verdict">
+                      <button class="verdict-btn" :class="{'verdict-adopt active': stat.verdict === 'adopt'}"
+                              @click.stop="setDashboardVerdict(stat.model, 'adopt')">A</button>
+                      <button class="verdict-btn" :class="{'verdict-consider active': stat.verdict === 'consider'}"
+                              @click.stop="setDashboardVerdict(stat.model, 'consider')">C</button>
+                      <button class="verdict-btn" :class="{'verdict-reject active': stat.verdict === 'reject'}"
+                              @click.stop="setDashboardVerdict(stat.model, 'reject')">R</button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Model comments -->
+            <div class="dash-comments">
+              <h3>Model Comments</h3>
+              <template x-for="stat in dashboard.modelStats" :key="'dc-' + stat.model">
+                <div class="dash-comment-item">
+                  <div class="dash-comment-header">
+                    <span class="dash-comment-model" x-text="displayModelName(stat.model)"></span>
+                    <span class="badge" x-show="stat.verdict"
+                          :class="{'verdict-adopt': stat.verdict==='adopt', 'verdict-consider': stat.verdict==='consider', 'verdict-reject': stat.verdict==='reject'}"
+                          x-text="stat.verdict"></span>
+                    <span class="dash-comment-score" x-text="'★ ' + stat.overallAvg.toFixed(1)"></span>
+                  </div>
+                  <textarea class="dash-comment-textarea"
+                            rows="2"
+                            :placeholder="'Comment: ' + stat.model"
+                            :value="stat.comment"
+                            @input.debounce.1500ms="saveDashboardModelComment(stat.model, $event.target.value)"></textarea>
+                </div>
+              </template>
+            </div>
+
+            <!-- Favorites Analysis -->
+            <div class="dash-favorites" x-show="dashboard.favorites && dashboard.favorites.total > 0">
+              <h3>♥ Favorites Analysis <span class="dash-fav-count" x-text="'(' + (dashboard.favorites?.total || 0) + ' / ' + (dashboard.favorites?.totalImages || 0) + ')'"></span></h3>
+              <div class="dash-fav-grid">
+                <div class="dash-fav-card">
+                  <div class="dash-fav-card-title">By Model</div>
+                  <template x-for="[model, count, total] in (dashboard.favorites?.byModel || [])" :key="'fm-' + model">
+                    <div class="dash-fav-row">
+                      <span class="dash-fav-label" x-text="displayModelName(model)"></span>
+                      <div class="dash-fav-bar-wrap">
+                        <div class="dash-fav-bar" :style="'width:' + (count / (dashboard.favorites?.total || 1) * 100) + '%'"></div>
+                      </div>
+                      <span class="dash-fav-count-num" x-text="count + (total ? '/' + total : '')"></span>
+                    </div>
+                  </template>
+                </div>
+                <div class="dash-fav-card">
+                  <div class="dash-fav-card-title">By Prompt</div>
+                  <template x-for="[prompt, count, total] in (dashboard.favorites?.byPrompt || [])" :key="'fp-' + prompt">
+                    <div class="dash-fav-row">
+                      <span class="dash-fav-label" x-text="prompt"></span>
+                      <div class="dash-fav-bar-wrap">
+                        <div class="dash-fav-bar" :style="'width:' + (count / (dashboard.favorites?.total || 1) * 100) + '%'"></div>
+                      </div>
+                      <span class="dash-fav-count-num" x-text="count + (total ? '/' + total : '')"></span>
+                    </div>
+                  </template>
+                </div>
+                <div class="dash-fav-card">
+                  <div class="dash-fav-card-title">By Seed</div>
+                  <template x-for="[seed, count] in (dashboard.favorites?.bySeed || [])" :key="'fs-' + seed">
+                    <div class="dash-fav-row">
+                      <span class="dash-fav-label" x-text="'seed ' + seed"></span>
+                      <div class="dash-fav-bar-wrap">
+                        <div class="dash-fav-bar" :style="'width:' + (count / (dashboard.favorites?.total || 1) * 100) + '%'"></div>
+                      </div>
+                      <span class="dash-fav-count-num" x-text="count"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+              <div class="dash-fav-top" x-show="(dashboard.favorites?.topImages || []).length > 0">
+                <div class="dash-fav-card-title">Top Favorites</div>
+                <div class="dash-fav-thumbs">
+                  <template x-for="fav in (dashboard.favorites?.topImages || []).slice(0, 12)" :key="'ft-' + fav.key">
+                    <div class="dash-fav-thumb">
+                      <img :src="fav.key" loading="lazy">
+                      <div class="dash-fav-thumb-info">
+                        <span x-text="displayModelName(fav.model)"></span>
+                        <span x-show="fav.overallAvg > 0" x-text="'★' + fav.overallAvg"></span>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== BOOK VIEW ========== -->
+        <div x-show="route === 'book'" x-cloak>
+          <div x-show="book.loading" class="loading-spinner">Loading...</div>
+
+          <!-- Book LIST -->
+          <template x-if="!book.loading && !book.currentBook">
+            <div>
+              <div class="section-header"><h2>Books</h2></div>
+              <div class="book-list">
+                <template x-for="(b, idx) in book.books" :key="'bl-' + b.id">
+                  <div class="book-card" @click="openBook(b.id)">
+                    <div class="book-card-thumb" x-show="b.coverThumb">
+                      <img :src="b.coverThumb" :alt="b.theme">
+                    </div>
+                    <div class="book-card-body">
+                      <div class="book-card-header">
+                        <span class="book-card-num" x-text="'#' + (idx + 1)"></span>
+                        <span class="book-card-theme" x-text="b.theme"></span>
+                      </div>
+                      <div class="book-card-meta">
+                        <span class="book-meta-date" x-text="b.dateFormatted"></span>
+                        <span x-text="b.pageCount + ' pages'"></span>
+                        <span x-text="b.modelCount + ' models'"></span>
+                        <span x-text="b.imageCount + ' exps'"></span>
+                        <span x-text="b.bookId" class="badge"></span>
+                        <span x-show="b.genre" class="badge genre" x-text="b.genre"></span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+              <div x-show="book.books.length === 0" class="empty-state">No books found.</div>
+            </div>
+          </template>
+
+          <!-- Book DETAIL -->
+          <template x-if="!book.loading && book.currentBook">
+            <div class="book-view" :class="{'book-editor-active': book.editorMode}">
+              <div class="book-header">
+                <button class="btn-ghost" @click="closeBook()">
+                  <span class="material-icons-round">arrow_back</span> Books
+                </button>
+                <span class="book-title" x-text="'#' + (book.books.indexOf(book.currentBook) + 1) + ' ' + book.currentBook.theme + ' (' + book.currentBook.dateFormatted + ')'"></span>
+                <div class="be-mode-toggle">
+                  <button class="filter-btn" :class="{'active': !book.editorMode}" @click="book.editorMode = false">
+                    <span class="material-icons-round" style="font-size:16px;vertical-align:middle">visibility</span> View
+                  </button>
+                  <button class="filter-btn" :class="{'active': book.editorMode}" @click="book.editorMode = true">
+                    <span class="material-icons-round" style="font-size:16px;vertical-align:middle">movie_edit</span> Editor
+                  </button>
+                </div>
+              </div>
+
+              <!-- ===== NORMAL VIEW MODE ===== -->
+              <div x-show="!book.editorMode">
+                <div class="book-top-bar">
+                  <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
+                  <div class="book-models">
+                    <template x-for="model in book.allModels" :key="'bm-' + model">
+                      <button class="filter-btn"
+                              :class="{'active': book.selectedModel === model}"
+                              @click="bookSelectModel(model)"
+                              x-text="displayModelName(model)"></button>
+                    </template>
+                  </div>
+                </div>
+
+                <div class="book-main">
+                  <button class="book-side-btn" @click="bookPrev()" :disabled="book.currentPage <= 0">
+                    <span class="material-icons-round">chevron_left</span>
+                  </button>
+                  <div class="book-image" @click="bookOpenLightbox()">
+                    <img :src="bookCurrentImage()?.full_url || bookCurrentImage()?.thumb_url" :alt="bookCurrentPage()?.scene">
+                    <div class="book-rating-overlay" x-show="getImageRating(bookCurrentImage())">
+                      <span x-text="getImageRating(bookCurrentImage()) >= 5 ? '★' : getImageRating(bookCurrentImage()) >= 2 ? '♥' : getImageRating(bookCurrentImage()) < 0 ? '👎' : ''"></span>
+                    </div>
+                    <div class="book-ai-overlay" x-show="getAestheticScore(bookCurrentImage())"
+                         :class="{'high': getAestheticScore(bookCurrentImage()) >= 0.7, 'low': getAestheticScore(bookCurrentImage()) < 0.4}">
+                      <span x-text="'AI ' + ((getAestheticScore(bookCurrentImage()) || 0) * 100).toFixed(0)"></span>
+                    </div>
+                  </div>
+                  <button class="book-side-btn" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1">
+                    <span class="material-icons-round">chevron_right</span>
+                  </button>
+                </div>
+
+                <div class="book-rate">
+                  <button class="rate-btn rate-star" :class="{'active': getImageRating(bookCurrentImage()) === 5}"
+                          @click="quickRate(bookCurrentImage(), 5)">★</button>
+                  <button class="rate-btn rate-heart" :class="{'active': getImageRating(bookCurrentImage()) === 2}"
+                          @click="quickRate(bookCurrentImage(), 2)">♥</button>
+                  <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}"
+                          @click="quickRate(bookCurrentImage(), -1)">👎</button>
+                </div>
+
+                <div class="book-seeds">
+                  <template x-for="img in bookSeedImages()" :key="'bs-' + img.name">
+                    <div class="book-seed-thumb"
+                         :class="{'active': img._seed === book.selectedSeed}"
+                         @click="bookSelectSeed(img._seed)">
+                      <img :src="img.thumb_url" :alt="img._seed">
+                      <span class="book-seed-label" x-text="'seed ' + (img._seed || '?')"></span>
+                    </div>
+                  </template>
+                </div>
+
+                <div class="book-prompt" x-show="bookCurrentExperiment()?.metadata?.prompt?.positive"
+                     x-text="bookCurrentExperiment()?.metadata?.prompt?.positive || ''"></div>
+
+                <div class="book-pages">
+                  <template x-for="(page, idx) in book.pages" :key="'bp-' + page.id">
+                    <div class="book-page-thumb"
+                         :class="{'active': idx === book.currentPage}"
+                         @click="book.currentPage = idx">
+                      <img :src="(page.models.find(m => m.model === book.selectedModel)?.images[0]?.thumb_url) || (page.models[0]?.images[0]?.thumb_url) || ''"
+                           :alt="page.scene">
+                      <span class="book-page-label" x-text="page.id"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <!-- ===== EDITOR MODE ===== -->
+              <div x-show="book.editorMode" x-cloak>
+                <!-- Editor top bar: progress + export buttons -->
+                <div class="be-toolbar">
+                  <div class="be-progress">
+                    <span class="be-progress-count" x-text="bookSelectionCount() + ' / ' + book.pages.length + ' pages selected'"></span>
+                    <div class="be-progress-bar">
+                      <div class="be-progress-fill" :style="'width:' + (book.pages.length ? (bookSelectionCount() / book.pages.length * 100) : 0) + '%'"></div>
+                    </div>
+                  </div>
+                  <div class="be-actions">
+                    <button class="be-action-btn" @click="bookAutoSelect()" title="Auto-select best rated images">
+                      <span class="material-icons-round">auto_fix_high</span> Auto
+                    </button>
+                    <button class="be-action-btn" @click="bookClearSelections()" title="Clear all selections">
+                      <span class="material-icons-round">clear_all</span>
+                    </button>
+                    <button class="be-action-btn be-export-btn" @click="bookExportCurrentImage()" title="Download current image">
+                      <span class="material-icons-round">download</span> Current
+                    </button>
+                    <button class="be-action-btn be-export-btn" @click="bookExportZip()" :disabled="book.exporting || bookSelectionCount() === 0"
+                            title="Download selected images as ZIP">
+                      <span class="material-icons-round">folder_zip</span> ZIP
+                    </button>
+                    <button class="be-action-btn be-export-btn be-export-primary" @click="bookExportPDF()" :disabled="book.exporting || bookSelectionCount() === 0"
+                            title="Download selected images as PDF">
+                      <span class="material-icons-round">picture_as_pdf</span> PDF
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Export progress overlay -->
+                <div class="be-export-overlay" x-show="book.exporting">
+                  <div class="be-export-modal">
+                    <div class="loading-spinner" style="padding:0;grid-column:auto"></div>
+                    <span x-text="book.exportProgress"></span>
+                  </div>
+                </div>
+
+                <!-- Main editor area: preview + candidates -->
+                <div class="be-main">
+                  <!-- Left: Large preview -->
+                  <div class="be-preview">
+                    <div class="be-preview-header">
+                      <button class="book-side-btn" @click="bookPrev()" :disabled="book.currentPage <= 0" style="height:40px;flex:0 0 36px">
+                        <span class="material-icons-round">chevron_left</span>
+                      </button>
+                      <span class="be-preview-title" x-text="bookShortPageId(bookCurrentPage()?.id || '') + ' — ' + (bookCurrentPage()?.summary || '')"></span>
+                      <button class="book-side-btn" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1" style="height:40px;flex:0 0 36px">
+                        <span class="material-icons-round">chevron_right</span>
+                      </button>
+                    </div>
+                    <div class="be-preview-image"
+                         @dragover.prevent="$event.dataTransfer.dropEffect = 'copy'"
+                         @dragenter="bookDragEnter($event)"
+                         @dragleave="bookDragLeave($event)"
+                         @drop="bookHandlePreviewDrop($event)">
+                      <img :src="bookEditorPreviewImage()?.full_url || bookEditorPreviewImage()?.thumb_url || ''" alt="Preview">
+                      <!-- Selection info overlay -->
+                      <div class="be-preview-info" x-show="bookGetSelection(bookCurrentPage()?.id)">
+                        <span class="be-preview-model" x-text="displayModelName(bookGetSelection(bookCurrentPage()?.id)?.model || '')"></span>
+                        <span class="be-preview-seed" x-text="'seed ' + (bookGetSelection(bookCurrentPage()?.id)?.seed || '')"></span>
+                      </div>
+                      <div class="be-preview-unselected" x-show="!bookGetSelection(bookCurrentPage()?.id)">
+                        No image selected for this page
+                      </div>
+                    </div>
+                    <!-- Rate the selected/current image -->
+                    <div class="book-rate" style="padding:8px 0">
+                      <button class="rate-btn rate-star" :class="{'active': getImageRating(bookCurrentImage()) === 5}"
+                              @click="quickRate(bookCurrentImage(), 5)" style="min-width:48px;padding:6px 12px">★</button>
+                      <button class="rate-btn rate-heart" :class="{'active': getImageRating(bookCurrentImage()) === 2}"
+                              @click="quickRate(bookCurrentImage(), 2)" style="min-width:48px;padding:6px 12px">♥</button>
+                      <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}"
+                              @click="quickRate(bookCurrentImage(), -1)" style="min-width:48px;padding:6px 12px">👎</button>
+                    </div>
+                  </div>
+
+                  <!-- Right: Candidate grid -->
+                  <div class="be-candidates">
+                    <div class="be-candidates-header">Candidates</div>
+                    <div class="be-candidates-scroll">
+                      <template x-for="group in bookEditorCandidatesByModel()" :key="'beg-' + group.model">
+                        <div class="be-model-group">
+                          <div class="be-model-label" x-text="displayModelName(group.model)"></div>
+                          <div class="be-model-images">
+                            <template x-for="cand in group.images" :key="'bec-' + cand.img.name">
+                              <div class="be-candidate"
+                                   :class="{'be-candidate-selected': bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)}"
+                                   @click="bookSelectImage(bookCurrentPage()?.id, cand.model, cand.seed, cand.img)"
+                                   draggable="true"
+                                   @dragstart="bookDragStartCandidate($event, cand.model, cand.seed, cand.img)">
+                                <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy">
+                                <div class="be-candidate-info">
+                                  <span class="be-cand-seed" x-text="'s:' + cand.seed"></span>
+                                  <span class="be-cand-rating" x-show="getImageRating(cand.img)"
+                                        x-text="getImageRating(cand.img) >= 5 ? '★' : getImageRating(cand.img) >= 2 ? '♥' : getImageRating(cand.img) < 0 ? '👎' : ''"></span>
+                                  <span class="be-cand-ai" x-show="getAestheticScore(cand.img)"
+                                        :class="{'high': getAestheticScore(cand.img) >= 0.7, 'low': getAestheticScore(cand.img) < 0.4}"
+                                        x-text="((getAestheticScore(cand.img) || 0) * 100).toFixed(0)"></span>
+                                </div>
+                                <div class="be-candidate-check" x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)">
+                                  <span class="material-icons-round">check_circle</span>
+                                </div>
+                              </div>
+                            </template>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Timeline strip (bottom) -->
+                <div class="be-timeline">
+                  <div class="be-timeline-scroll">
+                    <template x-for="(page, idx) in book.pages" :key="'bt-' + page.id">
+                      <div class="be-timeline-slot"
+                           :class="{'active': idx === book.currentPage, 'selected': !!bookGetSelection(page.id)}"
+                           @click="book.currentPage = idx"
+                           draggable="true"
+                           @dragstart="bookDragStartTimeline($event, idx)"
+                           @dragover.prevent="$event.dataTransfer.dropEffect = ($event.dataTransfer.types.length ? 'move' : 'none')"
+                           @dragenter="bookDragEnter($event)"
+                           @dragleave="bookDragLeave($event)"
+                           @drop="bookHandleTimelineDrop($event, idx)">
+                        <div class="be-timeline-thumb">
+                          <img :src="bookTimelineThumb(page)" :alt="page.id" loading="lazy">
+                          <div class="be-timeline-check" x-show="bookGetSelection(page.id)">
+                            <span class="material-icons-round">check</span>
+                          </div>
+                        </div>
+                        <span class="be-timeline-label" x-text="bookShortPageId(page.id)"></span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- ========== KNOWLEDGE BASE ========== -->
+        <div x-show="route === 'knowledge-base'" x-cloak>
+          <div class="section-header">
+            <h2>Knowledge Base</h2>
+            <div class="kb-tabs" style="display:flex;gap:8px;margin-left:auto;">
+              <button :class="{'active': kb.activeTab === 'recommend'}" @click="kb.activeTab = 'recommend'" class="filter-btn">Recommend</button>
+              <button :class="{'active': kb.activeTab === 'matrix'}" @click="kb.activeTab = 'matrix'" class="filter-btn">Matrix</button>
+              <button :class="{'active': kb.activeTab === 'prompts'}" @click="kb.activeTab = 'prompts'" class="filter-btn">Prompts</button>
+            </div>
+          </div>
+
+          <template x-if="kb.loading">
+            <div class="loading-spinner">Computing knowledge base...</div>
+          </template>
+
+          <!-- Quick Recommendation -->
+          <div x-show="kb.activeTab === 'recommend' && !kb.loading">
+            <div class="card" style="padding:24px;margin-bottom:24px;">
+              <h3 style="margin-bottom:16px;">Quick Recommendation</h3>
+              <p style="color:var(--text-secondary);margin-bottom:16px;">Genre + Type to select the best model and prompt</p>
+              <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                <select x-model="kb.selectedGenre" @change="computeRecommendation()" class="filter-select">
+                  <option value="">-- Genre --</option>
+                  <template x-for="g in kb.matrix?.genres || []">
+                    <option :value="g" x-text="g"></option>
+                  </template>
+                </select>
+                <select x-model="kb.selectedType" @change="computeRecommendation()" class="filter-select">
+                  <option value="">-- Type (all) --</option>
+                  <option value="explicit">explicit</option>
+                  <option value="sensitive">sensitive</option>
+                  <option value="sex">sex</option>
+                  <option value="penis">penis</option>
+                  <option value="toy">toy</option>
+                  <option value="orgasm">orgasm</option>
+                  <option value="pregnant">pregnant</option>
+                  <option value="lactation">lactation</option>
+                  <option value="birth">birth</option>
+                  <option value="ejac">ejac</option>
+                </select>
+              </div>
+              <template x-if="kb.recommendation">
+                <div class="card" style="background:var(--bg-input);padding:20px;">
+                  <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+                    <span class="material-icons-round" style="font-size:2rem;color:var(--accent)">emoji_events</span>
+                    <div>
+                      <div style="font-size:1.3rem;font-weight:600;" x-text="kb.recommendation.model"></div>
+                      <div style="color:var(--text-secondary);">
+                        Score: <span x-text="kb.recommendation.score" style="color:var(--accent);font-weight:600;"></span>
+                        / 5.0 |
+                        <span x-text="kb.recommendation.count"></span> samples |
+                        Fav: <span x-text="kb.recommendation.favRate"></span>%
+                      </div>
+                    </div>
+                  </div>
+                  <template x-if="kb.recommendation.topPrompt">
+                    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:8px;">
+                      <div style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:4px;">Top Prompt:</div>
+                      <code style="font-size:0.85rem;color:var(--text-primary);" x-text="kb.recommendation.topPrompt.id"></code>
+                      <span style="color:var(--text-muted);font-size:0.8rem;" x-text="'  avg ' + kb.recommendation.topPrompt.avg"></span>
+                    </div>
+                  </template>
+                </div>
+              </template>
+              <div x-show="kb.selectedGenre && !kb.recommendation" style="color:var(--text-muted);padding:12px;">
+                No rated data for this combination yet.
+              </div>
+            </div>
+          </div>
+
+          <!-- Decision Matrix -->
+          <div x-show="kb.activeTab === 'matrix' && !kb.loading">
+            <div class="card" style="padding:16px;margin-bottom:16px;">
+              <h3 style="margin-bottom:8px;">Genre x Model Matrix</h3>
+              <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:12px;">Click a genre row to drill down by type. Cell color = score (red to green).</p>
+              <div style="overflow-x:auto;">
+                <table class="kb-matrix" style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);">Genre</th>
+                      <template x-for="model in kb.matrix?.models || []">
+                        <th style="padding:6px 4px;border-bottom:1px solid var(--border);white-space:nowrap;" x-text="shortModelName(model)"></th>
+                      </template>
+                      <th style="padding:6px 8px;border-bottom:1px solid var(--border);">Best</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="genre in kb.matrix?.genres || []">
+                      <tr style="cursor:pointer;" @click="drillIntoGenre(genre)" :class="{'kb-drill-active': kb.matrixDrillGenre === genre}">
+                        <td style="padding:6px 8px;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.04);" x-text="genre"></td>
+                        <template x-for="model in kb.matrix.models">
+                          <td style="padding:4px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"
+                              :style="'background:' + matrixCellColor(kb.matrix.cells[genre]?.[model]?.avg || 0)">
+                            <span x-text="kb.matrix.cells[genre]?.[model]?.avg || '-'" style="font-weight:500;"></span>
+                            <div style="font-size:0.65rem;color:var(--text-muted);" x-text="'n=' + (kb.matrix.cells[genre]?.[model]?.count || 0)"></div>
+                          </td>
+                        </template>
+                        <td style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--accent);font-weight:600;"
+                            x-text="matrixWinner(genre)?.model ? shortModelName(matrixWinner(genre).model) : '-'"></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Drill-down by type -->
+            <template x-if="kb.matrixDrill">
+              <div class="card" style="padding:16px;">
+                <h3 style="margin-bottom:8px;" x-text="kb.matrixDrillGenre + ' - Type Breakdown'"></h3>
+                <div style="overflow-x:auto;">
+                  <table class="kb-matrix" style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+                    <thead>
+                      <tr>
+                        <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);">Type</th>
+                        <template x-for="model in kb.matrixDrill.models">
+                          <th style="padding:6px 4px;border-bottom:1px solid var(--border);white-space:nowrap;" x-text="shortModelName(model)"></th>
+                        </template>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template x-for="type in kb.matrixDrill.types">
+                        <tr>
+                          <td style="padding:6px 8px;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.04);" x-text="type"></td>
+                          <template x-for="model in kb.matrixDrill.models">
+                            <td style="padding:4px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"
+                                :style="'background:' + matrixCellColor(kb.matrixDrill.cells[type]?.[model]?.avg || 0)">
+                              <span x-text="kb.matrixDrill.cells[type]?.[model]?.avg || '-'"></span>
+                            </td>
+                          </template>
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </template>
+
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button class="back-btn" @click="copyKBMarkdown()">Copy Markdown</button>
+              <button class="back-btn" @click="copyKBJSON()">Copy JSON</button>
+            </div>
+          </div>
+
+          <!-- Prompt Library -->
+          <div x-show="kb.activeTab === 'prompts' && !kb.loading">
+            <div class="card" style="padding:16px;margin-bottom:16px;">
+              <h3 style="margin-bottom:12px;">Prompt Quality Rankings</h3>
+              <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+                <input type="text" x-model="kb.promptFilter" placeholder="Filter by genre, type, ID..."
+                       class="filter-select" style="flex:1;min-width:200px;">
+                <select x-model="kb.promptSort" class="filter-select">
+                  <option value="score">Sort: Score</option>
+                  <option value="favRate">Sort: Fav Rate</option>
+                  <option value="genre">Sort: Genre</option>
+                </select>
+              </div>
+              <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                  <thead>
+                    <tr style="border-bottom:1px solid var(--border);">
+                      <th style="text-align:left;padding:8px;">#</th>
+                      <th style="text-align:left;padding:8px;">Prompt</th>
+                      <th style="text-align:left;padding:8px;">Genre</th>
+                      <th style="text-align:left;padding:8px;">Type</th>
+                      <th style="text-align:center;padding:8px;">Avg</th>
+                      <th style="text-align:center;padding:8px;">n</th>
+                      <th style="text-align:center;padding:8px;">Fav%</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="(p, idx) in filteredPromptRankings" :key="p.id">
+                      <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                        <td style="padding:6px 8px;color:var(--text-muted);" x-text="idx + 1"></td>
+                        <td style="padding:6px 8px;font-weight:600;" x-text="p.id"></td>
+                        <td style="padding:6px 8px;" x-text="p.genre"></td>
+                        <td style="padding:6px 8px;" x-text="p.type"></td>
+                        <td style="padding:6px 8px;text-align:center;font-weight:600;" :style="'color:' + (p.avg >= 4 ? '#4caf50' : p.avg >= 3 ? '#ff9800' : '#f44336')" x-text="p.avg"></td>
+                        <td style="padding:6px 8px;text-align:center;color:var(--text-muted);" x-text="p.count"></td>
+                        <td style="padding:6px 8px;text-align:center;" x-text="p.favRate + '%'"></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end view-container -->
     </main>
   </div>
-  
+
+  <!-- ========== LIGHTBOX OVERLAY ========== -->
+  <div x-show="lightbox.open" x-cloak class="lightbox"
+       @keydown.escape.window="closeLightbox()"
+       @keydown.arrow-left.window="lightboxPrev()"
+       @keydown.arrow-right.window="lightboxNext()"
+       @keydown.s.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 5)"
+       @keydown.f.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, 2)"
+       @keydown.d.window="if(lightbox.open && !$event.target.matches('input,textarea')) quickRate(lightbox.currentImage, -1)">
+    <div class="lightbox-backdrop" @click="closeLightbox()"></div>
+
+    <!-- Carousel: prev / current / next -->
+    <div class="lb-carousel">
+      <div class="lb-side lb-prev" @click="lightboxPrev()">
+        <img :src="lbAdjacentImage(-1)?.full_url" x-show="lbAdjacentImage(-1)">
+      </div>
+
+      <div class="lb-center">
+        <img :src="lightbox.currentImage?.full_url" :alt="lightbox.currentImage?.name">
+
+        <div class="lb-top-bar">
+          <span class="lb-model-badge" x-show="lightbox.source === 'model-grid' && lightbox.currentImage?._mgModel"
+                x-text="displayModelName(lightbox.currentImage?._mgModel || '')"></span>
+          <span class="lb-counter" x-text="(lightbox.index + 1) + ' / ' + lightbox.images.length"></span>
+          <span class="lb-genre-badge" x-show="getExpGenre(lightbox.sourceExperiment || currentExperiment)"
+                x-text="getExpGenre(lightbox.sourceExperiment || currentExperiment)"></span>
+          <button class="lb-close-btn" @click="closeLightbox()">
+            <span class="material-icons-round">close</span>
+          </button>
+        </div>
+
+        <div class="lb-bottom-bar">
+          <div class="lb-rate-buttons">
+            <button class="rate-btn rate-star"
+                    :class="{'active': getImageRating(lightbox.currentImage) === 5}"
+                    @click.stop="quickRate(lightbox.currentImage, 5)" title="Best (S)">
+              <span class="rate-icon">★</span>
+            </button>
+            <button class="rate-btn rate-heart"
+                    :class="{'active': getImageRating(lightbox.currentImage) === 2}"
+                    @click.stop="quickRate(lightbox.currentImage, 2)" title="Like (F)">
+              <span class="rate-icon">♥</span>
+            </button>
+            <button class="rate-btn rate-bad"
+                    :class="{'active': getImageRating(lightbox.currentImage) === -1}"
+                    @click.stop="quickRate(lightbox.currentImage, -1)" title="Bad (D)">
+              <span class="rate-icon">👎</span>
+            </button>
+          </div>
+          <div class="lb-info-line">
+            <span x-text="(lightbox.sourceExperiment || currentExperiment)?.metadata?.model?.checkpoint || ''"></span>
+            <span class="lb-ai-score"
+                  x-show="getAestheticScore(lightbox.currentImage)"
+                  :class="{'high': getAestheticScore(lightbox.currentImage) >= 0.7, 'low': getAestheticScore(lightbox.currentImage) < 0.4}"
+                  x-text="'AI ' + ((getAestheticScore(lightbox.currentImage) || 0) * 100).toFixed(0)"></span>
+            <span x-text="lightbox.currentImage?.name || ''"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lb-side lb-next" @click="lightboxNext()">
+        <img :src="lbAdjacentImage(1)?.full_url" x-show="lbAdjacentImage(1)">
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js" defer></script>
+  <script src="js/utils.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/lightbox.js"></script>
+  <script src="js/compare.js"></script>
+  <script src="js/model-grid.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/knowledge-base.js"></script>
+  <script src="js/book.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
