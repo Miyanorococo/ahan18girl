@@ -57,6 +57,27 @@ us-east-1（バージニア）。GPUスポット価格が最安。
 **不採用: Trainium / Inferentia**
 ComfyUIおよびカスタムノード群（ControlNet, ADetailer, IP-Adapter, PuLID, SUPIR）がすべてCUDA専用。Neuron SDK対応なし。バッチ量産フェーズで再評価。
 
+#### AMI
+| バージョン | AMI ID | 備考 |
+|---|---|---|
+| **v2（推奨）** | `ami-0224a0f133066816e` | systemd disabled + 全依存プリインストール（2026-02-17） |
+| v1（旧） | `ami-0ddff4465ad04bfa5` | systemd 有効（KSampler ハング問題あり、使用非推奨） |
+
+**v2 AMI のプリインストール内容:**
+- ComfyUI 0.13.0 + NVIDIAドライバ 580.126.09 + CUDA 13.0 + PyTorch 2.10+cu128
+- systemd comfyui.service: **disabled + masked**（UserData でのみ起動する設計）
+- venv パッケージ: boto3, Pillow, dill, opencv-python-headless, onnxruntime, ultralytics(--no-deps), scipy, scikit-image
+- カスタムノード: Impact-Pack + **Impact-Subpack** + IPAdapter_plus + controlnet_aux + InstantID + PuLID + UltimateSDUpscale + segment_anything + rgthree + was-node-suite
+- 制御モデル: IP-Adapter Plus SDXL, ControlNet Union SDXL, DWPose (yolox_l + dw-ll_ucoco_384), face_yolov8m, SAM (sam_vit_b), 4x Remacri upscaler
+
+**⚠️ ComfyUI 起動方法（systemd 廃止済み）:**
+```bash
+# UserData / SSM で手動起動
+cd /data/ComfyUI
+source venv/bin/activate
+python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch &
+```
+
 #### バッチ評価（13モデル並列） — AWS Batch + Step Functions
 
 EC2 Fleet + bash スクリプトの問題（UserData二重base64、ドライバ欠如、孤立EBS、手動リトライ等）を構造的に解決。**本番稼働中（2026-02-16テスト成功、13モデル並列 SUCCEEDED）。**
