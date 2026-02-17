@@ -66,7 +66,33 @@ python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch &
 - `--disable-async-offload` 追加でドライバクラッシュ発生（nvidia-smi 通信失敗）
 - **真の根本原因: NVIDIA Driver 580.126.09 がモデルロード時にクラッシュ**
 - nvidia-smi は ComfyUI 起動時OK → モデルウェイトのVRAM転送で通信不能に
-- Driver 550 へのダウングレードを検証中
+- Driver ダウングレードは不要（現行 580 で動作確認）
+- **--disable-async-offload はドライバクラッシュを引き起こす。使わない**
+
+## 真の根本原因（2026-02-18 確定）
+**unattended-upgrades がカーネルを自動更新 → 自動リブート → NVIDIA DKMS ドライバが新カーネル用に未ビルド → nvidia-smi 通信失敗**
+- 全ての「ドライバクラッシュ」「KSampler ハング」はこれが原因
+- UserData での無効化は間に合わない（cloud-init config ステージで既に実行される）
+- **AMI レベルで mask + カーネル pin が必須**
+
+## AMI v3 (ami-0af264397e3c4aba7)
+- unattended-upgrades: masked
+- unattended-upgrades-shutdown: masked
+- カーネル pinned: 6.8.0-1045-aws
+- systemd comfyui: disabled + masked
+- 全 deps プリインストール
+
+## 最終解決構成（2026-02-18）
+```bash
+systemctl stop comfyui
+pkill -f "main.py.*8188"
+sleep 15  # EBS initialization
+python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch --gpu-only &
+# KSampler readiness check (/object_info/KSampler)
+# warmup_model() (64x64, 1-step dummy prompt)
+# Then normal generation
+```
+L2W テスト 9/9 画像生成成功。問題は完全に解決。
 
 ## 成功パターン（唯一の64枚バッチ成功）
 1. boto3 install
