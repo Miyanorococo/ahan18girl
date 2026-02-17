@@ -2685,19 +2685,22 @@ body {
 
 /* === Book Editor: Dedicated Insert Zones between Timeline Slots === */
 .be-timeline-insert-zone {
-  flex: 0 0 20px;
+  flex: 0 0 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, flex-basis 0.2s;
   cursor: pointer;
+  overflow: hidden;
 }
-/* Show insert zones on timeline hover or when a zone is active (being dragged over) */
-.be-timeline:hover .be-timeline-insert-zone {
+/* Expand insert zones only during drag (detected via .dragging class on timeline) */
+.be-timeline.dragging .be-timeline-insert-zone {
+  flex: 0 0 24px;
   opacity: 0.4;
 }
 .be-timeline-insert-zone.active {
+  flex: 0 0 24px;
   opacity: 1 !important;
 }
 .be-insert-plus {

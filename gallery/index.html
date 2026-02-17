@@ -944,7 +944,11 @@
               <button class="btn-ghost" style="padding:4px 12px;font-size:0.75rem" @click="bookClearMultiSelect()">Clear selection</button>
             </div>
 
-            <div class="be-timeline">
+            <div class="be-timeline"
+                 @dragover="$el.classList.add('dragging')"
+                 @dragleave="if(!$el.contains($event.relatedTarget)) $el.classList.remove('dragging')"
+                 @drop="$el.classList.remove('dragging')"
+                 @dragend.window="document.querySelectorAll('.be-timeline').forEach(t=>t.classList.remove('dragging'))"
               <div class="be-timeline-insert-zone"
                    @dragover.prevent="$event.dataTransfer.dropEffect = 'copy'; $event.currentTarget.classList.add('active')"
                    @dragleave="$event.currentTarget.classList.remove('active')"
