@@ -755,6 +755,183 @@ def score_all_experiments(bucket, force=False):
     rebuild_gallery_index(bucket)
 
 
+def build_ipadapter_workflow(checkpoint, positive, negative, seed, width, height,
+                              steps, cfg, sampler, scheduler, clip_skip,
+                              ref_image, ipa_weight, ipa_model="ip-adapter-plus_sdxl_vit-h.safetensors",
+                              clip_vision="CLIP-ViT-bigG-14-laion2B-39B-b160k.safetensors"):
+    """Build IP-Adapter workflow (txt2img + reference image for character consistency)."""
+    wf = build_txt2img_workflow(checkpoint, positive, negative, seed, width, height,
+                                 steps, cfg, sampler, scheduler, clip_skip)
+    # Add IP-Adapter nodes
+    wf["20"] = {"class_type": "IPAdapterModelLoader", "inputs": {"ipadapter_file": ipa_model}}
+    wf["21"] = {"class_type": "CLIPVisionLoader", "inputs": {"clip_name": clip_vision}}
+    wf["22"] = {"class_type": "LoadImage", "inputs": {"image": ref_image}}
+    wf["23"] = {"class_type": "IPAdapterAdvanced", "inputs": {
+        "model": ["1", 0], "ipadapter": ["20", 0], "image": ["22", 0],
+        "clip_vision": ["21", 0], "weight": ipa_weight, "weight_type": "linear",
+        "combine_embeds": "concat", "start_at": 0.0, "end_at": 1.0, "embeds_scaling": "V only"}}
+    # Redirect KSampler model input to IP-Adapter output
+    wf["6"]["inputs"]["model"] = ["23", 0]
+    return wf
+
+
+def build_controlnet_workflow(checkpoint, positive, negative, seed, width, height,
+                               steps, cfg, sampler, scheduler, clip_skip,
+                               control_image, cn_model, strength=0.6):
+    """Build ControlNet workflow (txt2img + control signal)."""
+    wf = build_txt2img_workflow(checkpoint, positive, negative, seed, width, height,
+                                 steps, cfg, sampler, scheduler, clip_skip)
+    wf["20"] = {"class_type": "ControlNetLoader", "inputs": {"control_net_name": cn_model}}
+    wf["21"] = {"class_type": "LoadImage", "inputs": {"image": control_image}}
+    wf["22"] = {"class_type": "ControlNetApplyAdvanced", "inputs": {
+        "positive": ["3", 0], "negative": ["4", 0], "control_net": ["20", 0],
+        "image": ["21", 0], "strength": strength, "start_percent": 0.0, "end_percent": 1.0}}
+    wf["6"]["inputs"]["positive"] = ["22", 0]
+    wf["6"]["inputs"]["negative"] = ["22", 1]
+    return wf
+
+
+def run_layer2_tests(checkpoint="wai-nsfw-illustrious-v16.safetensors"):
+    """Run Layer 2 control technology tests using proven generate-eval API."""
+    import shutil
+
+    log.info("=== Layer 2 Batch Test (via generate-eval.py) ===")
+    s3 = boto3.client("s3")
+    S3_PREFIX = "experiments/layer2-batch"
+    seeds = [42, 123, 456]
+    generated = 0
+    failed = 0
+    clip_skip = 2
+    W, H = 1024, 1536
+
+    def run_one(wf, prefix, timeout=600):
+        nonlocal generated, failed
+        try:
+            pid = queue_prompt(wf)
+            result = wait_for_completion(pid, timeout=timeout)
+            outputs = result.get("outputs", {})
+            for nid in ["8", "7"]:
+                for img in outputs.get(nid, {}).get("images", []):
+                    img_data = get_image(img["filename"], img.get("subfolder", ""))
+                    if img_data:
+                        # Save locally and upload to S3
+                        local = f"{OUTPUT_DIR}/{prefix}.png"
+                        os.makedirs(os.path.dirname(local), exist_ok=True)
+                        with open(local, "wb") as f:
+                            f.write(img_data)
+                        s3.put_object(Bucket=S3_BUCKET, Key=f"{S3_PREFIX}/{prefix}.png",
+                                     Body=img_data, ContentType="image/png")
+                        generated += 1
+                        log.info("  OK: %s", prefix)
+                        return local
+        except Exception as e:
+            log.error("  FAIL: %s - %s", prefix, e)
+        failed += 1
+        return None
+
+    # === Reference images ===
+    log.info("--- Reference Images ---")
+    ref_prompts = [
+        ("1girl, solo, standing, school uniform, full body, white background, smile, brown hair, long hair", "ref_stand"),
+        ("1girl, solo, sitting on chair, school uniform, classroom, looking at viewer, brown hair", "ref_sit"),
+        ("nsfw, explicit, 1girl, solo, lying on bed, nude, from above, bedroom, blush, brown hair, large breasts", "ref_nsfw"),
+    ]
+    for prompt, name in ref_prompts:
+        pos = f"masterpiece, best quality, {prompt}"
+        neg = "bad quality, worst quality, bad anatomy, bad hands"
+        wf = build_txt2img_workflow(checkpoint, pos, neg, 42, W, H, 25, 7, "euler_ancestral", "sgm_uniform", clip_skip)
+        local = run_one(wf, f"L2B_{name}")
+        if local:
+            os.makedirs("/data/ComfyUI/input", exist_ok=True)
+            shutil.copy2(local, f"/data/ComfyUI/input/{name}.png")
+
+    # === IP-Adapter: 5 weights × 3 scenes × 3 seeds ===
+    log.info("--- #10 IP-Adapter ---")
+    ipa_scenes = [
+        ("1girl, running, park, cherry blossom, school uniform, wind, brown hair", "run"),
+        ("1girl, swimming pool, swimsuit, summer, blue sky, brown hair", "pool"),
+        ("nsfw, 1girl, onsen, nude, hot spring, steam, brown hair", "onsen"),
+    ]
+    for weight in [0.2, 0.3, 0.4, 0.5, 0.7]:
+        for prompt, scene in ipa_scenes:
+            for seed in seeds:
+                pos = f"masterpiece, best quality, {prompt}"
+                neg = "bad quality, worst quality"
+                wf = build_ipadapter_workflow(checkpoint, pos, neg, seed, W, H,
+                    25, 7, "euler_ancestral", "sgm_uniform", clip_skip,
+                    "ref_stand.png", weight)
+                run_one(wf, f"L2B_ipa_w{str(weight).replace('.','')}__{scene}_s{seed}")
+
+    # === ControlNet Union: 3 strengths × 3 scenes ===
+    log.info("--- #28 ControlNet Union ---")
+    for strength in [0.3, 0.5, 0.8]:
+        for prompt, name in [
+            ("1girl, bikini, beach, sunset, brown hair", "beach"),
+            ("1girl, kimono, shrine, autumn, brown hair", "shrine"),
+            ("nsfw, 1girl, nude, bathroom, steam, brown hair", "bath"),
+        ]:
+            pos = f"masterpiece, best quality, {prompt}"
+            neg = "bad quality, worst quality"
+            wf = build_controlnet_workflow(checkpoint, pos, neg, 42, W, H,
+                25, 7, "euler_ancestral", "sgm_uniform", clip_skip,
+                "ref_stand.png", "controlnet-union-sdxl.safetensors", strength)
+            run_one(wf, f"L2B_cn_s{str(strength).replace('.','')}__{name}")
+
+    # === DWPose: 3 transfers × 3 seeds ===
+    log.info("--- #8 DWPose ---")
+    # Extract pose
+    pose_wf = {
+        "10": {"class_type": "LoadImage", "inputs": {"image": "ref_stand.png"}},
+        "11": {"class_type": "DWPreprocessor", "inputs": {
+            "image": ["10", 0], "detect_hand": "enable", "detect_body": "enable",
+            "detect_face": "enable", "resolution": 1024}},
+        "8": {"class_type": "SaveImage", "inputs": {"images": ["11", 0], "filename_prefix": "L2B_pose"}},
+    }
+    pose_local = run_one(pose_wf, "L2B_pose_extract")
+    if pose_local:
+        shutil.copy2(pose_local, "/data/ComfyUI/input/pose_ref.png")
+        for prompt, name in [
+            ("1girl, bikini, beach, sunset, brown hair", "beach"),
+            ("1girl, kimono, tea ceremony, tatami, brown hair", "kimono"),
+        ]:
+            for seed in seeds:
+                pos = f"masterpiece, best quality, {prompt}"
+                neg = "bad quality, worst quality"
+                wf = build_controlnet_workflow(checkpoint, pos, neg, seed, W, H,
+                    25, 7, "euler_ancestral", "sgm_uniform", clip_skip,
+                    "pose_ref.png", "control-lora-openposeXL2-rank256.safetensors", 0.7)
+                run_one(wf, f"L2B_dwpose_{name}_s{seed}")
+
+    # === Depth: 3 transfers × 3 seeds ===
+    log.info("--- #9 Depth ---")
+    depth_wf = {
+        "10": {"class_type": "LoadImage", "inputs": {"image": "ref_stand.png"}},
+        "11": {"class_type": "DepthAnythingPreprocessor", "inputs": {
+            "image": ["10", 0], "ckpt_name": "depth_anything_vitl14.pth", "resolution": 1024}},
+        "8": {"class_type": "SaveImage", "inputs": {"images": ["11", 0], "filename_prefix": "L2B_depth"}},
+    }
+    depth_local = run_one(depth_wf, "L2B_depth_extract")
+    if depth_local:
+        shutil.copy2(depth_local, "/data/ComfyUI/input/depth_ref.png")
+        for prompt, name in [
+            ("1girl, maid outfit, elegant room, chandelier, brown hair", "maid"),
+            ("1girl, nurse uniform, hospital corridor, brown hair", "nurse"),
+        ]:
+            for seed in seeds:
+                pos = f"masterpiece, best quality, {prompt}"
+                neg = "bad quality, worst quality"
+                wf = build_controlnet_workflow(checkpoint, pos, neg, seed, W, H,
+                    25, 7, "euler_ancestral", "sgm_uniform", clip_skip,
+                    "depth_ref.png", "controlnet-union-sdxl.safetensors", 0.5)
+                run_one(wf, f"L2B_depth_{name}_s{seed}")
+
+    log.info("=== Layer 2 COMPLETE: %d generated, %d failed ===", generated, failed)
+    # Upload summary
+    summary = f"COMPLETE: {generated} generated, {failed} failed"
+    s3.put_object(Bucket=S3_BUCKET, Key=f"{S3_PREFIX}/status.txt",
+                  Body=summary.encode(), ContentType="text/plain")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Batch eval image generator")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be generated")
@@ -766,6 +943,7 @@ def main():
     parser.add_argument("--rebuild-index", action="store_true", help="Rebuild gallery index.json from S3 metadata")
     parser.add_argument("--score-all", action="store_true", help="Score all unscored experiments with anime-aesthetic ONNX")
     parser.add_argument("--force-score", action="store_true", help="Re-score all experiments (even already scored)")
+    parser.add_argument("--layer2-test", action="store_true", help="Run Layer 2 control technology batch tests")
     args = parser.parse_args()
 
     if args.status:
@@ -778,6 +956,13 @@ def main():
 
     if args.rebuild_index:
         rebuild_gallery_index(S3_BUCKET)
+        sys.exit(0)
+
+    if args.layer2_test:
+        if not check_status():
+            log.error("ComfyUI not reachable.")
+            sys.exit(1)
+        run_layer2_tests()
         sys.exit(0)
 
     config = load_prompts(args.prompts_file)
