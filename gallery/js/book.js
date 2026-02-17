@@ -620,8 +620,12 @@ function bookMixin() {
     bookHandleTimelineDrop(event, targetIdx) {
       event.preventDefault();
       const el = event.currentTarget;
+
+      // Check insert indicators BEFORE removing them
+      const isInsertBefore = el.classList.contains('drag-insert-before');
+      const isInsertAfter = el.classList.contains('drag-insert-after');
+
       el.classList.remove('drag-over', 'drag-insert-before', 'drag-insert-after');
-      // Clear insert indicators from all slots
       document.querySelectorAll('.be-timeline-slot').forEach(s => s.classList.remove('drag-insert-before', 'drag-insert-after'));
 
       let data;
@@ -630,9 +634,8 @@ function bookMixin() {
       } catch { return; }
 
       if (data.type === 'candidate') {
-        const isInsertBefore = el.classList.contains('drag-insert-before');
-        const isInsertAfter = el.classList.contains('drag-insert-after');
         const img = { full_url: data.full_url, thumb_url: data.thumb_url, name: data.name };
+        // isInsertBefore/isInsertAfter already captured above
 
         if (isInsertBefore || isInsertAfter) {
           // INSERT: duplicate the source page at the insert position with the dragged image selected
