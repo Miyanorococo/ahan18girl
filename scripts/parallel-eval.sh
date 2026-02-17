@@ -264,13 +264,27 @@ aws s3 cp "s3://${S3_BUCKET}/eval-scripts/generate-eval.py" /tmp/eval-work/scrip
 aws s3 cp "s3://${S3_BUCKET}/eval-scripts/eval-prompts.json" /tmp/eval-work/assets/templates/ --region ${REGION}
 
 # --- Run generation ---
-echo "Starting generation: ${MODELS}"
+# Check EvalMode tag for special modes (layer2-test, etc.)
+EVAL_MODE=$(aws ec2 describe-tags --region ${REGION} \
+    --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=EvalMode" \
+    --query 'Tags[0].Value' --output text 2>/dev/null || echo "normal")
+
 cd /tmp/eval-work
-COMFYUI_URL=http://127.0.0.1:8188 \
-S3_BUCKET=${S3_BUCKET} \
-python3 scripts/generate-eval.py --models "${MODELS}" 2>&1 || {
-    echo "ERROR: generate-eval.py failed with exit code $?"
-}
+if [ "$EVAL_MODE" = "layer2" ]; then
+    echo "Starting Layer 2 batch test"
+    COMFYUI_URL=http://127.0.0.1:8188 \
+    S3_BUCKET=${S3_BUCKET} \
+    python3 scripts/generate-eval.py --layer2-test 2>&1 || {
+        echo "ERROR: --layer2-test failed with exit code $?"
+    }
+else
+    echo "Starting generation: ${MODELS}"
+    COMFYUI_URL=http://127.0.0.1:8188 \
+    S3_BUCKET=${S3_BUCKET} \
+    python3 scripts/generate-eval.py --models "${MODELS}" 2>&1 || {
+        echo "ERROR: generate-eval.py failed with exit code $?"
+    }
+fi
 
 echo "=== Generation complete ==="
 date -u
