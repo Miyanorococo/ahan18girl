@@ -46,8 +46,12 @@ function bookMixin() {
       regenPollTimer: null,
 
       // Generation versioning (Feature 5)
-      generations: [],        // ['R1', 'R2', 'R3'] - detected from loaded pages
-      selectedGen: 'all',     // 'all' | 'R1' | 'R1' | 'R2' etc.
+      generations: [],        // ['R0', 'R2', 'R3'] - detected from loaded pages
+      selectedGen: 'all',     // 'all' | 'R0' | 'R0' | 'R2' etc.
+
+      // Undo/Redo
+      _undoStack: [],         // Array of state snapshots
+      _redoStack: [],
 
       // Shelf (Feature 6)
       shelf: [],              // Array of page objects removed from timeline
@@ -219,7 +223,7 @@ function bookMixin() {
         if (!sceneMap[sceneKey]) sceneMap[sceneKey] = { models: {}, originalPid: pid };
         // Keep the original (non-regen) pid as the primary
         const gen = this.bookGetGeneration(pid);
-        if (gen === 'R1') sceneMap[sceneKey].originalPid = pid;
+        if (gen === 'R0') sceneMap[sceneKey].originalPid = pid;
         // Use model+gen as key to avoid overwriting original with regen
         const modelGenKey = `${exp.model}__${gen}`;
         sceneMap[sceneKey].models[modelGenKey] = { ...exp, _generation: gen };
@@ -261,7 +265,7 @@ function bookMixin() {
           if (img._seed) seedSet.add(img._seed);
         }
         if (!pageMap[sceneKey]) pageMap[sceneKey] = [];
-        pageMap[sceneKey].push({ model, experiment: exp, detail, images, _generation: exp._generation || 'R1' });
+        pageMap[sceneKey].push({ model, experiment: exp, detail, images, _generation: exp._generation || 'R0' });
       }
 
       const pages = [];
@@ -372,6 +376,7 @@ function bookMixin() {
 
     /** Select an image for a specific page in the editor */
     bookSelectImage(pageId, model, seed, img) {
+      this.bookPushUndo();
       this.book.selections = {
         ...this.book.selections,
         [pageId]: {
@@ -469,7 +474,7 @@ function bookMixin() {
     /** Check if a page has regen candidates (R1, R2, etc.) */
     bookPageHasRegen(page) {
       if (!page || !page.models) return false;
-      return page.models.some(m => m._generation && m._generation !== 'R1');
+      return page.models.some(m => m._generation && m._generation !== 'R0');
     },
 
     /** Get the thumbnail for a timeline slot (selected image or first available) */
@@ -486,6 +491,7 @@ function bookMixin() {
 
     /** Auto-select: for each page, pick the highest-rated image (or first) */
     bookAutoSelect() {
+      this.bookPushUndo();
       for (const page of this.book.pages) {
         // Skip pages that already have a selection
         if (this.book.selections[page.id]) continue;
@@ -663,6 +669,7 @@ function bookMixin() {
 
     /** Insert page from fromIdx at toIdx position (shift, not swap) */
     bookHandleTimelineReorder(fromIdx, toIdx) {
+      this.bookPushUndo();
       if (fromIdx === toIdx) return;
       const pages = [...this.book.pages];
       const [moved] = pages.splice(fromIdx, 1);
@@ -716,7 +723,7 @@ function bookMixin() {
       const gen = this.bookGetGeneration(pageId);
       const sceneMatch = pageId.match(/(S\d+[a-z]?)/i);
       const scene = sceneMatch ? sceneMatch[1] : pageId.slice(-6);
-      if (gen !== 'R1') {
+      if (gen !== 'R0') {
         return `${gen}:${scene}`;
       }
       return scene;
@@ -760,6 +767,7 @@ function bookMixin() {
 
     /** Remove a page from the timeline and add to shelf */
     bookRemovePage(idx) {
+      this.bookPushUndo();
       const pages = [...this.book.pages];
       if (idx < 0 || idx >= pages.length) return;
       const [removed] = pages.splice(idx, 1);
@@ -787,6 +795,7 @@ function bookMixin() {
 
     /** Restore a shelf item back to the end of the timeline */
     bookRestoreFromShelf(idx) {
+      this.bookPushUndo();
       const shelf = [...this.book.shelf];
       if (idx < 0 || idx >= shelf.length) return;
       const [item] = shelf.splice(idx, 1);
@@ -853,10 +862,10 @@ function bookMixin() {
      *  "0216a_S08f_climax" -> "R1"
      */
     bookGetGeneration(pageId) {
-      if (!pageId) return 'R1';
+      if (!pageId) return 'R0';
       const match = pageId.match(/_R(\d+)_/);
       // No prefix = R1 (original), R2 in S3 = R2 display, R3 in S3 = R3 display
-      return match ? `R${match[1]}` : 'R1';
+      return match ? `R${match[1]}` : 'R0';
     },
 
     /** Extract the scene part from a pageId, stripping bookId and generation prefix.
@@ -879,10 +888,10 @@ function bookMixin() {
         const gen = this.bookGetGeneration(page.id);
         genSet.add(gen);
       }
-      // Sort: 'R1' first, then R1, R2, R3...
+      // Sort: 'R0' first, then R1, R2, R3...
       const gens = [...genSet].sort((a, b) => {
-        if (a === 'R1') return -1;
-        if (b === 'R1') return 1;
+        if (a === 'R0') return -1;
+        if (b === 'R0') return 1;
         const na = parseInt(a.replace('R', ''));
         const nb = parseInt(b.replace('R', ''));
         return na - nb;
@@ -903,7 +912,7 @@ function bookMixin() {
       const modelMap = {};
       for (const modelData of page.models) {
         const name = modelData.model;
-        const gen = modelData._generation || 'R1';
+        const gen = modelData._generation || 'R0';
         if (!modelMap[name]) {
           modelMap[name] = { model: name, generations: {}, activeGen: null };
         }
@@ -922,7 +931,7 @@ function bookMixin() {
         const pref = this.book._modelGenPrefs[name];
         // Default to latest regen, or original if no regen
         // Default to latest (highest R number)
-        const latest = gens[gens.length - 1] || 'R1';
+        const latest = gens[gens.length - 1] || 'R0';
         group.activeGen = (pref && gens.includes(pref)) ? pref : latest;
         group.availableGens = gens;
       }
@@ -942,6 +951,75 @@ function bookMixin() {
           })),
         };
       }).filter(g => g && g.images.length > 0);
+    },
+
+    // ==========================================
+    // Undo / Redo
+    // ==========================================
+
+    /** Save current state to undo stack */
+    bookPushUndo() {
+      const snapshot = {
+        pages: JSON.parse(JSON.stringify(this.book.pages.map(p => p.id))),
+        selections: JSON.parse(JSON.stringify(this.book.selections)),
+        shelf: JSON.parse(JSON.stringify(this.book.shelf || [])),
+        currentPage: this.book.currentPage,
+      };
+      this.book._undoStack = [...this.book._undoStack, snapshot];
+      if (this.book._undoStack.length > 50) this.book._undoStack.shift(); // limit
+      this.book._redoStack = []; // clear redo on new action
+    },
+
+    /** Restore state from a snapshot */
+    _bookRestoreSnapshot(snapshot) {
+      if (!snapshot) return;
+      // Restore page order (re-find page objects by id)
+      const pageMap = {};
+      for (const p of this.book.pages) pageMap[p.id] = p;
+      for (const p of (this.book.shelf || [])) pageMap[p.id] = p;
+      const restoredPages = snapshot.pages.map(id => pageMap[id]).filter(Boolean);
+      // Pages not in restored list go to shelf
+      const restoredSet = new Set(snapshot.pages);
+      const restoredShelf = snapshot.shelf.map(id => pageMap[id]).filter(Boolean);
+
+      this.book.pages = restoredPages;
+      this.book.selections = snapshot.selections;
+      this.book.shelf = restoredShelf;
+      this.book.currentPage = Math.min(snapshot.currentPage, restoredPages.length - 1);
+      this.bookSaveSelections();
+      this.bookSaveShelf();
+    },
+
+    bookUndo() {
+      if (this.book._undoStack.length === 0) return;
+      // Save current state to redo
+      const current = {
+        pages: this.book.pages.map(p => p.id),
+        selections: JSON.parse(JSON.stringify(this.book.selections)),
+        shelf: (this.book.shelf || []).map(p => p.id),
+        currentPage: this.book.currentPage,
+      };
+      this.book._redoStack = [...this.book._redoStack, current];
+      // Restore previous state
+      const prev = this.book._undoStack.pop();
+      this.book._undoStack = [...this.book._undoStack];
+      this._bookRestoreSnapshot(prev);
+    },
+
+    bookRedo() {
+      if (this.book._redoStack.length === 0) return;
+      // Save current to undo
+      const current = {
+        pages: this.book.pages.map(p => p.id),
+        selections: JSON.parse(JSON.stringify(this.book.selections)),
+        shelf: (this.book.shelf || []).map(p => p.id),
+        currentPage: this.book.currentPage,
+      };
+      this.book._undoStack = [...this.book._undoStack, current];
+      // Restore next state
+      const next = this.book._redoStack.pop();
+      this.book._redoStack = [...this.book._redoStack];
+      this._bookRestoreSnapshot(next);
     },
 
     /** Switch the active generation for a specific model in candidates */
@@ -973,6 +1051,7 @@ function bookMixin() {
 
     /** Apply a rating to the current preview image on all multi-selected pages */
     bookBatchRate(score) {
+      this.bookPushUndo();
       if (this.book.selectedPages.length === 0) return;
 
       // Get the current preview image to identify which image to rate on other pages

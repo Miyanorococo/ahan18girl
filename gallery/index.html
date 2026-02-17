@@ -774,14 +774,21 @@
 
           <!-- ===== EDITOR MODE ===== -->
           <div x-show="book.editorMode" x-cloak
-               @keydown.delete.window="if(book.editorMode && !book.editingPrompt && !$event.target.matches('input,textarea')) bookRemovePage(book.currentPage)"
-               @keydown.backspace.window="if(book.editorMode && !book.editingPrompt && !$event.target.matches('input,textarea')) bookRemovePage(book.currentPage)">
+               @keydown.window="(() => {
+                 if (!book.editorMode || $event.target.matches('input,textarea')) return;
+                 const k = $event.key, ctrl = $event.ctrlKey || $event.metaKey;
+                 if ((k === 'Delete' || k === 'Backspace') && !book.editingPrompt) { bookRemovePage(book.currentPage); }
+                 else if (ctrl && k === 'z' && !$event.shiftKey) { $event.preventDefault(); bookUndo(); }
+                 else if (ctrl && (k === 'y' || (k === 'z' && $event.shiftKey) || (k === 'Z'))) { $event.preventDefault(); bookRedo(); }
+               })()"
             <div class="be-toolbar">
               <div class="be-progress">
                 <span x-text="bookSelectionCount() + ' / ' + book.pages.length + ' pages'"></span>
                 <div class="be-progress-bar"><div class="be-progress-fill" :style="'width:' + (book.pages.length ? (bookSelectionCount() / book.pages.length * 100) : 0) + '%'"></div></div>
               </div>
               <div class="be-actions">
+                <button class="btn-ghost" @click="bookUndo()" :disabled="book._undoStack.length === 0" title="Undo (Ctrl+Z)">↩</button>
+                <button class="btn-ghost" @click="bookRedo()" :disabled="book._redoStack.length === 0" title="Redo (Ctrl+Y)">↪</button>
                 <button class="btn-ghost" @click="bookAutoSelect()">Auto</button>
                 <button class="btn-ghost" @click="bookClearSelections()">Clear</button>
                 <button class="btn-ghost" @click="bookExportCurrentImage()">DL Current</button>
