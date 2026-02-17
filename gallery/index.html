@@ -838,11 +838,22 @@
               <div class="be-preview">
                 <div class="be-preview-header">
                   <button class="btn-ghost" @click="bookPrev()" :disabled="book.currentPage <= 0" style="padding:4px 8px">&larr;</button>
-                  <span x-text="bookShortPageId(bookCurrentPage()?.id || '') + ' — ' + (bookCurrentPage()?.summary || '')"></span>
+                  <span class="be-page-num" x-text="'P.' + (book.currentPage + 1)"></span>
+                  <span class="be-page-scene" x-text="bookShortPageId(bookCurrentPage()?.id || '')"></span>
+                  <span class="be-page-summary" x-text="bookCurrentPage()?.summary || ''"></span>
                   <button class="btn-ghost" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1" style="padding:4px 8px">&rarr;</button>
                 </div>
                 <div class="be-preview-image" @dragover.prevent="$event.dataTransfer.dropEffect='copy'" @dragenter="bookDragEnter($event)" @dragleave="bookDragLeave($event)" @drop="bookHandlePreviewDrop($event)">
                   <img :src="bookEditorPreviewImage()?.full_url || bookEditorPreviewImage()?.thumb_url || ''" alt="Preview">
+                  <!-- Rating overlay on main preview -->
+                  <div class="be-preview-rating"
+                       x-show="getImageRating(bookEditorPreviewImage())"
+                       x-text="getImageRating(bookEditorPreviewImage()) >= 5 ? '★' : getImageRating(bookEditorPreviewImage()) >= 2 ? '♥' : getImageRating(bookEditorPreviewImage()) < 0 ? '👎' : ''"
+                       :class="{
+                         'rating-star': getImageRating(bookEditorPreviewImage()) >= 5,
+                         'rating-heart': getImageRating(bookEditorPreviewImage()) >= 2 && getImageRating(bookEditorPreviewImage()) < 5,
+                         'rating-bad': getImageRating(bookEditorPreviewImage()) < 0
+                       }"></div>
                   <div class="be-preview-info" x-show="bookGetSelection(bookCurrentPage()?.id)">
                     <span x-text="displayModelName(bookGetSelection(bookCurrentPage()?.id)?.model || '')"></span>
                     <span x-text="'seed ' + (bookGetSelection(bookCurrentPage()?.id)?.seed || '')"></span>
