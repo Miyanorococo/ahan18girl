@@ -1165,19 +1165,21 @@ function bookMixin() {
 
     /** Fetch an image and return as a data URL */
     async _fetchImageAsDataURL(url) {
-      const response = await fetch(url);
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) throw new Error(`Fetch failed: ${response.status} ${url}`);
       const blob = await response.blob();
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
+        reader.onerror = () => reject(new Error('FileReader failed'));
         reader.readAsDataURL(blob);
       });
     },
 
     /** Fetch an image and return as blob */
     async _fetchImageAsBlob(url) {
-      const response = await fetch(url);
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) throw new Error(`Fetch failed: ${response.status} ${url}`);
       return response.blob();
     },
 
@@ -1268,7 +1270,7 @@ function bookMixin() {
 
       } catch (e) {
         console.error('PDF export failed:', e);
-        alert('PDF export failed: ' + e.message);
+        alert('PDF export failed: ' + (e?.message || e || 'Unknown error'));
       } finally {
         this.book.exporting = false;
         this.book.exportProgress = '';
@@ -1316,7 +1318,7 @@ function bookMixin() {
 
       } catch (e) {
         console.error('ZIP export failed:', e);
-        alert('ZIP export failed: ' + e.message);
+        alert('ZIP export failed: ' + (e?.message || e || 'Unknown error'));
       } finally {
         this.book.exporting = false;
         this.book.exportProgress = '';
