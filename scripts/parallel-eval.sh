@@ -231,7 +231,7 @@ sleep 15
 # --- Start ComfyUI ---
 cd /data/ComfyUI
 source venv/bin/activate
-python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch --gpu-only --disable-async-offload --normalvram &
+python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch --gpu-only --disable-async-offload &
 COMFYUI_PID=$!
 
 echo "Waiting for ComfyUI..."
