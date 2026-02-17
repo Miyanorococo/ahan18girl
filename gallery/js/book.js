@@ -855,8 +855,8 @@ function bookMixin() {
     bookGetGeneration(pageId) {
       if (!pageId) return 'R1';
       const match = pageId.match(/_R(\d+)_/);
-      // Original (no Rn prefix) = R1, first regen (R1 in prompt) = R2, etc.
-      return match ? `R${parseInt(match[1]) + 1}` : 'R1';
+      // No prefix = R1 (original), R2 in S3 = R2 display, R3 in S3 = R3 display
+      return match ? `R${match[1]}` : 'R1';
     },
 
     /** Extract the scene part from a pageId, stripping bookId and generation prefix.

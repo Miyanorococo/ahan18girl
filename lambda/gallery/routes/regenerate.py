@@ -114,10 +114,10 @@ def _detect_next_generation(s3, book_id):
 
     Looks at experiment directories under experiments/ in S3 to find prompt_ids
     that contain R{n}_ prefixes for this book.
-    Returns 1 if no regen generations exist yet.
+    Returns 2 if no regen generations exist yet (R1 = original, R2 = first regen).
     """
 
-    max_gen = 0
+    max_gen = 1  # Start at 1 so first regen is R2 (R1 = original display name)
     prefix = "gallery/experiments/"
 
     try:
