@@ -205,16 +205,24 @@ function bookMixin() {
         return m && m[1] === bookId;
       });
 
-      // Group by scene
+      // Group by scene (merge regen into original page)
+      // e.g., 0216a_S08f_climax and 0216a_R1_S08f_climax → same scene "S08f_climax"
       const sceneMap = {};
       const modelSet = new Set();
       const seedSet = new Set();
 
       for (const exp of bookExps) {
         const pid = exp.prompt_id || '';
-        if (!sceneMap[pid]) sceneMap[pid] = { models: {} };
+        // Get the scene key: strip bookId and Rn_ prefix
+        const sceneKey = this.bookGetSceneId(pid);
+        if (!sceneMap[sceneKey]) sceneMap[sceneKey] = { models: {}, originalPid: pid };
+        // Keep the original (non-regen) pid as the primary
+        const gen = this.bookGetGeneration(pid);
+        if (gen === 'original') sceneMap[sceneKey].originalPid = pid;
+        // Use model+gen as key to avoid overwriting original with regen
+        const modelGenKey = `${exp.model}__${gen}`;
+        sceneMap[sceneKey].models[modelGenKey] = { ...exp, _generation: gen };
         modelSet.add(exp.model);
-        sceneMap[pid].models[exp.model] = exp;
       }
 
       const sortedScenes = Object.keys(sceneMap).sort((a, b) => {
@@ -225,24 +233,24 @@ function bookMixin() {
 
       // Load all experiment details in parallel (fast)
       const allLoadTasks = [];
-      for (const pid of sortedScenes) {
-        for (const [model, exp] of Object.entries(sceneMap[pid].models)) {
-          allLoadTasks.push({ pid, model, exp });
+      for (const sceneKey of sortedScenes) {
+        for (const [modelGenKey, exp] of Object.entries(sceneMap[sceneKey].models)) {
+          allLoadTasks.push({ sceneKey, pid: sceneMap[sceneKey].originalPid, modelGenKey, model: exp.model, exp });
         }
       }
 
       const loadResults = await Promise.allSettled(
-        allLoadTasks.map(async ({ pid, model, exp }) => {
+        allLoadTasks.map(async ({ sceneKey, pid, modelGenKey, model, exp }) => {
           const detail = await this._loadExperimentCached(exp.id);
-          return { pid, model, exp, detail };
+          return { sceneKey, pid, modelGenKey, model, exp, detail };
         })
       );
 
-      // Build pages from loaded results
+      // Build pages from loaded results (regen merged into original pages)
       const pageMap = {};
       for (const result of loadResults) {
         if (result.status !== 'fulfilled' || !result.value.detail) continue;
-        const { pid, model, exp, detail } = result.value;
+        const { sceneKey, pid, model, exp, detail } = result.value;
         const images = (detail.images || []).map((img, idx) => ({
           ...img, _index: idx,
           _seed: this._extractSeed(img.name),
@@ -251,18 +259,19 @@ function bookMixin() {
         for (const img of images) {
           if (img._seed) seedSet.add(img._seed);
         }
-        if (!pageMap[pid]) pageMap[pid] = [];
-        pageMap[pid].push({ model, experiment: exp, detail, images });
+        if (!pageMap[sceneKey]) pageMap[sceneKey] = [];
+        pageMap[sceneKey].push({ model, experiment: exp, detail, images, _generation: exp._generation || 'original' });
       }
 
       const pages = [];
-      for (const pid of sortedScenes) {
-        const pageModels = pageMap[pid] || [];
+      for (const sceneKey of sortedScenes) {
+        const pageModels = pageMap[sceneKey] || [];
         if (pageModels.length > 0) {
           pageModels.sort((a, b) => a.model.localeCompare(b.model));
+          const originalPid = sceneMap[sceneKey].originalPid;
           pages.push({
-            id: pid, prompt_id: pid, scene: pid,
-            summary: pageModels[0].experiment.prompt_summary || pid,
+            id: originalPid, prompt_id: originalPid, scene: sceneKey,
+            summary: pageModels[0].experiment.prompt_summary || sceneKey,
             models: pageModels,
           });
         }
