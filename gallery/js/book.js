@@ -909,12 +909,19 @@ function bookMixin() {
         modelMap[name].generations[gen] = modelData;
       }
 
-      // Set activeGen per model: use stored preference or default to original
+      // Set activeGen per model: default to latest generation (R2 > R1 > original)
       if (!this.book._modelGenPrefs) this.book._modelGenPrefs = {};
       for (const [name, group] of Object.entries(modelMap)) {
-        const gens = Object.keys(group.generations);
+        const gens = Object.keys(group.generations).sort((a, b) => {
+          // Sort: R1, R2, R3... then original last
+          if (a === 'original') return 1;
+          if (b === 'original') return -1;
+          return a.localeCompare(b);
+        });
         const pref = this.book._modelGenPrefs[name];
-        group.activeGen = (pref && gens.includes(pref)) ? pref : (gens.includes('original') ? 'original' : gens[0]);
+        // Default to latest regen, or original if no regen
+        const latestRegen = gens.find(g => g !== 'original');
+        group.activeGen = (pref && gens.includes(pref)) ? pref : (latestRegen || 'original');
         group.availableGens = gens;
       }
 
