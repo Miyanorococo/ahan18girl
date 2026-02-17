@@ -453,10 +453,13 @@ function bookMixin() {
     /** Get the thumbnail for a timeline slot (selected image or first available) */
     bookTimelineThumb(page) {
       const sel = this.book.selections[page.id];
-      if (sel) return sel.thumb_url;
-      // Fallback: first image of first model
-      const firstModel = page.models[0];
-      return firstModel?.images[0]?.thumb_url || '';
+      if (sel && sel.thumb_url) return sel.thumb_url;
+      // Fallback: try selected model first, then first model
+      const selModel = page.models.find(m => m.model === this.book.selectedModel);
+      const selectedSeedImg = selModel?.images.find(i => i._seed === this.book.selectedSeed);
+      if (selectedSeedImg?.thumb_url) return selectedSeedImg.thumb_url;
+      if (selModel?.images[0]?.thumb_url) return selModel.images[0].thumb_url;
+      return page.models[0]?.images[0]?.thumb_url || '';
     },
 
     /** Auto-select: for each page, pick the highest-rated image (or first) */
@@ -1321,14 +1324,24 @@ function bookMixin() {
 
     /** Fetch an image and return as a data URL */
     async _fetchImageAsDataURL(url) {
-      const response = await fetch(url, { credentials: 'include' });
-      if (!response.ok) throw new Error(`Fetch failed: ${response.status} ${url}`);
-      const blob = await response.blob();
+      // Use Image element to convert to canvas dataURL (avoids CORS/fetch issues)
       return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error('FileReader failed'));
-        reader.readAsDataURL(blob);
+        const img = new Image();
+        img.crossOrigin = 'use-credentials';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          try {
+            resolve(canvas.toDataURL('image/jpeg', 0.95));
+          } catch (e) {
+            reject(new Error('Canvas toDataURL failed (CORS): ' + url));
+          }
+        };
+        img.onerror = () => reject(new Error('Image load failed: ' + url));
+        img.src = url;
       });
     },
 
