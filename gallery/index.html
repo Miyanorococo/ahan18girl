@@ -923,15 +923,37 @@
                      }"
                      @click="bookTimelineClick($event, idx)" draggable="true"
                      @dragstart="bookDragStartTimeline($event, idx)"
-                     @dragover.prevent="$event.dataTransfer.dropEffect='move'"
+                     @dragover="bookTimelineDragOver($event, idx)"
                      @dragenter="bookDragEnter($event)" @dragleave="bookDragLeave($event)"
                      @drop="bookHandleTimelineDrop($event, idx)">
                   <img :src="bookTimelineThumb(page)" :alt="page.id" loading="lazy" style="width:50px;height:auto;display:block;border-radius:3px">
                   <div x-show="bookGetSelection(page.id)" style="position:absolute;top:1px;right:1px;color:#4caf50;font-size:0.7rem">&#10003;</div>
                   <div x-show="bookIsRegenFlagged(page.id)" style="position:absolute;top:1px;left:1px;color:#ff9800;font-size:0.6rem">&#9873;</div>
-                  <span style="font-size:0.5rem;color:var(--text-muted)" x-text="bookShortPageId(page.id)"></span>
+                  <div class="be-timeline-rating"
+                       :class="bookTimelineRatingClass(page)"
+                       x-show="bookTimelineRatingIcon(page)"
+                       x-text="bookTimelineRatingIcon(page)"></div>
+                  <button class="be-timeline-delete" @click.stop="bookRemovePage(idx)" title="Remove page">&times;</button>
+                  <span class="be-timeline-num" x-text="(idx + 1) + '. ' + bookShortPageId(page.id)"></span>
                 </div>
               </template>
+            </div>
+
+            <!-- Shelf: saved images below timeline -->
+            <div class="be-shelf" x-show="book.shelf && book.shelf.length > 0" x-cloak>
+              <div class="be-shelf-header" @click="book.shelfOpen = !book.shelfOpen">
+                <span x-text="'Shelf (' + book.shelf.length + ' items) ' + (book.shelfOpen ? '\u25B2' : '\u25BC')"></span>
+              </div>
+              <div class="be-shelf-items" x-show="book.shelfOpen">
+                <template x-for="(item, idx) in book.shelf" :key="'bs-' + item.id">
+                  <div class="be-shelf-item" draggable="true" @dragstart="bookDragStartShelf($event, idx)">
+                    <img :src="bookShelfThumb(item)" :alt="item.id" loading="lazy">
+                    <span class="be-shelf-label" x-text="bookShortPageId(item.id)"></span>
+                    <button class="be-shelf-restore" @click="bookRestoreFromShelf(idx)" title="Restore to timeline">&uarr;</button>
+                    <button class="be-shelf-remove" @click="bookRemoveFromShelf(idx)" title="Remove permanently">&times;</button>
+                  </div>
+                </template>
+              </div>
             </div>
           </div>
         </div>

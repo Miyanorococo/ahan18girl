@@ -2629,3 +2629,163 @@ body {
 @keyframes be-spin {
   to { transform: rotate(360deg); }
 }
+
+/* === Book Editor: Timeline Page Number === */
+.be-timeline-num {
+  font-size: 0.5rem;
+  color: var(--text-muted);
+  display: block;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 54px;
+}
+
+/* === Book Editor: Rating Overlay on Timeline === */
+.be-timeline-rating {
+  position: absolute;
+  bottom: 18px;
+  left: 2px;
+  font-size: 0.8rem;
+  opacity: 0.4;
+  transition: opacity 0.15s;
+  pointer-events: none;
+  z-index: 1;
+  line-height: 1;
+}
+.be-timeline-rating.rating-star { color: #ffd700; }
+.be-timeline-rating.rating-bad { color: #f44336; }
+.be-timeline-slot:hover .be-timeline-rating { opacity: 1; }
+
+/* === Book Editor: Delete Button on Timeline === */
+.be-timeline-delete {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f44336;
+  color: white;
+  border: none;
+  font-size: 0.6rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  line-height: 1;
+  padding: 0;
+}
+.be-timeline-slot:hover .be-timeline-delete { opacity: 0.8; }
+.be-timeline-delete:hover { opacity: 1 !important; transform: scale(1.1); }
+
+/* === Book Editor: Insert Indicator on Timeline === */
+.be-timeline-slot.drag-insert-before::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #4caf50;
+  border-radius: 2px;
+  z-index: 3;
+}
+.be-timeline-slot.drag-insert-after::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #4caf50;
+  border-radius: 2px;
+  z-index: 3;
+}
+
+/* === Book Editor: Shelf === */
+.be-shelf {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+.be-shelf-header {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+  transition: color 0.15s;
+}
+.be-shelf-header:hover { color: var(--text-primary); }
+.be-shelf-items {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+.be-shelf-item {
+  position: relative;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: grab;
+  transition: border-color 0.15s;
+}
+.be-shelf-item:active { cursor: grabbing; }
+.be-shelf-item:hover { border-color: rgba(255, 255, 255, 0.3); }
+.be-shelf-item img {
+  width: 60px;
+  height: auto;
+  display: block;
+}
+.be-shelf-label {
+  display: block;
+  text-align: center;
+  font-size: 0.5rem;
+  color: var(--text-muted);
+  padding: 1px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
+}
+.be-shelf-restore,
+.be-shelf-remove {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: none;
+  font-size: 0.55rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 2;
+  line-height: 1;
+  padding: 0;
+}
+.be-shelf-restore {
+  top: 2px;
+  left: 2px;
+  background: #4caf50;
+  color: white;
+}
+.be-shelf-remove {
+  top: 2px;
+  right: 2px;
+  background: #f44336;
+  color: white;
+}
+.be-shelf-item:hover .be-shelf-restore,
+.be-shelf-item:hover .be-shelf-remove { opacity: 0.8; }
+.be-shelf-restore:hover,
+.be-shelf-remove:hover { opacity: 1 !important; transform: scale(1.1); }
