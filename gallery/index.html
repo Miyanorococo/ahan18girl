@@ -785,8 +785,20 @@
                 <button class="btn-ghost" @click="bookExportCurrentImage()">DL Current</button>
                 <button class="btn-ghost" @click="bookExportZip()" :disabled="book.exporting || bookSelectionCount() === 0">ZIP</button>
                 <button class="btn-primary" @click="bookExportPDF()" :disabled="book.exporting || bookSelectionCount() === 0">PDF</button>
+                <!-- Regen flag counter & export -->
+                <button class="btn-ghost" x-show="bookRegenFlagCount() > 0"
+                        @click="bookExportRegenList()"
+                        x-text="'Regen (' + bookRegenFlagCount() + ')'"></button>
               </div>
             </div>
+
+            <!-- Smart Suggest bar (Feature 2) -->
+            <div class="be-suggestion" x-show="book.suggestion" x-cloak>
+              <span x-text="book.suggestion?.message || ''"></span>
+              <button class="btn-primary" style="padding:4px 12px;font-size:0.75rem" @click="bookApplySuggestion()">Apply</button>
+              <button class="btn-ghost" style="padding:4px 12px;font-size:0.75rem" @click="bookDismissSuggestion()">Dismiss</button>
+            </div>
+
             <div class="be-export-overlay" x-show="book.exporting">
               <div style="background:var(--bg-card);padding:24px;border-radius:12px;text-align:center">
                 <div>Exporting...</div>
@@ -811,9 +823,26 @@
                   </div>
                 </div>
                 <div class="book-rate" style="padding:8px 0">
-                  <button class="rate-btn rate-star" :class="{'active': getImageRating(bookCurrentImage()) === 5}" @click="quickRate(bookCurrentImage(), 5)">★</button>
-                  <button class="rate-btn rate-heart" :class="{'active': getImageRating(bookCurrentImage()) === 2}" @click="quickRate(bookCurrentImage(), 2)">♥</button>
-                  <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}" @click="quickRate(bookCurrentImage(), -1)">👎</button>
+                  <button class="rate-btn rate-star" :class="{'active': getImageRating(bookCurrentImage()) === 5}" @click="bookEditorRate(bookCurrentImage(), 5)">★</button>
+                  <button class="rate-btn rate-heart" :class="{'active': getImageRating(bookCurrentImage()) === 2}" @click="bookEditorRate(bookCurrentImage(), 2)">♥</button>
+                  <button class="rate-btn rate-bad" :class="{'active': getImageRating(bookCurrentImage()) === -1}" @click="bookEditorRate(bookCurrentImage(), -1)">👎</button>
+                </div>
+                <!-- Prompt Editor (Feature 3) -->
+                <div style="display:flex;gap:6px;justify-content:center;padding-bottom:4px">
+                  <button class="btn-ghost" style="padding:3px 10px;font-size:0.7rem"
+                          x-show="!book.editingPrompt"
+                          @click="bookStartEditPrompt()"
+                          x-text="bookIsRegenFlagged(bookCurrentPage()?.id) ? '&#9998; Edit regen prompt' : '&#9998; Edit prompt'"></button>
+                  <button class="btn-ghost" style="padding:3px 10px;font-size:0.7rem;color:var(--accent)"
+                          x-show="bookIsRegenFlagged(bookCurrentPage()?.id) && !book.editingPrompt"
+                          @click="bookRemoveRegenFlag()">Unflag</button>
+                </div>
+                <div class="be-prompt-editor" x-show="book.editingPrompt" x-cloak>
+                  <textarea x-model="book.editPromptText" rows="4" placeholder="Edit prompt for regeneration..."></textarea>
+                  <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px">
+                    <button class="btn-ghost" style="padding:4px 12px;font-size:0.75rem" @click="bookCancelEditPrompt()">Cancel</button>
+                    <button class="btn-primary" style="padding:4px 12px;font-size:0.75rem" @click="bookSaveRegenFlag()">Save &amp; Flag</button>
+                  </div>
                 </div>
               </div>
               <div class="be-candidates">
@@ -842,16 +871,35 @@
                 </div>
               </div>
             </div>
+
+            <!-- Batch Rate bar (Feature 1) - shown above timeline when multi-selected -->
+            <div class="be-batch-bar" x-show="book.selectedPages.length > 1" x-cloak>
+              <span x-text="book.selectedPages.length + ' pages selected'"></span>
+              <div style="display:flex;gap:6px">
+                <button class="rate-btn rate-star" style="padding:6px 12px;min-width:auto" @click="bookBatchRate(5)">★</button>
+                <button class="rate-btn rate-heart" style="padding:6px 12px;min-width:auto" @click="bookBatchRate(2)">♥</button>
+                <button class="rate-btn rate-bad" style="padding:6px 12px;min-width:auto" @click="bookBatchRate(-1)">👎</button>
+              </div>
+              <button class="btn-ghost" style="padding:4px 12px;font-size:0.75rem" @click="bookClearMultiSelect()">Clear selection</button>
+            </div>
+
             <div class="be-timeline">
               <template x-for="(page, idx) in book.pages" :key="'bt-' + page.id">
-                <div class="be-timeline-slot" :class="{'active': idx === book.currentPage, 'selected': !!bookGetSelection(page.id)}"
-                     @click="book.currentPage = idx" draggable="true"
+                <div class="be-timeline-slot"
+                     :class="{
+                       'active': idx === book.currentPage,
+                       'selected': !!bookGetSelection(page.id),
+                       'multi-selected': bookIsMultiSelected(idx),
+                       'regen-flagged': bookIsRegenFlagged(page.id)
+                     }"
+                     @click="bookTimelineClick($event, idx)" draggable="true"
                      @dragstart="bookDragStartTimeline($event, idx)"
                      @dragover.prevent="$event.dataTransfer.dropEffect='move'"
                      @dragenter="bookDragEnter($event)" @dragleave="bookDragLeave($event)"
                      @drop="bookHandleTimelineDrop($event, idx)">
                   <img :src="bookTimelineThumb(page)" :alt="page.id" loading="lazy" style="width:50px;height:auto;display:block;border-radius:3px">
-                  <div x-show="bookGetSelection(page.id)" style="position:absolute;top:1px;right:1px;color:#4caf50;font-size:0.7rem">✓</div>
+                  <div x-show="bookGetSelection(page.id)" style="position:absolute;top:1px;right:1px;color:#4caf50;font-size:0.7rem">&#10003;</div>
+                  <div x-show="bookIsRegenFlagged(page.id)" style="position:absolute;top:1px;left:1px;color:#ff9800;font-size:0.6rem">&#9873;</div>
                   <span style="font-size:0.5rem;color:var(--text-muted)" x-text="bookShortPageId(page.id)"></span>
                 </div>
               </template>

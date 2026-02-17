@@ -25,6 +25,18 @@ function bookMixin() {
       selections: {},     // pageId -> {model, seed, full_url, thumb_url, name}
       exporting: false,
       exportProgress: '',
+
+      // Batch Rate (Feature 1)
+      selectedPages: [],    // array of page indices for multi-select
+      shiftSelecting: false,
+
+      // Smart Suggest (Feature 2)
+      suggestion: null,     // {model, count, message} or null
+
+      // Before/After Regen (Feature 3)
+      editingPrompt: false,
+      editPromptText: '',
+      regenFlags: {},       // {pageId: {newPrompt, originalPrompt}}
     },
 
     /**
@@ -244,8 +256,9 @@ function bookMixin() {
       this.book.editorMode = false;
       this.book.loading = false;
 
-      // Load saved selections for this book
+      // Load saved selections and regen flags for this book
       this.bookLoadSelections();
+      this._loadRegenFlags();
     },
 
     /** Back to book list */
@@ -253,6 +266,10 @@ function bookMixin() {
       this.book.currentBook = null;
       this.book.pages = [];
       this.book.editorMode = false;
+      this.book.selectedPages = [];
+      this.book.suggestion = null;
+      this.book.editingPrompt = false;
+      this.book.regenFlags = {};
     },
 
     /** Get current page object */
@@ -322,6 +339,17 @@ function bookMixin() {
         },
       };
       this.bookSaveSelections();
+    },
+
+    /** Rate an image in editor mode, with Smart Suggest trigger for ★ */
+    bookEditorRate(img, score) {
+      if (!img) return;
+      this.quickRate(img, score);
+      // If star rating in editor mode, trigger Smart Suggest
+      if (score === 5 && this.book.editorMode) {
+        const model = img._model || this.book.selectedModel;
+        this.bookCheckSuggestion(model);
+      }
     },
 
     /** Remove selection for a page */
@@ -606,6 +634,291 @@ function bookMixin() {
       // "0216a_S00_cover" -> "S00"
       const match = pageId.match(/(S\d+[a-z]?)/i);
       return match ? match[1] : pageId.slice(-6);
+    },
+
+    // ==========================================
+    // Batch Rate (Feature 1)
+    // ==========================================
+
+    /** Handle timeline slot click with optional Shift for multi-select */
+    bookTimelineClick(event, idx) {
+      if (event.shiftKey && this.book.editorMode) {
+        // Toggle this page in the multi-selection
+        const pos = this.book.selectedPages.indexOf(idx);
+        if (pos >= 0) {
+          this.book.selectedPages = this.book.selectedPages.filter(i => i !== idx);
+        } else {
+          this.book.selectedPages = [...this.book.selectedPages, idx];
+        }
+      } else {
+        // Normal click: navigate to that page, clear multi-selection
+        this.book.selectedPages = [];
+        this.book.currentPage = idx;
+      }
+    },
+
+    /** Apply a rating to the current preview image on all multi-selected pages */
+    bookBatchRate(score) {
+      if (this.book.selectedPages.length === 0) return;
+
+      // Get the current preview image to identify which image to rate on other pages
+      const previewImg = this.bookEditorPreviewImage();
+      if (!previewImg) return;
+
+      // For each selected page, find the matching model+seed image and rate it
+      const model = previewImg.model || this.book.selectedModel;
+      const seed = previewImg.seed || this.book.selectedSeed;
+
+      for (const pageIdx of this.book.selectedPages) {
+        const page = this.book.pages[pageIdx];
+        if (!page) continue;
+
+        // Find the image for this model on that page
+        const modelData = page.models.find(m => m.model === model);
+        if (!modelData) continue;
+
+        // Find matching seed, or fall back to first image
+        let targetImg = modelData.images.find(img => img._seed === seed);
+        if (!targetImg) targetImg = modelData.images[0];
+        if (!targetImg) continue;
+
+        this.quickRate(targetImg, score);
+      }
+
+      // Clear multi-selection after batch rating
+      this.book.selectedPages = [];
+    },
+
+    /** Clear multi-selection */
+    bookClearMultiSelect() {
+      this.book.selectedPages = [];
+    },
+
+    /** Check if a page index is multi-selected */
+    bookIsMultiSelected(idx) {
+      return this.book.selectedPages.includes(idx);
+    },
+
+    // ==========================================
+    // Smart Suggest (Feature 2)
+    // ==========================================
+
+    /** Check if we should suggest a model after a star rating in editor mode */
+    bookCheckSuggestion(model) {
+      if (!this.book.editorMode || !model) return;
+
+      // Count unselected pages
+      const unselectedPages = this.book.pages.filter(p => !this.book.selections[p.id]);
+      const count = unselectedPages.length;
+
+      // Only suggest if more than 3 unselected pages
+      if (count <= 3) {
+        this.book.suggestion = null;
+        return;
+      }
+
+      // Check how many unselected pages have this model available
+      let availableCount = 0;
+      for (const page of unselectedPages) {
+        if (page.models.some(m => m.model === model)) {
+          availableCount++;
+        }
+      }
+
+      if (availableCount === 0) {
+        this.book.suggestion = null;
+        return;
+      }
+
+      const shortModel = this.displayModelName ? this.displayModelName(model) : model;
+      this.book.suggestion = {
+        model,
+        count: availableCount,
+        message: `★ on ${shortModel} — Apply to ${availableCount} unselected pages?`,
+      };
+    },
+
+    /** Apply the suggested model to all unselected pages */
+    bookApplySuggestion() {
+      if (!this.book.suggestion) return;
+      const model = this.book.suggestion.model;
+
+      for (const page of this.book.pages) {
+        // Skip pages that already have a selection
+        if (this.book.selections[page.id]) continue;
+
+        const modelData = page.models.find(m => m.model === model);
+        if (!modelData || modelData.images.length === 0) continue;
+
+        // Find the best image by AI score, then by any rating
+        let bestImg = null;
+        let bestScore = -Infinity;
+        for (const img of modelData.images) {
+          const aiScore = this.getAestheticScore(img) || 0;
+          const rating = this.getImageRating(img) || 0;
+          const score = rating * 100 + aiScore * 50;
+          if (score > bestScore) {
+            bestScore = score;
+            bestImg = img;
+          }
+        }
+
+        if (bestImg) {
+          this.bookSelectImage(page.id, model, bestImg._seed || '', bestImg);
+        }
+      }
+
+      this.book.suggestion = null;
+    },
+
+    /** Dismiss the suggestion */
+    bookDismissSuggestion() {
+      this.book.suggestion = null;
+    },
+
+    // ==========================================
+    // Before/After Regen (Feature 3)
+    // ==========================================
+
+    /** Start editing the prompt for the current page */
+    bookStartEditPrompt() {
+      const page = this.bookCurrentPage();
+      if (!page) return;
+
+      // Try to get the prompt from experiment metadata
+      let prompt = '';
+      if (page.models.length > 0) {
+        const detail = page.models[0].detail;
+        prompt = detail?.metadata?.prompt?.positive || '';
+      }
+
+      // Check if there is already a regen flag for this page
+      if (this.book.regenFlags[page.id]) {
+        prompt = this.book.regenFlags[page.id].newPrompt;
+      }
+
+      this.book.editPromptText = prompt;
+      this.book.editingPrompt = true;
+    },
+
+    /** Save the edited prompt and flag the page for regeneration */
+    bookSaveRegenFlag() {
+      const page = this.bookCurrentPage();
+      if (!page) return;
+
+      // Get original prompt for reference
+      let originalPrompt = '';
+      if (page.models.length > 0) {
+        const detail = page.models[0].detail;
+        originalPrompt = detail?.metadata?.prompt?.positive || '';
+      }
+
+      this.book.regenFlags = {
+        ...this.book.regenFlags,
+        [page.id]: {
+          newPrompt: this.book.editPromptText,
+          originalPrompt,
+          flaggedAt: new Date().toISOString(),
+        },
+      };
+
+      // Persist to localStorage
+      this._saveRegenFlags();
+      this.book.editingPrompt = false;
+    },
+
+    /** Cancel prompt editing */
+    bookCancelEditPrompt() {
+      this.book.editingPrompt = false;
+      this.book.editPromptText = '';
+    },
+
+    /** Remove a regen flag for the current page */
+    bookRemoveRegenFlag() {
+      const page = this.bookCurrentPage();
+      if (!page) return;
+      const newFlags = { ...this.book.regenFlags };
+      delete newFlags[page.id];
+      this.book.regenFlags = newFlags;
+      this._saveRegenFlags();
+    },
+
+    /** Count of pages flagged for regeneration */
+    bookRegenFlagCount() {
+      return Object.keys(this.book.regenFlags).length;
+    },
+
+    /** Check if a page is flagged for regen */
+    bookIsRegenFlagged(pageId) {
+      return !!this.book.regenFlags[pageId];
+    },
+
+    /** Export regen list as JSON download */
+    bookExportRegenList() {
+      const flags = this.book.regenFlags;
+      if (Object.keys(flags).length === 0) {
+        alert('No pages flagged for regeneration.');
+        return;
+      }
+
+      // Build export format compatible with generate-eval.py
+      const regenList = [];
+      for (const [pageId, flag] of Object.entries(flags)) {
+        const page = this.book.pages.find(p => p.id === pageId);
+        regenList.push({
+          page_id: pageId,
+          scene: page?.scene || pageId,
+          summary: page?.summary || '',
+          original_prompt: flag.originalPrompt,
+          new_prompt: flag.newPrompt,
+          flagged_at: flag.flaggedAt,
+        });
+      }
+
+      const data = {
+        book_id: this.book.currentBook?.id || 'unknown',
+        book_theme: this.book.currentBook?.theme || '',
+        flagged_pages: regenList.length,
+        exported_at: new Date().toISOString(),
+        pages: regenList,
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      const bookName = this.book.currentBook?.theme || 'book';
+      a.download = `${bookName}_regen_list.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    },
+
+    /** Save regen flags to localStorage */
+    _saveRegenFlags() {
+      try {
+        const stored = JSON.parse(localStorage.getItem('book_regen_flags') || '{}');
+        const bookKey = this.book.currentBook?.id;
+        if (bookKey) {
+          stored[bookKey] = this.book.regenFlags;
+          localStorage.setItem('book_regen_flags', JSON.stringify(stored));
+        }
+      } catch (e) {
+        console.error('Failed to save regen flags:', e);
+      }
+    },
+
+    /** Load regen flags from localStorage */
+    _loadRegenFlags() {
+      try {
+        const stored = JSON.parse(localStorage.getItem('book_regen_flags') || '{}');
+        const bookKey = this.book.currentBook?.id;
+        if (bookKey && stored[bookKey]) {
+          this.book.regenFlags = stored[bookKey];
+        } else {
+          this.book.regenFlags = {};
+        }
+      } catch {
+        this.book.regenFlags = {};
+      }
     },
 
     // ==========================================

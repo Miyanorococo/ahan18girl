@@ -2525,3 +2525,72 @@ body {
 .be-timeline-slot.active { border-color: var(--accent); opacity: 1; }
 .be-timeline-slot.selected { opacity: 0.9; }
 .be-timeline-slot.drag-over { border-color: #4caf50; background: rgba(76,175,80,0.2); opacity: 1; }
+
+/* === Book Editor: Batch Rate (Feature 1) === */
+.be-batch-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  margin-top: 12px;
+  background: rgba(33, 150, 243, 0.12);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  animation: fadeIn 0.15s ease;
+}
+.be-batch-bar .rate-btn { font-size: 0.85rem; }
+
+.be-timeline-slot.multi-selected {
+  border-color: #2196f3 !important;
+  background: rgba(33, 150, 243, 0.2);
+  opacity: 1;
+}
+
+/* === Book Editor: Smart Suggest (Feature 2) === */
+.be-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  margin-top: 4px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.25);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  animation: fadeIn 0.15s ease;
+}
+
+/* === Book Editor: Before/After Prompt Editor (Feature 3) === */
+.be-prompt-editor {
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin-top: 4px;
+}
+.be-prompt-editor textarea {
+  width: 100%;
+  background: var(--bg-deepest);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: var(--radius-badge);
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-stack);
+  resize: vertical;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color 0.15s;
+}
+.be-prompt-editor textarea:focus {
+  border-color: var(--accent);
+}
+
+.be-timeline-slot.regen-flagged {
+  border-color: #ff9800 !important;
+  box-shadow: 0 0 0 1px rgba(255, 152, 0, 0.3);
+  opacity: 0.95;
+}
