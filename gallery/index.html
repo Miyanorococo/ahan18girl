@@ -718,7 +718,7 @@
                if ((k === 'Delete' || k === 'Backspace') && !book.editingPrompt) { bookRemovePage(book.currentPage); }
                else if (ctrl && k === 'z' && !$event.shiftKey) { $event.preventDefault(); bookUndo(); }
                else if (ctrl && (k === 'y' || (k === 'z' && $event.shiftKey) || (k === 'Z'))) { $event.preventDefault(); bookRedo(); }
-             })()"
+             })()">
           <!-- Header -->
           <div class="book-header">
             <button class="btn-ghost" @click="closeBook()">&larr; Books</button>
@@ -780,7 +780,7 @@
           </div>
 
           <!-- ===== EDITOR MODE ===== -->
-          <div class="book-editor-section"
+          <div class="book-editor-section">
             <div class="be-toolbar">
               <div class="be-progress">
                 <span x-text="bookSelectionCount() + ' / ' + book.pages.length + ' pages'"></span>
