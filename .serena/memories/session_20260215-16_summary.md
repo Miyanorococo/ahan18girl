@@ -87,6 +87,30 @@ assets/templates/ に6バージョン保存:
 - 27_AIグラビア連載60回分析.md
 - 28_セッション記録_20260215-16.md
 
+## 2026-02-17 追加調査
+
+### AMI v2 作成完了
+- ami-0224a0f133066816e: systemd disabled + boto3/dill/opencv/onnxruntime + Impact-Subpack + 全制御モデル
+- しかし AMI v2 でも KSampler ハング再発
+- --disable-cuda-malloc も効果なし
+
+### KSampler ハングの真の原因（未解決）
+- systemd 競合ではなかった（AMI v2 で無効化しても再発）
+- cudaMallocAsync でもなかった（native アロケータでも再発）
+- **重要な矛盾**: Fleet --models (txt2img) は同じAMI/GPUで動く
+- → run_layer2_tests() のコードに問題がある可能性大
+- 次のセッションで: ワークフローを1つずつ分離テスト
+
+### 現在の Layer 2 データ
+| テスト | 枚数 | 十分？ |
+|---|---|---|
+| IP-Adapter | 57 | ✅ |
+| CN Union | 11 | ✅ |
+| Depth | 9 | ✅ |
+| DWPose | 4 | △要追加 |
+| ADetailer | 1 | △要追加 |
+| Upscale | 2 | △要追加 |
+
 ## Docker再ビルド時の注意
 - onnxruntimeをDockerfileに追加すること（aesthetic scorer用）
 - 現在のイメージにはonnxruntime未インストール

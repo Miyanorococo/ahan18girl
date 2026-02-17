@@ -616,17 +616,11 @@ function bookMixin() {
       event.dataTransfer.effectAllowed = 'move';
     },
 
-    /** Handle drop on a timeline slot */
+    /** Handle drop on a timeline slot (swap/select only; inserts go through insert zones) */
     bookHandleTimelineDrop(event, targetIdx) {
       event.preventDefault();
       const el = event.currentTarget;
-
-      // Check insert indicators BEFORE removing them
-      const isInsertBefore = el.classList.contains('drag-insert-before');
-      const isInsertAfter = el.classList.contains('drag-insert-after');
-
-      el.classList.remove('drag-over', 'drag-insert-before', 'drag-insert-after');
-      document.querySelectorAll('.be-timeline-slot').forEach(s => s.classList.remove('drag-insert-before', 'drag-insert-after'));
+      el.classList.remove('drag-over');
 
       let data;
       try {
@@ -634,36 +628,19 @@ function bookMixin() {
       } catch { return; }
 
       if (data.type === 'candidate') {
+        // SWAP: select image for the target page
         const img = { full_url: data.full_url, thumb_url: data.thumb_url, name: data.name };
-        // isInsertBefore/isInsertAfter already captured above
-
-        if (isInsertBefore || isInsertAfter) {
-          // INSERT: duplicate the source page at the insert position with the dragged image selected
-          this.bookPushUndo();
-          const sourcePage = this.book.pages.find(p => p.id === data.pageId);
-          if (!sourcePage) return;
-          // Create a shallow copy of the page (shares models/images references)
-          const insertIdx = isInsertAfter ? targetIdx + 1 : targetIdx;
-          const newPage = { ...sourcePage, _insertedFrom: data.pageId };
-          const pages = [...this.book.pages];
-          pages.splice(insertIdx, 0, newPage);
-          this.book.pages = pages;
-          this.bookSelectImage(newPage.id, data.model, data.seed, img);
-          this.book.currentPage = insertIdx;
-        } else {
-          // SWAP: select image for the target page
-          const targetPage = this.book.pages[targetIdx];
-          if (!targetPage) return;
-          this.bookSelectImage(targetPage.id, data.model, data.seed, img);
-          this.book.currentPage = targetIdx;
-        }
+        const targetPage = this.book.pages[targetIdx];
+        if (!targetPage) return;
+        this.bookSelectImage(targetPage.id, data.model, data.seed, img);
+        this.book.currentPage = targetIdx;
       } else if (data.type === 'timeline') {
-        // Timeline slot dropped on another slot -> insert (not swap)
+        // Timeline slot dropped on another slot -> reorder
         const fromIdx = data.fromIdx;
         if (fromIdx === targetIdx) return;
         this.bookHandleTimelineReorder(fromIdx, targetIdx);
       } else if (data.type === 'shelf') {
-        // Shelf item dropped on timeline -> insert at position
+        // Shelf item dropped on timeline slot -> insert at position
         const shelfIdx = data.shelfIdx;
         if (shelfIdx == null) return;
         const shelf = [...this.book.shelf];
@@ -706,9 +683,48 @@ function bookMixin() {
       if (fromIdx === toIdx) return;
       const pages = [...this.book.pages];
       const [moved] = pages.splice(fromIdx, 1);
-      pages.splice(toIdx, 0, moved);
+      // Adjust target index after removal
+      const adjustedIdx = toIdx > fromIdx ? toIdx - 1 : toIdx;
+      pages.splice(adjustedIdx, 0, moved);
       this.book.pages = pages;
-      this.book.currentPage = toIdx;
+      this.book.currentPage = adjustedIdx;
+    },
+
+    /** Handle drop on a dedicated insert zone between timeline slots */
+    bookHandleInsertDrop(event, insertIdx) {
+      event.preventDefault();
+      event.currentTarget.classList.remove('active');
+      let data;
+      try { data = JSON.parse(event.dataTransfer.getData('text/plain')); } catch { return; }
+
+      if (data.type === 'candidate') {
+        this.bookPushUndo();
+        const sourcePage = this.book.pages.find(p => p.id === data.pageId);
+        if (!sourcePage) return;
+        const newPage = { ...sourcePage, id: sourcePage.id + '_ins_' + Date.now(), _insertedFrom: data.pageId };
+        const pages = [...this.book.pages];
+        pages.splice(insertIdx, 0, newPage);
+        this.book.pages = pages;
+        this.bookSelectImage(newPage.id, data.model, data.seed, {
+          full_url: data.full_url, thumb_url: data.thumb_url, name: data.name
+        });
+        this.book.currentPage = insertIdx;
+      } else if (data.type === 'timeline') {
+        this.bookHandleTimelineReorder(data.fromIdx, insertIdx);
+      } else if (data.type === 'shelf') {
+        const shelfIdx = data.shelfIdx;
+        if (shelfIdx == null) return;
+        this.bookPushUndo();
+        const shelf = [...this.book.shelf];
+        if (shelfIdx < 0 || shelfIdx >= shelf.length) return;
+        const [item] = shelf.splice(shelfIdx, 1);
+        this.book.shelf = shelf;
+        this.bookSaveShelf();
+        const pages = [...this.book.pages];
+        pages.splice(insertIdx, 0, item);
+        this.book.pages = pages;
+        this.book.currentPage = insertIdx;
+      }
     },
 
     /** Drag enter handler for drop targets (adds visual indicator) */
@@ -725,27 +741,16 @@ function bookMixin() {
       const x = event.clientX;
       const y = event.clientY;
       if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
-        event.currentTarget.classList.remove('drag-over', 'drag-insert-before', 'drag-insert-after');
+        event.currentTarget.classList.remove('drag-over');
       }
     },
 
-    /** Drag over handler for timeline slots - shows insertion indicator */
+    /** Drag over handler for timeline slots - swap only (insert via dedicated zones) */
     bookTimelineDragOver(event, slotIdx) {
       event.preventDefault();
       try {
-        // Allow both copy (candidates) and move (timeline reorder)
         event.dataTransfer.dropEffect = event.dataTransfer.effectAllowed === 'copy' ? 'copy' : 'move';
       } catch {}
-      const el = event.currentTarget;
-      const rect = el.getBoundingClientRect();
-      const midX = rect.left + rect.width / 2;
-      if (event.clientX < midX) {
-        el.classList.add('drag-insert-before');
-        el.classList.remove('drag-insert-after');
-      } else {
-        el.classList.add('drag-insert-after');
-        el.classList.remove('drag-insert-before');
-      }
     },
 
     /** Get a short display name for a page ID */

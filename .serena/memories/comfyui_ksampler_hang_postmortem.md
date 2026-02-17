@@ -26,6 +26,15 @@ source venv/bin/activate
 python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch &
 ```
 
+## 追加調査結果（2026-02-17）
+- systemd disabled (AMI v2) でも同じハング発生 → systemd は原因ではない
+- --disable-cuda-malloc でも同じハング → cudaMallocAsync は原因ではない
+- GPU: native アロケータでも 0% utilization
+- 基本CUDA操作（torch.randn）は正常動作
+- ComfyUI がプロンプトを受け取り、モデルをロードするが、KSampler の実行が始まらない
+- **未解決**: Fleet の --models と --layer2-test の差が何を引き起こすか不明
+- **次のステップ**: Fleet ワーカーで --layer2-test を直接実行して比較（parallel-eval.sh 経由）
+
 ## 成功パターン（唯一の64枚バッチ成功）
 1. boto3 install
 2. dill install

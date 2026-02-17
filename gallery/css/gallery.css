@@ -2683,28 +2683,36 @@ body {
 .be-timeline-slot:hover .be-timeline-delete { opacity: 0.8; }
 .be-timeline-delete:hover { opacity: 1 !important; transform: scale(1.1); }
 
-/* === Book Editor: Insert Indicator on Timeline === */
-.be-timeline-slot.drag-insert-before::before {
-  content: '';
-  position: absolute;
-  left: -4px;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #4caf50;
-  border-radius: 2px;
-  z-index: 3;
+/* === Book Editor: Dedicated Insert Zones between Timeline Slots === */
+.be-timeline-insert-zone {
+  flex: 0 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
 }
-.be-timeline-slot.drag-insert-after::after {
-  content: '';
-  position: absolute;
-  right: -4px;
-  top: 0;
-  bottom: 0;
-  width: 3px;
+/* Show insert zones when any slot is being dragged */
+.be-timeline:has(.be-timeline-slot[draggable]) .be-timeline-insert-zone,
+.be-timeline-insert-zone.active {
+  opacity: 1;
+}
+.be-insert-plus {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(76,175,80,0.3);
+  color: #4caf50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.be-timeline-insert-zone.active .be-insert-plus {
   background: #4caf50;
-  border-radius: 2px;
-  z-index: 3;
+  color: white;
 }
 
 /* === Book Editor: Shelf === */
