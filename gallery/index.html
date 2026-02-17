@@ -991,11 +991,14 @@
             </div>
 
             <!-- Shelf: saved images below timeline -->
-            <div class="be-shelf" x-show="book.shelf && book.shelf.length > 0" x-cloak>
-              <div class="be-shelf-header" @click="book.shelfOpen = !book.shelfOpen">
-                <span x-text="'Shelf (' + book.shelf.length + ' items) ' + (book.shelfOpen ? '\u25B2' : '\u25BC')"></span>
+            <div class="be-shelf">
+              <div class="be-shelf-header">
+                <span x-text="'Shelf (' + (book.shelf?.length || 0) + ')'" style="font-size:0.8rem;color:var(--text-secondary)"></span>
               </div>
-              <div class="be-shelf-items" x-show="book.shelfOpen">
+              <div class="be-shelf-items" style="min-height:60px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px dashed rgba(255,255,255,0.1);padding:8px"
+                   @dragover.prevent="$event.dataTransfer.dropEffect='copy'; $event.currentTarget.style.borderColor='#4caf50'"
+                   @dragleave="$event.currentTarget.style.borderColor='rgba(255,255,255,0.1)'"
+                   @drop="$event.currentTarget.style.borderColor='rgba(255,255,255,0.1)'"
                 <template x-for="(item, idx) in book.shelf" :key="'bsh-' + item.id">
                   <div class="be-shelf-item" draggable="true" @dragstart="bookDragStartShelf($event, idx)">
                     <img :src="bookShelfThumb(item)" :alt="item.id" loading="lazy">
@@ -1004,6 +1007,7 @@
                     <button class="be-shelf-remove" @click="bookRemoveFromShelf(idx)" title="Remove permanently">&times;</button>
                   </div>
                 </template>
+                <span x-show="!book.shelf || book.shelf.length === 0" style="color:var(--text-muted);font-size:0.7rem;padding:8px">Drop pages here</span>
               </div>
             </div>
           </div>
