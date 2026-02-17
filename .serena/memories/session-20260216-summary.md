@@ -24,15 +24,34 @@
 | WAI v11-v16 | 2-5 | 17-34 | 2-4 | 0-6% | On hold |
 | Pony/Illustrij/SD1.5 | 0 | 0-1 | 1-3 | 0% | Eliminated |
 
-## Next Actions
-1. Continue ♥ scanning (433/7000+ = 6%)
-2. Remove birth prompts
-3. Character consistency test (#10) with Nova + Animagine
-4. Switch heatmap from AI to human rating
-5. Stop g5 instance when not needed (cost)
+## Session Extended (2026-02-17 early morning)
 
-## Key Files
-- Gallery: gallery/js/{app,dashboard,lightbox,model-grid}.js
-- Lambda: lambda/gallery/{lambda_function,routes/extract,services/image_scorer}.py
-- Prompts: assets/templates/eval-prompts-*.json
-- Docs: Obsidian AI出版戦略/21-28_*.md
+### Production
+- 3 Books generated: 0216a(JK), 0216b(wife), 0216c(nurse) × 34 scenes × 7 models = 2,142 images
+- Book ID system: MMDD+letter (0216a, 0216b...) for unique book identification
+- Story template: 33 scenes (cover→date→kiss→sex1→bath→toy→sex2→pregnancy→birth→future+bonus)
+- Sex① = surprise/embarrassment, Sex② = addiction/insatiable
+- Seeds: random at prompt creation, shared across models
+- FeMix config fixed (was wrong sampler/scheduler/clip_skip)
+
+### Gallery Features Added
+- Book View: list (cover thumb + metadata) → detail (page nav + model/seed switch)
+- Book Editor: timeline, candidate grid, auto-select, PDF/ZIP export
+- Drag & drop: candidate→slot, candidate→preview, slot↔slot reorder
+- Batch Rate: Shift+click multi-select → bulk rating
+- Smart Suggest: ★ on model → suggest for unselected pages
+- Before/After: edit prompts → flag → regenerate from UI (in progress)
+- gallery-new: full Alpine.js migration with new sidebar/Material Icons design
+
+### Prompt Improvements
+- fucked_silly: orgasm→ahegao, sex→fucked_silly, ejac→cross-eyed+dazed
+- dynamic: twisted_torso for from_behind, leaning_forward for sensitive
+- Animagine: strip_tags 33 (lighting/angle/skin), wind kept
+- Futanari: penis→enlarged clitoris/clitoris hypertrophy
+- Random seeds per book generation
+
+## Next Actions
+1. Review 3 books in Book Editor, select best images
+2. Export PDF/ZIP of selected images
+3. Add text/dialogue overlay
+4. Publish to DLSite

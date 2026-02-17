@@ -37,14 +37,30 @@
 
 | テスト | 状態 | 結果 |
 |---|---|---|
-| #8 DWPose | ✅ | ポーズ抽出+転送 成功。strength 0.7推奨 |
+| #8 DWPose | ✅ | ポーズ抽出+転送 成功（SSM版）。Batchテストでは Impact-Pack依存で失敗 |
 | #9 Depth | ✅ | DepthAnything+CN Union で衣装/背景変更成功 |
 | #10 IP-Adapter | ✅ | weight 0.3-0.5最適。Face版も動作 |
 | #28 CN Union | ✅ | standard/promax 両方動作 |
-| #12 ADetailer | ❌ | 修正済み: Impact-Subpack追加 + face_yolov8m.pt。未テスト（ComfyUIハング問題） |
-| #13 Upscale | ❌ | 修正済み: batch_size + tiled_decode 追加。未テスト（ComfyUIハング問題） |
+| #12 ADetailer | ✅ | Impact-Subpack + SAM model + bbox/face_yolov8m.pt で成功 |
+| #13 Upscale | ✅ | mask_blur=8, batch_size=1, tiled_decode=False で成功 (3.8MB, 65s) |
 
-## ComfyUI SSM経由ハング問題
+## Layer 2 バッチテスト結果（2026-02-17）
+generate-eval.py --layer2-test で64枚生成成功:
+- IP-Adapter: 45枚（5 weights × 3 scenes × 3 seeds）
+- CN Union: 9枚（3 strengths × 3 scenes）
+- Depth: 7枚（extract + 2 scenes × 3 seeds）
+- Reference: 3枚
+- DWPose: 0枚（Impact-Pack依存で失敗）
+修正が必要だった問題: boto3欠如、ComfyUIデッドロック（dill未インストール）
+
+## ComfyUI KSampler ハング問題（根本原因特定済み）
+- AMI の systemd ComfyUI サービスと UserData 手動起動が競合
+- Fleet txt2img は偶然動く（systemd が /data マウント前に起動失敗するため）
+- Layer 2 テストでは依存関係インストール後に systemd が成功→ポート競合/CUDA汚染
+- **修正方法**: AMI 再構築時に systemd を disabled にし、UserData でのみ起動する方式に統一
+- 必要な追加パッケージ: boto3, dill, opencv-python-headless, ultralytics(--no-deps)
+
+## ComfyUI SSM経由ハング問題（参考）
 - ComfyUI 0.13.0 + AMI ami-0ddff4465ad04bfa5 でSSM経由起動時にKSamplerがハング
 - Batch/Fleet（UserData経由）では正常動作
 - 原因: systemd vs UserData の起動環境差（CUDA パス、環境変数等）

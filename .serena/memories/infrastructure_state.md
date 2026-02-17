@@ -1,5 +1,9 @@
 # インフラ状態（2026-02-16時点）
 
+## AMI
+- **v2 (推奨)**: ami-0224a0f133066816e — systemd disabled + boto3/dill/opencv/onnxruntime + Impact-Subpack + 全制御モデル
+- v1 (旧): ami-0ddff4465ad04bfa5 — systemd 有効（KSampler ハング問題あり）
+
 ## AWS Batch + Step Functions（本番）
 - Stack: r18-anime-batch (us-east-1)
 - State Machine: r18-anime-eval
