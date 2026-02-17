@@ -46,8 +46,8 @@ function bookMixin() {
       regenPollTimer: null,
 
       // Generation versioning (Feature 5)
-      generations: [],        // ['original', 'R1', 'R2'] - detected from loaded pages
-      selectedGen: 'all',     // 'all' | 'original' | 'R1' | 'R2' etc.
+      generations: [],        // ['R1', 'R2', 'R3'] - detected from loaded pages
+      selectedGen: 'all',     // 'all' | 'R1' | 'R1' | 'R2' etc.
 
       // Shelf (Feature 6)
       shelf: [],              // Array of page objects removed from timeline
@@ -219,7 +219,7 @@ function bookMixin() {
         if (!sceneMap[sceneKey]) sceneMap[sceneKey] = { models: {}, originalPid: pid };
         // Keep the original (non-regen) pid as the primary
         const gen = this.bookGetGeneration(pid);
-        if (gen === 'original') sceneMap[sceneKey].originalPid = pid;
+        if (gen === 'R1') sceneMap[sceneKey].originalPid = pid;
         // Use model+gen as key to avoid overwriting original with regen
         const modelGenKey = `${exp.model}__${gen}`;
         sceneMap[sceneKey].models[modelGenKey] = { ...exp, _generation: gen };
@@ -261,7 +261,7 @@ function bookMixin() {
           if (img._seed) seedSet.add(img._seed);
         }
         if (!pageMap[sceneKey]) pageMap[sceneKey] = [];
-        pageMap[sceneKey].push({ model, experiment: exp, detail, images, _generation: exp._generation || 'original' });
+        pageMap[sceneKey].push({ model, experiment: exp, detail, images, _generation: exp._generation || 'R1' });
       }
 
       const pages = [];
@@ -469,7 +469,7 @@ function bookMixin() {
     /** Check if a page has regen candidates (R1, R2, etc.) */
     bookPageHasRegen(page) {
       if (!page || !page.models) return false;
-      return page.models.some(m => m._generation && m._generation !== 'original');
+      return page.models.some(m => m._generation && m._generation !== 'R1');
     },
 
     /** Get the thumbnail for a timeline slot (selected image or first available) */
@@ -716,7 +716,7 @@ function bookMixin() {
       const gen = this.bookGetGeneration(pageId);
       const sceneMatch = pageId.match(/(S\d+[a-z]?)/i);
       const scene = sceneMatch ? sceneMatch[1] : pageId.slice(-6);
-      if (gen !== 'original') {
+      if (gen !== 'R1') {
         return `${gen}:${scene}`;
       }
       return scene;
@@ -850,12 +850,13 @@ function bookMixin() {
 
     /** Extract the generation from a pageId/prompt_id.
      *  "0216a_R1_S08f_climax" -> "R1"
-     *  "0216a_S08f_climax" -> "original"
+     *  "0216a_S08f_climax" -> "R1"
      */
     bookGetGeneration(pageId) {
-      if (!pageId) return 'original';
+      if (!pageId) return 'R1';
       const match = pageId.match(/_R(\d+)_/);
-      return match ? `R${match[1]}` : 'original';
+      // Original (no Rn prefix) = R1, first regen (R1 in prompt) = R2, etc.
+      return match ? `R${parseInt(match[1]) + 1}` : 'R1';
     },
 
     /** Extract the scene part from a pageId, stripping bookId and generation prefix.
@@ -878,10 +879,10 @@ function bookMixin() {
         const gen = this.bookGetGeneration(page.id);
         genSet.add(gen);
       }
-      // Sort: 'original' first, then R1, R2, R3...
+      // Sort: 'R1' first, then R1, R2, R3...
       const gens = [...genSet].sort((a, b) => {
-        if (a === 'original') return -1;
-        if (b === 'original') return 1;
+        if (a === 'R1') return -1;
+        if (b === 'R1') return 1;
         const na = parseInt(a.replace('R', ''));
         const nb = parseInt(b.replace('R', ''));
         return na - nb;
@@ -902,7 +903,7 @@ function bookMixin() {
       const modelMap = {};
       for (const modelData of page.models) {
         const name = modelData.model;
-        const gen = modelData._generation || 'original';
+        const gen = modelData._generation || 'R1';
         if (!modelMap[name]) {
           modelMap[name] = { model: name, generations: {}, activeGen: null };
         }
@@ -914,14 +915,14 @@ function bookMixin() {
       for (const [name, group] of Object.entries(modelMap)) {
         const gens = Object.keys(group.generations).sort((a, b) => {
           // Sort: R1, R2, R3... then original last
-          if (a === 'original') return 1;
-          if (b === 'original') return -1;
+          if (a === 'R1') return 1;
+          if (b === 'R1') return -1;
           return a.localeCompare(b);
         });
         const pref = this.book._modelGenPrefs[name];
         // Default to latest regen, or original if no regen
-        const latestRegen = gens.find(g => g !== 'original');
-        group.activeGen = (pref && gens.includes(pref)) ? pref : (latestRegen || 'original');
+        const latestRegen = gens.find(g => g !== 'R1');
+        group.activeGen = (pref && gens.includes(pref)) ? pref : (latestRegen || 'R1');
         group.availableGens = gens;
       }
 

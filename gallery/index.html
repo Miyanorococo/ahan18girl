@@ -892,9 +892,9 @@
                     <div style="margin-bottom:12px">
                       <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
                         <span style="font-size:0.75rem;color:var(--text-muted)" x-text="displayModelName(group.model)"></span>
-                        <template x-if="group.availableGens && group.availableGens.filter(g => g !== 'original').length > 0">
+                        <template x-if="group.availableGens && group.availableGens.length > 1">
                           <div style="display:flex;gap:2px">
-                            <template x-for="gen in group.availableGens.filter(g => g !== 'original')" :key="'gt-' + group.model + '-' + gen">
+                            <template x-for="gen in group.availableGens" :key="'gt-' + group.model + '-' + gen">
                               <button style="font-size:0.55rem;padding:1px 5px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--text-muted);transition:all 0.1s"
                                       :style="gen === group.activeGen ? 'background:#9c27b0;color:white;border-color:#9c27b0' : ''"
                                       @click="bookSwitchModelGen(group.model, gen)"
