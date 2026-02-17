@@ -630,20 +630,30 @@ function bookMixin() {
       } catch { return; }
 
       if (data.type === 'candidate') {
-        // Check insertion indicator: if insert-before or insert-after, treat as cross-page selection
         const isInsertBefore = el.classList.contains('drag-insert-before');
         const isInsertAfter = el.classList.contains('drag-insert-after');
+        const img = { full_url: data.full_url, thumb_url: data.thumb_url, name: data.name };
 
-        // Candidate dropped on timeline slot -> select image for that page
-        const targetPage = this.book.pages[targetIdx];
-        if (!targetPage) return;
-        this.bookSelectImage(targetPage.id, data.model, data.seed, {
-          full_url: data.full_url,
-          thumb_url: data.thumb_url,
-          name: data.name,
-        });
-        // Navigate to the target page so user sees the result
-        this.book.currentPage = targetIdx;
+        if (isInsertBefore || isInsertAfter) {
+          // INSERT: duplicate the source page at the insert position with the dragged image selected
+          this.bookPushUndo();
+          const sourcePage = this.book.pages.find(p => p.id === data.pageId);
+          if (!sourcePage) return;
+          // Create a shallow copy of the page (shares models/images references)
+          const insertIdx = isInsertAfter ? targetIdx + 1 : targetIdx;
+          const newPage = { ...sourcePage, _insertedFrom: data.pageId };
+          const pages = [...this.book.pages];
+          pages.splice(insertIdx, 0, newPage);
+          this.book.pages = pages;
+          this.bookSelectImage(newPage.id, data.model, data.seed, img);
+          this.book.currentPage = insertIdx;
+        } else {
+          // SWAP: select image for the target page
+          const targetPage = this.book.pages[targetIdx];
+          if (!targetPage) return;
+          this.bookSelectImage(targetPage.id, data.model, data.seed, img);
+          this.book.currentPage = targetIdx;
+        }
       } else if (data.type === 'timeline') {
         // Timeline slot dropped on another slot -> insert (not swap)
         const fromIdx = data.fromIdx;
