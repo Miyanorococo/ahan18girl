@@ -90,7 +90,9 @@ function bookMixin() {
           bookId = prefixMatch[1];
         }
 
-        const bookKey = `${date}_${bookId}`;
+        // For MMDD+letter bookIds, key by bookId only (regen on different day stays in same book)
+        // For legacy letter prefixes, key by date+prefix
+        const bookKey = /^\d{4}[a-z]$/.test(bookId) ? bookId : `${date}_${bookId}`;
         if (!bookMap[bookKey]) {
           bookMap[bookKey] = {
             id: bookKey,
@@ -184,17 +186,17 @@ function bookMixin() {
       this.book.currentBook = bookInfo;
       const { date, bookId } = bookInfo;
 
-      // Filter experiments for this book
+      // Filter experiments for this book (by bookId, any date — regen may be on different day)
       const bookExps = this.experiments.filter(e => {
-        const dateMatch = e.id.match(/^(\d{8})_/);
-        if (!dateMatch || dateMatch[1] !== date) return false;
         const pid = e.prompt_id || '';
-        // Match by book ID
+        // Match by book ID (e.g., 0216a_S00, 0216a_R1_S00)
         if (/^\d{4}[a-z]_/.test(pid)) {
           const m = pid.match(/^(\d{4}[a-z])_/);
           return m && m[1] === bookId;
         }
-        // Legacy: match by letter prefix
+        // Legacy: match by date + letter prefix
+        const dateMatch = e.id.match(/^(\d{8})_/);
+        if (!dateMatch || dateMatch[1] !== date) return false;
         const m = pid.match(/^([A-Za-z]+)\d/);
         return m && m[1] === bookId;
       });
