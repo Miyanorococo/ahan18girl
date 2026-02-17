@@ -723,7 +723,7 @@
           </div>
 
           <!-- ===== VIEW MODE ===== -->
-          <div x-show="!book.editorMode">
+          <template x-if="!book.editorMode"><div>
             <div class="book-top-bar">
               <span class="book-page-info" x-text="(book.currentPage + 1) + ' / ' + book.pages.length + ' — ' + (bookCurrentPage()?.scene || '')"></span>
               <div class="book-models">
@@ -770,10 +770,10 @@
                 </div>
               </template>
             </div>
-          </div>
+          </div></template>
 
           <!-- ===== EDITOR MODE ===== -->
-          <div x-show="book.editorMode" style="display:none"
+          <template x-if="book.editorMode"><div
                @keydown.window="(() => {
                  if (!book.editorMode || $event.target.matches('input,textarea')) return;
                  const k = $event.key, ctrl = $event.ctrlKey || $event.metaKey;
@@ -988,7 +988,7 @@
                 </template>
               </div>
             </div>
-          </div>
+          </div></template>
         </div>
       </template>
     </div>
