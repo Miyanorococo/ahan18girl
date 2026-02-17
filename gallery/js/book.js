@@ -190,13 +190,14 @@ function bookMixin() {
       this.book.currentBook = bookInfo;
       const { date, bookId } = bookInfo;
 
-      // Filter experiments for this book (by bookId, any date — regen may be on different day)
+      // Filter experiments for this book
+      const isBookIdFormat = /^\d{4}[a-z]$/.test(bookId);
       const bookExps = this.experiments.filter(e => {
         const pid = e.prompt_id || '';
-        // Match by book ID (e.g., 0216a_S00, 0216a_R1_S00)
-        if (/^\d{4}[a-z]_/.test(pid)) {
-          const m = pid.match(/^(\d{4}[a-z])_/);
-          return m && m[1] === bookId;
+        if (isBookIdFormat) {
+          // Only match prompt_ids that START with this bookId (e.g., 0216a_)
+          // This excludes legacy S00 format that has no bookId prefix
+          return pid.startsWith(bookId + '_');
         }
         // Legacy: match by date + letter prefix
         const dateMatch = e.id.match(/^(\d{8})_/);
