@@ -48,6 +48,10 @@ function bookMixin() {
       // Generation versioning (Feature 5)
       generations: [],        // ['original', 'R1', 'R2'] - detected from loaded pages
       selectedGen: 'all',     // 'all' | 'original' | 'R1' | 'R2' etc.
+
+      // Shelf (Feature 6)
+      shelf: [],              // Array of page objects removed from timeline
+      shelfOpen: false,
     },
 
     /**
@@ -267,9 +271,10 @@ function bookMixin() {
       this.book.editorMode = false;
       this.book.loading = false;
 
-      // Load saved selections and regen flags for this book
+      // Load saved selections, regen flags, and shelf for this book
       this.bookLoadSelections();
       this._loadRegenFlags();
+      this.bookLoadShelf();
 
       // Detect generations from loaded pages
       this.bookDetectGenerations();
@@ -291,6 +296,8 @@ function bookMixin() {
       this.book.regenArn = '';
       this.book.generations = [];
       this.book.selectedGen = 'all';
+      this.book.shelf = [];
+      this.book.shelfOpen = false;
     },
 
     /** Get current page object */
@@ -568,7 +575,9 @@ function bookMixin() {
     bookHandleTimelineDrop(event, targetIdx) {
       event.preventDefault();
       const el = event.currentTarget;
-      el.classList.remove('drag-over');
+      el.classList.remove('drag-over', 'drag-insert-before', 'drag-insert-after');
+      // Clear insert indicators from all slots
+      document.querySelectorAll('.be-timeline-slot').forEach(s => s.classList.remove('drag-insert-before', 'drag-insert-after'));
 
       let data;
       try {
@@ -585,10 +594,23 @@ function bookMixin() {
           name: data.name,
         });
       } else if (data.type === 'timeline') {
-        // Timeline slot dropped on another slot -> swap pages
+        // Timeline slot dropped on another slot -> insert (not swap)
         const fromIdx = data.fromIdx;
         if (fromIdx === targetIdx) return;
         this.bookHandleTimelineReorder(fromIdx, targetIdx);
+      } else if (data.type === 'shelf') {
+        // Shelf item dropped on timeline -> insert at position
+        const shelfIdx = data.shelfIdx;
+        if (shelfIdx == null) return;
+        const shelf = [...this.book.shelf];
+        if (shelfIdx < 0 || shelfIdx >= shelf.length) return;
+        const [item] = shelf.splice(shelfIdx, 1);
+        this.book.shelf = shelf;
+        this.bookSaveShelf();
+        const pages = [...this.book.pages];
+        pages.splice(targetIdx, 0, item);
+        this.book.pages = pages;
+        this.book.currentPage = targetIdx;
       }
     },
 
@@ -614,22 +636,14 @@ function bookMixin() {
       }
     },
 
-    /** Swap two pages in the book.pages array */
+    /** Insert page from fromIdx at toIdx position (shift, not swap) */
     bookHandleTimelineReorder(fromIdx, toIdx) {
+      if (fromIdx === toIdx) return;
       const pages = [...this.book.pages];
-      // Swap the two pages
-      const temp = pages[fromIdx];
-      pages[fromIdx] = pages[toIdx];
-      pages[toIdx] = temp;
-      // Reassign to trigger Alpine reactivity
+      const [moved] = pages.splice(fromIdx, 1);
+      pages.splice(toIdx, 0, moved);
       this.book.pages = pages;
-
-      // Update currentPage to follow the dragged page
-      if (this.book.currentPage === fromIdx) {
-        this.book.currentPage = toIdx;
-      } else if (this.book.currentPage === toIdx) {
-        this.book.currentPage = fromIdx;
-      }
+      this.book.currentPage = toIdx;
     },
 
     /** Drag enter handler for drop targets (adds visual indicator) */
@@ -646,7 +660,27 @@ function bookMixin() {
       const x = event.clientX;
       const y = event.clientY;
       if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
-        event.currentTarget.classList.remove('drag-over');
+        event.currentTarget.classList.remove('drag-over', 'drag-insert-before', 'drag-insert-after');
+      }
+    },
+
+    /** Drag over handler for timeline slots - shows insertion indicator */
+    bookTimelineDragOver(event, slotIdx) {
+      event.preventDefault();
+      let data;
+      try {
+        const raw = event.dataTransfer.types.includes('text/plain') ? 'move' : 'copy';
+        event.dataTransfer.dropEffect = raw;
+      } catch {}
+      const el = event.currentTarget;
+      const rect = el.getBoundingClientRect();
+      const midX = rect.left + rect.width / 2;
+      if (event.clientX < midX) {
+        el.classList.add('drag-insert-before');
+        el.classList.remove('drag-insert-after');
+      } else {
+        el.classList.add('drag-insert-after');
+        el.classList.remove('drag-insert-before');
       }
     },
 
@@ -661,6 +695,128 @@ function bookMixin() {
         return `${gen}:${scene}`;
       }
       return scene;
+    },
+
+    // ==========================================
+    // Page Remove & Shelf (Feature 6)
+    // ==========================================
+
+    /** Get the rating icon for a page's current selection or first image */
+    bookTimelineRatingIcon(page) {
+      // Check selected image first
+      const sel = this.book.selections[page.id];
+      if (sel && sel._ratingImg) {
+        const r = this.getImageRating(sel._ratingImg);
+        if (r === 5) return '\u2605'; // star
+        if (r === -1) return '\uD83D\uDC4E'; // thumbs down
+      }
+      // Check first image of first model
+      const firstModel = page.models[0];
+      if (!firstModel) return '';
+      for (const img of firstModel.images) {
+        const r = this.getImageRating(img);
+        if (r === 5) return '\u2605';
+        if (r === -1) return '\uD83D\uDC4E';
+      }
+      return '';
+    },
+
+    /** Get the rating class for timeline overlay */
+    bookTimelineRatingClass(page) {
+      const firstModel = page.models[0];
+      if (!firstModel) return '';
+      for (const img of firstModel.images) {
+        const r = this.getImageRating(img);
+        if (r === 5) return 'rating-star';
+        if (r === -1) return 'rating-bad';
+      }
+      return '';
+    },
+
+    /** Remove a page from the timeline and add to shelf */
+    bookRemovePage(idx) {
+      const pages = [...this.book.pages];
+      if (idx < 0 || idx >= pages.length) return;
+      const [removed] = pages.splice(idx, 1);
+      this.book.pages = pages;
+      // Add to shelf
+      if (!this.book.shelf) this.book.shelf = [];
+      this.book.shelf = [...this.book.shelf, removed];
+      this.bookSaveShelf();
+      if (this.book.currentPage >= pages.length) {
+        this.book.currentPage = Math.max(0, pages.length - 1);
+      }
+    },
+
+    /** Start dragging a shelf item */
+    bookDragStartShelf(event, idx) {
+      const item = this.book.shelf[idx];
+      if (!item) return;
+      const data = {
+        type: 'shelf',
+        shelfIdx: idx,
+      };
+      event.dataTransfer.setData('text/plain', JSON.stringify(data));
+      event.dataTransfer.effectAllowed = 'move';
+    },
+
+    /** Restore a shelf item back to the end of the timeline */
+    bookRestoreFromShelf(idx) {
+      const shelf = [...this.book.shelf];
+      if (idx < 0 || idx >= shelf.length) return;
+      const [item] = shelf.splice(idx, 1);
+      this.book.shelf = shelf;
+      this.bookSaveShelf();
+      this.book.pages = [...this.book.pages, item];
+    },
+
+    /** Permanently remove a shelf item */
+    bookRemoveFromShelf(idx) {
+      const shelf = [...this.book.shelf];
+      if (idx < 0 || idx >= shelf.length) return;
+      shelf.splice(idx, 1);
+      this.book.shelf = shelf;
+      this.bookSaveShelf();
+    },
+
+    /** Save shelf to localStorage */
+    bookSaveShelf() {
+      try {
+        const stored = JSON.parse(localStorage.getItem('book_shelf') || '{}');
+        const bookKey = this.book.currentBook?.id;
+        if (bookKey) {
+          // Store minimal data for shelf items (page id, scene, summary, first thumb)
+          stored[bookKey] = (this.book.shelf || []).map(p => ({
+            id: p.id, prompt_id: p.prompt_id, scene: p.scene, summary: p.summary,
+            models: p.models,
+          }));
+          localStorage.setItem('book_shelf', JSON.stringify(stored));
+        }
+      } catch (e) {
+        console.error('Failed to save shelf:', e);
+      }
+    },
+
+    /** Load shelf from localStorage */
+    bookLoadShelf() {
+      try {
+        const stored = JSON.parse(localStorage.getItem('book_shelf') || '{}');
+        const bookKey = this.book.currentBook?.id;
+        if (bookKey && stored[bookKey]) {
+          this.book.shelf = stored[bookKey];
+        } else {
+          this.book.shelf = [];
+        }
+      } catch {
+        this.book.shelf = [];
+      }
+      this.book.shelfOpen = false;
+    },
+
+    /** Get thumbnail for a shelf item */
+    bookShelfThumb(item) {
+      const firstModel = item.models?.[0];
+      return firstModel?.images?.[0]?.thumb_url || '';
     },
 
     // ==========================================

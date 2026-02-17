@@ -773,7 +773,9 @@
           </div>
 
           <!-- ===== EDITOR MODE ===== -->
-          <div x-show="book.editorMode" x-cloak>
+          <div x-show="book.editorMode" x-cloak
+               @keydown.delete.window="if(book.editorMode && !book.editingPrompt && !$event.target.matches('input,textarea')) bookRemovePage(book.currentPage)"
+               @keydown.backspace.window="if(book.editorMode && !book.editingPrompt && !$event.target.matches('input,textarea')) bookRemovePage(book.currentPage)">
             <div class="be-toolbar">
               <div class="be-progress">
                 <span x-text="bookSelectionCount() + ' / ' + book.pages.length + ' pages'"></span>
