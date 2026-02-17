@@ -914,15 +914,16 @@ function bookMixin() {
       if (!this.book._modelGenPrefs) this.book._modelGenPrefs = {};
       for (const [name, group] of Object.entries(modelMap)) {
         const gens = Object.keys(group.generations).sort((a, b) => {
-          // Sort: R1, R2, R3... then original last
-          if (a === 'R1') return 1;
-          if (b === 'R1') return -1;
-          return a.localeCompare(b);
+          // Sort R1 → R2 → R3 numerically
+          const na = parseInt(a.replace('R', '')) || 0;
+          const nb = parseInt(b.replace('R', '')) || 0;
+          return na - nb;
         });
         const pref = this.book._modelGenPrefs[name];
         // Default to latest regen, or original if no regen
-        const latestRegen = gens.find(g => g !== 'R1');
-        group.activeGen = (pref && gens.includes(pref)) ? pref : (latestRegen || 'R1');
+        // Default to latest (highest R number)
+        const latest = gens[gens.length - 1] || 'R1';
+        group.activeGen = (pref && gens.includes(pref)) ? pref : latest;
         group.availableGens = gens;
       }
 
