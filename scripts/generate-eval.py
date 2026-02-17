@@ -105,7 +105,7 @@ def clear_queue():
         pass
 
 
-def wait_for_completion(prompt_id, timeout=300):
+def wait_for_completion(prompt_id, timeout=600):
     """Poll history until the prompt completes. Clears queue on timeout."""
     start = time.time()
     while time.time() - start < timeout:
