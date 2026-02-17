@@ -213,6 +213,11 @@ else
     fi
 fi
 
+# --- Disable unattended-upgrades (prevents kernel update that breaks NVIDIA driver) ---
+systemctl stop unattended-upgrades 2>/dev/null || true
+systemctl disable unattended-upgrades 2>/dev/null || true
+apt-mark hold linux-image-$(uname -r) linux-headers-$(uname -r) linux-modules-$(uname -r) 2>/dev/null || true
+
 # --- Install dependencies ---
 pip3 install boto3 Pillow 2>/dev/null || true
 if [ -d /data/ComfyUI/venv ]; then
