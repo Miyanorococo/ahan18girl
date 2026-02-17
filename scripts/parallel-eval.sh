@@ -39,27 +39,21 @@ SUBNETS=(
     "subnet-034d901aa43c8b856"  # us-east-1f
 )
 
-# 13 models × 1 worker each
+# 7 adopted models (synced with eval-prompts.json v2-unified model_groups)
+# Excluded: v14(v16下位互換), illustrij(★0%), autismmix(★0%), pony(★0%), dreamshaper(SD1.5), aam(SD1.5)
 WORKER_MODELS=(
     "wai-nsfw-illustrious-v16"
-    "wai-nsfw-illustrious-v14"
     "wai-nsfw-illustrious-v12"
     "wai-nsfw-illustrious-v11"
     "wai-branch-rouwei"
-    "illustrij-v20"
     "nova-anime-xl-il"
-    "autismmix-sdxl"
-    "pony-diffusion-v6-xl"
     "animagine-xl-4.0"
     "femix-hassakuxl"
-    "dreamshaper-8"
-    "aam-anylora-anime-mix"
 )
 
 WORKER_NAMES=(
-    "wai-v16" "wai-v14" "wai-v12" "wai-v11" "rouwei"
-    "illustrij" "nova" "autismmix" "pony" "animagine"
-    "femix" "dreamshaper" "aam"
+    "wai-v16" "wai-v12" "wai-v11" "rouwei"
+    "nova" "animagine" "femix"
 )
 
 NUM_WORKERS=${#WORKER_MODELS[@]}
@@ -232,7 +226,7 @@ sleep 15
 # --- Start ComfyUI ---
 cd /data/ComfyUI
 source venv/bin/activate
-python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch --gpu-only &
+python main.py --listen 127.0.0.1 --port 8188 --disable-auto-launch --gpu-only --disable-async-offload --normalvram &
 COMFYUI_PID=$!
 
 echo "Waiting for ComfyUI..."
