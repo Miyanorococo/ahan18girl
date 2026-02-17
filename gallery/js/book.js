@@ -37,6 +37,13 @@ function bookMixin() {
       editingPrompt: false,
       editPromptText: '',
       regenFlags: {},       // {pageId: {newPrompt, originalPrompt}}
+
+      // Regeneration workflow (Feature 4)
+      regenRunning: false,
+      regenStatus: '',
+      regenCompleted: false,
+      regenArn: '',
+      regenPollTimer: null,
     },
 
     /**
@@ -263,6 +270,7 @@ function bookMixin() {
 
     /** Back to book list */
     closeBook() {
+      this.bookStopRegenPoll();
       this.book.currentBook = null;
       this.book.pages = [];
       this.book.editorMode = false;
@@ -270,6 +278,10 @@ function bookMixin() {
       this.book.suggestion = null;
       this.book.editingPrompt = false;
       this.book.regenFlags = {};
+      this.book.regenRunning = false;
+      this.book.regenCompleted = false;
+      this.book.regenStatus = '';
+      this.book.regenArn = '';
     },
 
     /** Get current page object */
@@ -919,6 +931,117 @@ function bookMixin() {
       } catch {
         this.book.regenFlags = {};
       }
+    },
+
+    // ==========================================
+    // Regeneration Workflow (Feature 4)
+    // ==========================================
+
+    /** Trigger regeneration from UI - collects flagged pages and calls API */
+    async bookTriggerRegen() {
+      const flags = this.book.regenFlags;
+      const flaggedPageIds = Object.keys(flags);
+      if (flaggedPageIds.length === 0) {
+        alert('No pages flagged for regeneration.');
+        return;
+      }
+
+      if (!confirm(`Regenerate ${flaggedPageIds.length} page(s)? This will start a batch job across all models.`)) {
+        return;
+      }
+
+      // Build pages payload
+      const pages = [];
+      for (const [pageId, flag] of Object.entries(flags)) {
+        const page = this.book.pages.find(p => p.id === pageId);
+        // Determine genre and type from existing experiment metadata
+        let genre = '';
+        let type = 'sensitive';
+        if (page && page.models.length > 0) {
+          const detail = page.models[0].detail;
+          genre = detail?.metadata?.genre || this.book.currentBook?.genre || '';
+          type = detail?.metadata?.type || 'sensitive';
+        }
+        pages.push({
+          pageId,
+          prompt: flag.newPrompt,
+          genre,
+          type,
+        });
+      }
+
+      const bookId = this.book.currentBook?.bookId || this.book.currentBook?.id || 'unknown';
+
+      this.book.regenRunning = true;
+      this.book.regenCompleted = false;
+      this.book.regenStatus = 'Starting...';
+
+      try {
+        const result = await GalleryAPI.startRegeneration(bookId, pages);
+        this.book.regenArn = result.executionArn;
+        this.book.regenStatus = `Running (${result.promptCount} prompts, ${result.models.length} models)`;
+
+        // Start polling
+        this.bookPollRegenStatus();
+      } catch (e) {
+        console.error('Regeneration failed to start:', e);
+        this.book.regenRunning = false;
+        this.book.regenStatus = '';
+        alert('Failed to start regeneration: ' + e.message);
+      }
+    },
+
+    /** Poll regeneration status until completed */
+    async bookPollRegenStatus() {
+      if (!this.book.regenArn) return;
+
+      // Clear any existing timer
+      if (this.book.regenPollTimer) {
+        clearTimeout(this.book.regenPollTimer);
+        this.book.regenPollTimer = null;
+      }
+
+      try {
+        const result = await GalleryAPI.getRegenerationStatus(this.book.regenArn);
+        const status = result.status;
+
+        if (status === 'RUNNING') {
+          this.book.regenStatus = 'Running...';
+          // Poll again in 15 seconds
+          this.book.regenPollTimer = setTimeout(() => this.bookPollRegenStatus(), 15000);
+        } else if (status === 'SUCCEEDED') {
+          this.book.regenRunning = false;
+          this.book.regenCompleted = true;
+          this.book.regenStatus = 'Completed';
+        } else {
+          // FAILED, ABORTED, or other
+          this.book.regenRunning = false;
+          this.book.regenCompleted = false;
+          this.book.regenStatus = `${status}`;
+          alert(`Regeneration ${status.toLowerCase()}.`);
+        }
+      } catch (e) {
+        console.error('Failed to poll regen status:', e);
+        // Retry in 30 seconds on error
+        this.book.regenPollTimer = setTimeout(() => this.bookPollRegenStatus(), 30000);
+      }
+    },
+
+    /** Stop polling (cleanup) */
+    bookStopRegenPoll() {
+      if (this.book.regenPollTimer) {
+        clearTimeout(this.book.regenPollTimer);
+        this.book.regenPollTimer = null;
+      }
+    },
+
+    /** Reset regeneration state */
+    bookResetRegenState() {
+      this.bookStopRegenPoll();
+      this.book.regenRunning = false;
+      this.book.regenCompleted = false;
+      this.book.regenStatus = '';
+      this.book.regenArn = '';
     },
 
     // ==========================================

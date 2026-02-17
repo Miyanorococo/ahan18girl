@@ -785,10 +785,26 @@
                 <button class="btn-ghost" @click="bookExportCurrentImage()">DL Current</button>
                 <button class="btn-ghost" @click="bookExportZip()" :disabled="book.exporting || bookSelectionCount() === 0">ZIP</button>
                 <button class="btn-primary" @click="bookExportPDF()" :disabled="book.exporting || bookSelectionCount() === 0">PDF</button>
-                <!-- Regen flag counter & export -->
-                <button class="btn-ghost" x-show="bookRegenFlagCount() > 0"
-                        @click="bookExportRegenList()"
-                        x-text="'Regen (' + bookRegenFlagCount() + ')'"></button>
+                <!-- Regen: trigger regeneration or export list -->
+                <button class="btn-primary" style="background:#ff9800"
+                        x-show="bookRegenFlagCount() > 0 && !book.regenRunning && !book.regenCompleted"
+                        @click="bookTriggerRegen()"
+                        x-text="'Regenerate (' + bookRegenFlagCount() + ')'"></button>
+                <button class="btn-ghost"
+                        x-show="bookRegenFlagCount() > 0 && !book.regenRunning && !book.regenCompleted"
+                        @click="bookExportRegenList()" title="Export regen list as JSON">Export</button>
+                <!-- Regen running indicator -->
+                <span class="be-regen-status" x-show="book.regenRunning"
+                      style="color:#ff9800;font-size:0.8rem;display:flex;align-items:center;gap:4px">
+                  <span class="be-regen-spinner"></span>
+                  <span x-text="book.regenStatus"></span>
+                </span>
+                <!-- Regen completed -->
+                <button class="btn-primary" x-show="book.regenCompleted"
+                        @click="location.reload()"
+                        style="background:#4caf50">Reload (regen done)</button>
+                <button class="btn-ghost" x-show="book.regenCompleted || (!book.regenRunning && book.regenStatus && book.regenStatus !== '')"
+                        @click="bookResetRegenState()" style="font-size:0.75rem">Dismiss</button>
               </div>
             </div>
 

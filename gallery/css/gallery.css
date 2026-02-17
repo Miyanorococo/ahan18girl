@@ -2594,3 +2594,17 @@ body {
   box-shadow: 0 0 0 1px rgba(255, 152, 0, 0.3);
   opacity: 0.95;
 }
+
+/* Regeneration spinner */
+.be-regen-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 152, 0, 0.3);
+  border-top-color: #ff9800;
+  border-radius: 50%;
+  animation: be-spin 0.8s linear infinite;
+}
+@keyframes be-spin {
+  to { transform: rotate(360deg); }
+}

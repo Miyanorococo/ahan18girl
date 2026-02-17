@@ -91,4 +91,29 @@ const GalleryAPI = {
       }),
     });
   },
+
+  /**
+   * Start regeneration for flagged pages.
+   * @param {string} bookId - Book ID
+   * @param {Array} pages - [{pageId, prompt, genre, type}]
+   * @param {Array} [models] - Optional model filter
+   * @param {Array} [seeds] - Optional seeds
+   * @returns {Promise<Object>} {status, executionName, executionArn, ...}
+   */
+  startRegeneration(bookId, pages, models = [], seeds = [42, 123, 456]) {
+    return this.fetchJSON('/api/regenerate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookId, pages, models, seeds }),
+    });
+  },
+
+  /**
+   * Check regeneration status.
+   * @param {string} arn - Step Functions execution ARN
+   * @returns {Promise<Object>} {status: 'RUNNING'|'SUCCEEDED'|'FAILED'|'ABORTED', ...}
+   */
+  getRegenerationStatus(arn) {
+    return this.fetchJSON(`/api/regenerate-status?arn=${encodeURIComponent(arn)}`);
+  },
 };

@@ -2,7 +2,7 @@ import json
 import logging
 import re
 
-from routes import experiments, productions, ratings, select, extract
+from routes import experiments, productions, ratings, select, extract, regenerate
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -77,6 +77,14 @@ def route(method, path, event):
     # POST /api/select
     if method == "POST" and path == "/api/select":
         return select.select_images(event)
+
+    # POST /api/regenerate
+    if method == "POST" and path == "/api/regenerate":
+        return regenerate.start_regeneration(event)
+
+    # GET /api/regenerate-status
+    if method == "GET" and path == "/api/regenerate-status":
+        return regenerate.get_regeneration_status(event)
 
     # POST /api/infer-genre
     if method == "POST" and path == "/api/infer-genre":
