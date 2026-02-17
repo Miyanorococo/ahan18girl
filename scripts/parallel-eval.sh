@@ -189,23 +189,28 @@ SPOT_MONITOR_PID=$!
 
 # --- Mount data volume ---
 # BlockDeviceMapping attaches it as /dev/sdf (appears as /dev/nvme1n1 on nitro)
-echo "Waiting for data volume..."
-for attempt in $(seq 1 30); do
-    for dev in /dev/nvme1n1 /dev/xvdf /dev/sdf; do
-        if [ -b "$dev" ]; then
-            mkdir -p /data
-            mount "$dev" /data 2>/dev/null && echo "Mounted $dev on /data" && break 2
-        fi
+# On NVMe instances (g6e, g5), systemd or cloud-init may auto-mount /data
+if mountpoint -q /data; then
+    echo "/data is already mounted, skipping device wait"
+else
+    echo "Waiting for data volume..."
+    for attempt in $(seq 1 30); do
+        for dev in /dev/nvme1n1 /dev/xvdf /dev/sdf; do
+            if [ -b "$dev" ]; then
+                mkdir -p /data
+                mount "$dev" /data 2>/dev/null && echo "Mounted $dev on /data" && break 2
+            fi
+        done
+        echo "  Waiting for device... ($attempt/30)"
+        sleep 10
     done
-    echo "  Waiting for device... ($attempt/30)"
-    sleep 10
-done
 
-if ! mountpoint -q /data; then
-    echo "ERROR: Could not mount /data after 5 minutes"
-    kill $SPOT_MONITOR_PID 2>/dev/null || true
-    aws ec2 terminate-instances --region ${REGION} --instance-ids "${INSTANCE_ID}" 2>/dev/null || true
-    exit 1
+    if ! mountpoint -q /data; then
+        echo "ERROR: Could not mount /data after 5 minutes"
+        kill $SPOT_MONITOR_PID 2>/dev/null || true
+        aws ec2 terminate-instances --region ${REGION} --instance-ids "${INSTANCE_ID}" 2>/dev/null || true
+        exit 1
+    fi
 fi
 
 # --- Install dependencies ---

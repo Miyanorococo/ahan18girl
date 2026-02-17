@@ -105,6 +105,35 @@ def clear_queue():
         pass
 
 
+def warmup_model(checkpoint):
+    """Send a tiny 64x64 1-step prompt to force SDXL model loading into VRAM.
+
+    ComfyUI起動直後の初回プロンプトではモデルロードが発生し300-500秒かかる。
+    本番生成前にダミープロンプトでモデルをVRAMにキャッシュしておくことで、
+    初回タイムアウトを防止する。
+    """
+    log.info("Warming up model: %s (64x64, 1-step dummy prompt)...", checkpoint)
+    workflow = build_txt2img_workflow(
+        checkpoint=checkpoint,
+        positive="test",
+        negative="",
+        seed=0,
+        width=64,
+        height=64,
+        steps=1,
+        cfg=1,
+        sampler="euler",
+        scheduler="normal",
+        clip_skip=1,
+    )
+    try:
+        pid = queue_prompt(workflow)
+        wait_for_completion(pid, timeout=600)
+        log.info("Warmup complete: model loaded into VRAM")
+    except Exception as e:
+        log.warning("Warmup failed (generation may still work): %s", e)
+
+
 def wait_for_completion(prompt_id, timeout=600):
     """Poll history until the prompt completes. Clears queue on timeout."""
     start = time.time()
@@ -494,6 +523,21 @@ def run_generation(config, model_filter=None, prompt_filter=None, dry_run=False,
     now = datetime.now(timezone.utc)
     date_str = now.strftime("%Y%m%d")
 
+    # Warmup: 最初のモデルのチェックポイントでVRAMにロードしておく
+    if not dry_run:
+        first_checkpoint = None
+        for group in config["model_groups"].values():
+            for model_name in group["models"]:
+                if model_filter and model_name not in model_filter:
+                    continue
+                first_checkpoint = CHECKPOINT_MAP.get(model_name)
+                if first_checkpoint:
+                    break
+            if first_checkpoint:
+                break
+        if first_checkpoint:
+            warmup_model(first_checkpoint)
+
     total_images = 0
     total_models = 0
 
@@ -814,6 +858,7 @@ def run_layer2_tests(checkpoint="wai-nsfw-illustrious-v16.safetensors"):
     import shutil
 
     log.info("=== Layer 2 Batch Test (via generate-eval.py) ===")
+    warmup_model(checkpoint)
     s3 = boto3.client("s3")
     S3_PREFIX = "experiments/layer2-batch"
     seeds = [42, 123, 456]
