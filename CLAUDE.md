@@ -457,7 +457,17 @@ Obsidian: `/Users/rkuros/Obsidian/AWS/AWS/AI出版戦略/` に以下のファイ
 - Book ID命名規則（MMDD+letter）
 - Seed: プロンプト生成時にランダム書き込み方式
 
+### 完了タスク（2026-02-17〜18）
+- Book Editor: ドラッグ&ドロップ（Swap/Insert/Reorder）、＋インサートゾーン、Shelf常時表示
+- Undo/Redo（Ctrl+Z/Y、50ステップ）、世代管理（R0/R1/R2モデル別タブ）
+- UI再生成ワークフロー完成（プロンプト編集→Flag→Regenerateボタン→Lambda→Step Functions）
+- バグ修正多数（HTML閉じタグ、effectAllowed不一致、jsPDF CDN、orphaned CSS 334行削除）
+- プロンプトファイル衝突修正（専用S3キー、Regen APIの共有ファイル上書き廃止）
+- Book 0218a（青髪サイドブレイド）生成開始
+- JS/CSS/HTMLフルスキャン監査完了（全PASS）
+
 ### 詳細ログ
-- Obsidian: `28_セッションログ_20260216.md`（全実施内容）
+- Obsidian: `28_セッションログ_20260216.md`（初日の全実施内容）
+- Obsidian: `32_セッションログ_20260217-18.md`（Book Editor拡張+バグ修正+青髪生成）
 - Obsidian: `29_イラストノベルJKストーリー.md`（ストーリー+プロンプト）
 - Obsidian: `31_イラストノベル量産方針.md`（A/B/C方式）
