@@ -50,8 +50,47 @@
 - Futanari: penis→enlarged clitoris/clitoris hypertrophy
 - Random seeds per book generation
 
+## Session 2026-02-18 Updates
+
+### Book Editor Enhancements
+- Drag & drop: candidate→slot (swap), candidate→insert zone (+button), slot↔slot reorder
+- Insert zones: hidden by default, expand with + icon during drag
+- Shelf: always visible with drop zone placeholder
+- Undo/Redo: Ctrl+Z/Y, 50-step history
+- Per-model generation tabs (R0/R1/R2) for regen candidates
+- Rating overlay on candidate thumbnails (★/♥/👎 semi-transparent)
+- Page numbers on timeline
+- Delete key removes page to shelf
+- View/Editor toggle: CSS-only (.book-editor-active class)
+- PDF export: no background/margins, jsPDF 2.5.1
+
+### Bug Fixes
+- lightbox.js: `entry` undefined → `updated`
+- app.js: `const stored` → `let stored` (R2→R1 migration)
+- favicon.ico added (fixes 502)
+- Orphaned CSS removed (334 lines)
+- HTML unclosed tags fixed (multiple instances)
+- effectAllowed/dropEffect unified to 'all'
+- R2→R1 S3 rename + localStorage migration
+
+### Prompt File Conflict Resolution
+- Each book uses dedicated S3 key: eval-scripts/eval-prompts-{bookId}.json
+- Regen API no longer overwrites shared eval-prompts.json
+- Step Functions: promptsFile parameter added (pending Docker rebuild for full support)
+- Current workaround: ensure eval-prompts.json is correct before batch start
+
+### Book 0218a (Blue Hair)
+- Character: 青髪ロング サイドブレイド、琥珀色の目、巨乳、20歳日本人
+- Style: 朝のまどろみ、白Tシャツ、コージーベッドルーム
+- Seeds: [974592, 427904, 556469] (random)
+- Status: generating (88/238)
+
+### Generation Naming
+- R0 = original, R1 = first regen, R2 = second regen
+- S3: no-prefix=R0, _R1_=R1, _R2_=R2 (consistent)
+
 ## Next Actions
-1. Review 3 books in Book Editor, select best images
-2. Export PDF/ZIP of selected images
-3. Add text/dialogue overlay
-4. Publish to DLSite
+1. Complete 0218a generation + scoring + index rebuild
+2. Review all 4 books, select best for first publication
+3. PDF export → text/dialogue → DLSite upload
+4. Docker rebuild with PROMPTS_FILE support for true parallel batches

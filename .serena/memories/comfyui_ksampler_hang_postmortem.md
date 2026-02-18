@@ -101,7 +101,14 @@ L2W テスト 9/9 画像生成成功（--models パス）。
 - txt2img 3枚生成成功
 - ただし IP-Adapter/ControlNet ワークフローはまだタイムアウト
 - EBS スナップショットの初回 I/O が遅く、warmup が 600秒でタイムアウト
-- 次のセッション: warmup timeout 900秒 + Layer 2 ワークフロータイムアウト拡大
+## 最終結論（2026-02-18）
+- AMI v4 のカーネル/ドライバ修正は成功（nvidia-smi 正常）
+- Fleet --models (txt2img) は動作する（70+ experiments + L2W 9枚）
+- **Layer 2 --layer2-test の初回モデルロードがハング（ComfyUI API 固有問題）**
+- warmup 900秒でもタイムアウト（VRAM 0 MiB のまま）
+- Spot 中断問題も発生（On-Demand で回避可能だが高コスト）
+- **推奨**: Layer 2 は 84枚（個別テスト）で十分。バッチ N 数追加は AMI ゼロ構築時に対応
+- ComfyUI 初回モデルロード問題は、systemd 先行起動でキャッシュする運用で回避可能
 
 ## eval-prompts.json 共有問題 — 解決（2026-02-18）
 - 各 Fleet 実行で eval-prompts-{timestamp}.json のユニークキーを使用
