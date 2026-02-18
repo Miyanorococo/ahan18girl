@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir \
         torch torchvision torchaudio \
         --index-url https://download.pytorch.org/whl/cu124 \
     && pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir boto3 Pillow
+    && pip install --no-cache-dir boto3 Pillow onnxruntime
 
 # Create model directories (populated at runtime from S3)
 RUN mkdir -p models/checkpoints models/vae models/loras \
@@ -40,7 +40,7 @@ RUN chmod +x /opt/entrypoint.sh
 
 ENV COMFYUI_URL=http://127.0.0.1:8188
 ENV S3_BUCKET=r18-anime-assets
-ENV PROMPTS_FILE=/opt/eval/assets/templates/eval-prompts.json
+ENV PROMPTS_S3_KEY=eval-scripts/eval-prompts.json
 ENV OUTPUT_DIR=/opt/ComfyUI/output/eval
 
 ENTRYPOINT ["/opt/entrypoint.sh"]

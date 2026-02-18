@@ -68,7 +68,7 @@ if [ "${READY}" != "true" ]; then
 fi
 
 # ---- Download latest prompts from S3 (override baked-in version) ----
-PROMPTS_S3_KEY="${PROMPTS_FILE:-eval-scripts/eval-prompts.json}"
+PROMPTS_S3_KEY="${PROMPTS_S3_KEY:-eval-scripts/eval-prompts.json}"
 log "Downloading prompts from S3: ${PROMPTS_S3_KEY}"
 aws s3 cp "s3://${S3_BUCKET}/${PROMPTS_S3_KEY}" \
     /opt/eval/assets/templates/eval-prompts.json \
