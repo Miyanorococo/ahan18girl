@@ -128,7 +128,7 @@ def warmup_model(checkpoint):
     )
     try:
         pid = queue_prompt(workflow)
-        wait_for_completion(pid, timeout=600)
+        wait_for_completion(pid, timeout=900)
         log.info("Warmup complete: model loaded into VRAM")
     except Exception as e:
         log.warning("Warmup failed (generation may still work): %s", e)
@@ -867,7 +867,7 @@ def run_layer2_tests(checkpoint="wai-nsfw-illustrious-v16.safetensors"):
     clip_skip = 2
     W, H = 1024, 1536
 
-    def run_one(wf, prefix, timeout=600):
+    def run_one(wf, prefix, timeout=900):
         nonlocal generated, failed
         try:
             pid = queue_prompt(wf)
