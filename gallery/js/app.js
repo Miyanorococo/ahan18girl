@@ -218,12 +218,8 @@ document.addEventListener('alpine:init', () => {
         this._serverTotal = data.total || 0;
         this._nextCursor = data.nextCursor || null;
 
-        // Build filter options from first load (full list) if not yet built
+        // Build filter options from first load if not yet built
         if (this.availableModels.length === 0) {
-          // Fetch unfiltered to get all unique values for dropdowns
-          const all = await GalleryAPI.getExperiments({ limit: 1 });
-          // Server returns total — but we need unique model/genre lists
-          // Use a lightweight approach: fetch without filters, large limit, just for options
           const optData = await GalleryAPI.getExperiments({ limit: 500 });
           const opts = optData.experiments || [];
           const models = new Set(), genres = new Set();
@@ -318,8 +314,55 @@ document.addEventListener('alpine:init', () => {
     },
 
     filterExperiments() {
-      // Trigger server-side filtered load
-      this.loadFilteredExperiments(true);
+      // ratingStatus and pipeline filters depend on client-side ratings data,
+      // so they can't be server-side. If active, filter locally after server fetch.
+      const needsClientFilter = this.filters.ratingStatus || this.filters.pipeline;
+      if (needsClientFilter) {
+        this._filterExperimentsLocal();
+      } else {
+        this.loadFilteredExperiments(true);
+      }
+    },
+
+    /** Client-side filtering for ratingStatus/pipeline (needs localStorage ratings). */
+    _filterExperimentsLocal() {
+      let result = this.experiments.length > 0 ? this.experiments : this.filteredExperiments;
+
+      const search = (this.filters.search || '').toLowerCase().trim();
+      if (search) {
+        result = result.filter(exp => {
+          const text = [exp.prompt_summary, exp.id, exp.model, exp.pipeline].filter(Boolean).join(' ').toLowerCase();
+          return text.includes(search);
+        });
+      }
+      if (this.filters.model) result = result.filter(exp => exp.model === this.filters.model);
+      if (this.filters.pipeline) result = result.filter(exp => exp.pipeline === this.filters.pipeline);
+      if (this.filters.genre) result = result.filter(exp => this.getExpGenre(exp) === this.filters.genre);
+
+      if (this.filters.ratingStatus === 'unrated') {
+        result = result.filter(exp => this._getExpRatedCount(exp) === 0);
+      } else if (this.filters.ratingStatus === 'partial') {
+        result = result.filter(exp => {
+          const rated = this._getExpRatedCount(exp);
+          return rated > 0 && rated < (exp.image_count || 0);
+        });
+      } else if (this.filters.ratingStatus === 'rated') {
+        result = result.filter(exp => {
+          const rated = this._getExpRatedCount(exp);
+          return rated > 0 && rated >= (exp.image_count || 0);
+        });
+      } else if (this.filters.ratingStatus === 'favorited') {
+        result = result.filter(exp => this._getExpFavCount(exp) > 0);
+      }
+
+      if (this.sortBy === 'date-asc') result.sort((a, b) => (a.created_at || '').localeCompare(b.created_at || ''));
+      else if (this.sortBy === 'model') result.sort((a, b) => (a.model || '').localeCompare(b.model || ''));
+      else if (this.sortBy === 'rated') result.sort((a, b) => this._getExpRatedCount(b) - this._getExpRatedCount(a));
+      else result.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+
+      this.filteredExperiments = result;
+      this._serverTotal = result.length;
+      this._nextCursor = null;
     },
 
     /** Cached rated/fav counts per experiment. Rebuilt on rating changes. */
