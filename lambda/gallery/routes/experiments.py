@@ -124,6 +124,13 @@ def list_experiments(event):
     if end_idx < total:
         result["nextCursor"] = base64.b64encode(str(end_idx).encode()).decode()
 
+    # Include filter options on unfiltered requests (for dropdown population)
+    if not any([book, model, genre, prompt_id, search]):
+        models = sorted({e.get("model", "") for e in index if e.get("model")})
+        genres = sorted({e.get("genre", "") for e in index if e.get("genre")})
+        result["availableModels"] = models
+        result["availableGenres"] = genres
+
     return _response(200, result)
 
 

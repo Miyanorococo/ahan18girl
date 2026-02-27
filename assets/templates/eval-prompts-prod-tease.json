@@ -1,0 +1,178 @@
+{
+  "_meta": {
+    "description": "焦らしグラビアブック — 茶髪JK教室、徐々に脱衣→SEX複数体位",
+    "created": "2026-02-18",
+    "version": "prod-tease-v1",
+    "character": "茶髪ロング、制服JK、教室",
+    "seeds": [601589, 779427, 904561],
+    "book_id": "0218t",
+    "book_theme": "放課後の秘密（焦らしグラビア）"
+  },
+  "negative_common": {
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, ",
+    "safe": ""
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": ["wai-nsfw-illustrious-v16", "wai-nsfw-illustrious-v11", "wai-branch-rouwei", "wai-nsfw-illustrious-v12"],
+      "cfg": 7, "steps": 25, "sampler": "euler_ancestral", "scheduler": "sgm_uniform", "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "B_nova": {
+      "models": ["nova-anime-xl-il"],
+      "cfg": 5, "steps": 25, "sampler": "euler_ancestral", "scheduler": "normal", "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers"
+    },
+    "D_animagine": {
+      "models": ["animagine-xl-4.0"],
+      "cfg": 5, "steps": 28, "sampler": "euler_ancestral", "scheduler": "normal", "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers",
+      "strip_tags": ["warm lighting", "soft lighting", "afternoon light", "golden hour", "golden hour light", "afternoon sunlight", "from front", "from above", "from below", "from behind", "from side", "dynamic angle", "low angle", "close-up", "cowboy shot", "full body", "upper body", "smooth skin", "wet skin", "glistening skin", "detailed skin", "skin texture"]
+    },
+    "E_femix": {
+      "models": ["femix-hassakuxl"],
+      "cfg": 7, "steps": 25, "sampler": "euler_ancestral", "scheduler": "sgm_uniform", "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits"
+    }
+  },
+  "prompts": [
+    {
+      "id": "0218t_S01_cover",
+      "genre": "JK/グラビア", "type": "safe",
+      "content": {"default": "1girl, solo, brown hair, long hair, school uniform, white shirt, plaid skirt, standing, wind, floating hair, skirt lift, looking at viewer, smile, blush, school gate, cherry blossoms, spring, afternoon sunlight, lens flare, full body"}
+    },
+    {
+      "id": "0218t_S02_sitting",
+      "genre": "JK/グラビア", "type": "safe",
+      "content": {"default": "1girl, solo, brown hair, long hair, school uniform, white shirt, plaid skirt, sitting on chair, classroom, looking at viewer, chin rest, gentle smile, detailed eyes, afternoon light, from front, upper body"}
+    },
+    {
+      "id": "0218t_S03_stretch",
+      "genre": "JK/グラビア", "type": "sensitive",
+      "content": {"default": "1girl, solo, brown hair, long hair, school uniform, sitting on chair, stretching, arms up, shirt riding up, navel peek, yawning, eyes closed, relaxed, classroom, afternoon light, from slightly below"}
+    },
+    {
+      "id": "0218t_S04_faceup",
+      "genre": "JK/グラビア", "type": "sensitive",
+      "content": {"default": "1girl, solo, brown hair, long hair, close-up, face, biting lip, playful expression, looking at viewer, blush, loose tie, top button undone, collarbone, classroom, soft lighting, upper body"}
+    },
+    {
+      "id": "0218t_S05_backlit",
+      "genre": "JK/グラビア", "type": "sensitive",
+      "content": {"default": "1girl, solo, brown hair, long hair, school uniform, standing by window, backlighting, silhouette, body outline visible through shirt, looking back, mysterious smile, golden hour, full body"}
+    },
+    {
+      "id": "0218t_S06_leaning",
+      "genre": "JK/グラビア", "type": "sensitive",
+      "content": {"default": "1girl, solo, brown hair, long hair, school uniform, leaning forward on desk, cleavage, from above, looking up at viewer, innocent expression, loose tie, warm lighting, upper body"}
+    },
+    {
+      "id": "0218t_S07_crossleg",
+      "genre": "JK/グラビア", "type": "sensitive",
+      "content": {"default": "1girl, solo, brown hair, long hair, school uniform, sitting on chair, crossed legs, skirt riding up, thighs visible, thighhighs, playful smile, hand on knee, classroom, warm lighting, full body"}
+    },
+    {
+      "id": "0218t_S08_unbutton",
+      "genre": "JK/グラビア", "type": "sensitive",
+      "content": {"default": "1girl, solo, brown hair, long hair, school uniform, unbuttoning shirt, nervous, bra strap visible, blush, embarrassed, looking away, classroom, warm lighting, upper body"}
+    },
+    {
+      "id": "0218t_S09_shirtopen",
+      "genre": "JK/グラビア", "type": "sensitive",
+      "content": {"default": "1girl, solo, brown hair, long hair, open shirt, white lace bra, shirt hanging off one shoulder, collarbone, smooth skin, sitting on desk, looking at viewer, shy, blush, classroom, afternoon light, upper body"}
+    },
+    {
+      "id": "0218t_S10_backview",
+      "genre": "JK/グラビア", "type": "sensitive",
+      "content": {"default": "1girl, solo, brown hair, long hair, removing shirt, from behind, looking back, bare back, bra clasp visible, spine, smooth skin, classroom, warm lighting, upper body"}
+    },
+    {
+      "id": "0218t_S11_skirtdown",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, solo, brown hair, long hair, skirt pull, panties, white panties, standing, biting lip, blush, long legs, thighhighs, classroom, from side, full body"}
+    },
+    {
+      "id": "0218t_S12_underwear",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, solo, brown hair, long hair, underwear, white bra, white panties, sitting on chair, knees together, covering chest, peeking, embarrassed, blush, classroom, soft lighting, upper body"}
+    },
+    {
+      "id": "0218t_S13_topless",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, solo, brown hair, long hair, topless, nude, covering breasts, arm across chest, sitting on desk, thighhighs, looking away, deep blush, smooth skin, classroom, golden hour, upper body"}
+    },
+    {
+      "id": "0218t_S14_fullnude",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, solo, brown hair, long hair, completely nude, sitting on chair, knees slightly apart, shy, one hand between legs, other arm covering breasts, blush, embarrassed, classroom, warm lighting, full body"}
+    },
+    {
+      "id": "0218t_S15_touch",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, solo, brown hair, long hair, nude, sitting on chair, spread legs, touching self, hand on inner thigh, blush, half-closed eyes, panting, classroom, warm lighting, from front, upper body"}
+    },
+    {
+      "id": "0218t_S16_masturbation",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, solo, brown hair, long hair, nude, sitting on chair, spread legs, masturbation, fingering, head tilted back, open mouth, panting, blush, sweat, wet skin, classroom, afternoon light, from slightly above"}
+    },
+    {
+      "id": "0218t_S17_solo_orgasm",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, solo, brown hair, long hair, nude, sitting on chair, orgasm, arched back, trembling, ahegao, rolling eyes, tongue out, squirting, gripping chair, sweat, blush, classroom, warm lighting, dynamic angle"}
+    },
+    {
+      "id": "0218t_S18_sex_missionary_above",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, 1boy, brown hair, long hair, nude, sex, vaginal, missionary, lying on desk, spread legs, penetration, surprised, wide eyes, open mouth, blush, gripping desk, classroom, from above"}
+    },
+    {
+      "id": "0218t_S19_sex_missionary_side",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, 1boy, brown hair, long hair, nude, sex, vaginal, missionary, lying on desk, legs wrapped, panting, pleasure, half-closed eyes, blush, sweat, classroom, from side, warm lighting, upper body"}
+    },
+    {
+      "id": "0218t_S20_sex_doggy",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, 1boy, brown hair, long hair, nude, sex, vaginal, from behind, doggystyle, bent over desk, twisted torso, looking back, open mouth, panting, blush, sweat, embarrassed, classroom, from behind"}
+    },
+    {
+      "id": "0218t_S21_sex_cowgirl",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, 1boy, brown hair, long hair, nude, sex, vaginal, cowgirl position, girl on top, sitting on chair, riding, bouncing, large breasts, bouncing breasts, fucked silly, tongue out, drooling, blush, sweat, classroom, from below"}
+    },
+    {
+      "id": "0218t_S22_sex_standing",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, 1boy, brown hair, long hair, nude, sex, vaginal, standing sex, against blackboard, one leg lifted, deep penetration, open mouth, moaning, blush, sweat, classroom, from side, full body"}
+    },
+    {
+      "id": "0218t_S23_sex_sitting",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, 1boy, brown hair, long hair, nude, sex, vaginal, sitting sex, face to face, straddling lap, embrace, tongue out, kiss, sweat, love juice, classroom, close-up, warm lighting"}
+    },
+    {
+      "id": "0218t_S24_climax",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, 1boy, brown hair, long hair, nude, sex, vaginal, orgasm, ahegao, rolling eyes, tongue out, drooling, cum, creampie, arched back, convulsing, trembling, tears, sweat, classroom, from above, dynamic angle"}
+    },
+    {
+      "id": "0218t_S25_after",
+      "genre": "JK/グラビア", "type": "explicit",
+      "content": {"default": "1girl, solo, brown hair, long hair, nude, sitting on chair, after sex, cum dripping, cum on thighs, dazed, fucked silly, panting, messy hair, sweat, glistening skin, satisfied, exhausted, classroom, golden hour, upper body"}
+    }
+  ]
+}

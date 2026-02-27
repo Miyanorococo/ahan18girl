@@ -1,0 +1,512 @@
+{
+  "_meta": {
+    "description": "黒髪JK恋愛ノベル — 詳細タグ版（体型・下着・乳首一貫性強化）",
+    "created": "2026-02-19",
+    "version": "prod-jk-v2",
+    "character": "白峰 玲（しらみね れい）— 黒髪ロングストレート、青い目、巨乳D-cup、制服JK",
+    "seeds": [42, 123, 456, 789, 1024, 2048, 3141, 4096, 5555, 7777],
+    "book_id": "0219a",
+    "book_theme": "黒髪JK恋愛ノベル（詳細タグ版）"
+  },
+  "negative_common": {
+    "explicit": "censored, mosaic censoring, bar censor, ",
+    "sensitive": "censored, ",
+    "safe": ""
+  },
+  "model_groups": {
+    "A_illustrious": {
+      "models": ["wai-nsfw-illustrious-v16", "wai-nsfw-illustrious-v11", "wai-branch-rouwei", "wai-nsfw-illustrious-v12"],
+      "cfg": 7, "steps": 25, "sampler": "euler_ancestral", "scheduler": "sgm_uniform", "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers, small_breasts, flat_chest, sports_bra, black_underwear, dark_nipples, large_areolae"
+    },
+    "B_nova": {
+      "models": ["nova-anime-xl-il"],
+      "cfg": 5, "steps": 25, "sampler": "euler_ancestral", "scheduler": "normal", "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers, small_breasts, flat_chest, sports_bra, black_underwear, dark_nipples, large_areolae"
+    },
+    "D_animagine": {
+      "models": ["animagine-xl-4.0"],
+      "cfg": 5, "steps": 28, "sampler": "euler_ancestral", "scheduler": "normal", "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, fewer digits, missing fingers, small_breasts, flat_chest, sports_bra, black_underwear, dark_nipples, large_areolae",
+      "strip_tags": ["warm lighting", "soft lighting", "afternoon light", "golden hour", "sunset light", "moonlight", "candlelight", "natural light", "sunlight", "volumetric lighting", "rim light", "backlighting", "soft shadows", "warm tones", "from above", "from below", "from side", "from behind", "looking at viewer", "looking away", "skin", "fair skin"]
+    },
+    "E_femix": {
+      "models": ["femix-hassakuxl"],
+      "cfg": 7, "steps": 25, "sampler": "euler_ancestral", "scheduler": "sgm_uniform", "clip_skip": 2,
+      "resolution": {"width": 1024, "height": 1536},
+      "quality_prefix": "masterpiece, best quality, amazing quality, high score, great score, ",
+      "quality_suffix": "",
+      "negative": "bad quality, worst quality, worst detail, sketch, bad anatomy, bad hands, extra digits, small_breasts, flat_chest, sports_bra, black_underwear, dark_nipples, large_areolae"
+    }
+  },
+  "prompts": [
+    {
+      "id": "0219a_S00_cover",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing, wind, floating hair, skirt lift, looking at viewer, smile, blush, cherry blossoms, school gate, spring, sunlight, lens flare",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing, wind, floating hair, skirt lift, smile, blush, cherry blossoms, school gate, spring, lens flare"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S01_standing",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing, arms crossed, looking away, slight frown, cool expression, classroom, window, afternoon light",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing, arms crossed, slight frown, cool expression, classroom, window"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S01b_library",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, sitting, reading book, library, bookshelves, relaxed expression, gentle eyes, afternoon light, quiet atmosphere",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, sitting, reading book, library, bookshelves, relaxed expression, gentle eyes"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S01c_rain",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing, rain, wet ground, school gate, no umbrella, hands clasped, looking down, after school, evening light",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing, rain, wet ground, school gate, no umbrella, hands clasped, looking down"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S01d_friday",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing by desk, leaning slightly forward, talking, embarrassed, slight blush, holding phone, classroom, afternoon light",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, school uniform, white shirt, blue plaid skirt, red ribbon, thighhighs, standing by desk, leaning slightly forward, talking, embarrassed, slight blush, holding phone, classroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S02_date1",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, white sundress, straw hat, holding hat, smile, blush, outdoor, park, green trees, sunlight, summer, looking at viewer, wind, floating hair",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, white sundress, straw hat, holding hat, smile, blush, outdoor, park, green trees, summer, wind, floating hair"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S02_date1b_icecream",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white sundress, straw hat, eating ice cream, holding ice cream cone, happy, smile, blush, outdoor, park, food truck, summer, sunlight, trees",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white sundress, straw hat, eating ice cream, holding ice cream cone, happy, smile, blush, outdoor, park, food truck, summer, trees"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S02_date1c_stain",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white sundress, wet dress, see-through, white_lace_bra visible through dress, stain on dress, looking down at chest, panicked, embarrassed, deep blush, covering chest with hands, outdoor, park, summer, sunlight",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white sundress, wet dress, see-through, white_lace_bra visible through dress, stain on dress, looking down at chest, panicked, embarrassed, deep blush, covering chest with hands, outdoor, park, summer"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S02b_shopping",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white sundress, holding clothes hanger, ivory off-shoulder sweater on hanger, looking at clothes, surprised, blush, embarrassed, waving hands, refusing, clothing store, shopping, warm lighting, afternoon light",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white sundress, holding clothes hanger, ivory off-shoulder sweater on hanger, surprised, blush, embarrassed, waving hands, refusing, clothing store, shopping"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S02c_fitting_room",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, bare shoulders, denim skirt, standing, fidgeting, pulling skirt down, shy, deep blush, looking away, embarrassed smile, fitting room, curtain background, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, bare shoulders, denim skirt, standing, fidgeting, pulling skirt down, shy, deep blush, embarrassed smile, fitting room, curtain background"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S03_date2",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, casual clothes, ivory off-shoulder sweater, denim skirt, holding hands, pov, smile, shy, blush, outdoor, seaside, sunset, golden hour, orange sky",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, casual clothes, ivory off-shoulder sweater, denim skirt, holding hands, pov, smile, shy, blush, outdoor, seaside, sunset, orange sky"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S03b_his_room",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, bare shoulders, denim skirt, standing, looking around, nervous, hands clasped together, blush, shy, apartment room, doorway, evening light, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, bare shoulders, denim skirt, standing, looking around, nervous, hands clasped together, blush, shy, apartment room, doorway, evening"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S04_tea",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, bare shoulders, denim skirt, sitting on floor, wariza, girl sitting, holding tea cup, both hands on cup, shy, blush, looking down, apartment room, low table, warm lighting, evening",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, bare shoulders, denim skirt, sitting on floor, wariza, girl sitting, holding tea cup, both hands on cup, shy, blush, apartment room, low table, evening"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S05a_light_kiss_face",
+      "type": "sensitive",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, bare shoulders, 1boy, hetero, kiss, light kiss, closed eyes, blush, gentle, close-up, face focus, bedroom, warm lighting, evening",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, bare shoulders, 1boy, hetero, kiss, light kiss, closed eyes, blush, gentle, close-up, face focus, bedroom, evening"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S05b_light_kiss_side",
+      "type": "sensitive",
+      "content": {
+        "default": "1girl, 1boy, hetero, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, bare shoulders, denim skirt, kiss, light kiss, standing, from side, full body, blush, gentle, apartment room, window, evening light, warm lighting",
+        "D_animagine": "1girl, 1boy, hetero, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, bare shoulders, denim skirt, kiss, light kiss, standing, full body, blush, gentle, apartment room, window, evening"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S06_bed_sit",
+      "type": "sensitive",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, sweater slipping off shoulder, bare shoulder, denim skirt, sitting on bed, leaning forward, cleavage, shy smile, blush, looking at viewer, bedroom, warm lighting, evening",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, sweater slipping off shoulder, bare shoulder, denim skirt, sitting on bed, leaning forward, cleavage, shy smile, blush, bedroom, evening"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S06b_deep_kiss",
+      "type": "sensitive",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, sweater slipping off shoulder, bare shoulder, 1boy, hetero, kiss, french kiss, tongue, closed eyes, blush, tears of joy, embrace, sitting on bed, bedroom, warm lighting, close-up",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, sweater slipping off shoulder, bare shoulder, 1boy, hetero, kiss, french kiss, tongue, closed eyes, blush, tears of joy, embrace, sitting on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S06c_touch_breast",
+      "type": "sensitive",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, bare shoulders, 1boy, breast grab, groping, clothed, over clothes, blush, embarrassed, panting, looking away, sitting on bed, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, bare shoulders, 1boy, breast grab, groping, clothed, over clothes, blush, embarrassed, panting, sitting on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S06d_touch_pussy",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, denim skirt, 1boy, hand under skirt, crotch rub, over clothes, blush, embarrassed, biting lip, legs together, sitting on bed, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, denim skirt, 1boy, hand under skirt, crotch rub, over clothes, blush, embarrassed, biting lip, legs together, sitting on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S06e_wet_stain",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, ivory off-shoulder sweater, denim skirt, wet stain, wet spot on skirt, crotch area, embarrassed, deep blush, covering crotch, looking away, sitting on bed, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, ivory off-shoulder sweater, denim skirt, wet stain, wet spot on skirt, crotch area, embarrassed, deep blush, covering crotch, sitting on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S07_underwear",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white_lace_bra, matching_white_lace_panties, standing, arms covering chest, embarrassed, deep blush, looking away, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white_lace_bra, matching_white_lace_panties, standing, arms covering chest, embarrassed, deep blush, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S07b_nipple_lick",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white_lace_bra, bra pull, bra shift, one breast exposed, small_pink_nipples, small_areolae, matching_white_lace_panties, 1boy, licking nipple, breast sucking, blush, panting, surprised, lying on bed, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white_lace_bra, bra pull, bra shift, one breast exposed, small_pink_nipples, small_areolae, matching_white_lace_panties, 1boy, licking nipple, breast sucking, blush, panting, surprised, lying on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S07c_first_orgasm",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white_lace_bra, bra shift, one breast exposed, small_pink_nipples, matching_white_lace_panties, trembling, confused, wide eyes, blush, panting, slight arch, gripping sheets, lying on bed, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white_lace_bra, bra shift, one breast exposed, small_pink_nipples, matching_white_lace_panties, trembling, confused, wide eyes, blush, panting, slight arch, gripping sheets, lying on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S07d_finger_panty",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white_lace_bra, bra shift, matching_white_lace_panties, panties aside, 1boy, fingering, spread legs, blush, panting, biting lip, nervous, lying on bed, white sheets, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white_lace_bra, bra shift, matching_white_lace_panties, panties aside, 1boy, fingering, spread legs, blush, panting, biting lip, nervous, lying on bed, white sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S07e_finger_orgasm",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white_lace_bra, bra shift, matching_white_lace_panties, panties aside, 1boy, fingering, orgasm, arched back, open mouth, surprised, tears, blush, sweat, gripping sheets, lying on bed, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white_lace_bra, bra shift, matching_white_lace_panties, panties aside, 1boy, fingering, orgasm, arched back, open mouth, surprised, tears, blush, sweat, gripping sheets, lying on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S07f_continuous",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white_lace_bra, bra shift, matching_white_lace_panties, panties aside, 1boy, fingering, multiple orgasms, continuous, crying, tears streaming, trembling, drooling, fucked silly, blush, sweat, messy hair, lying on bed, wet sheets, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white_lace_bra, bra shift, matching_white_lace_panties, panties aside, 1boy, fingering, multiple orgasms, continuous, crying, tears streaming, trembling, drooling, fucked silly, blush, sweat, messy hair, lying on bed, wet sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S07g_squirt",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, thick thighs, white_lace_bra, bra shift, matching_white_lace_panties, panties aside, squirting, female ejaculation, arched back, ahegao, rolling eyes, tongue out, drooling, convulsing, blush, sweat, wet sheets, lying on bed, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, wide_hips, black hair, long hair, straight hair, blue eyes, thick thighs, white_lace_bra, bra shift, matching_white_lace_panties, panties aside, squirting, female ejaculation, arched back, ahegao, rolling eyes, tongue out, drooling, convulsing, blush, sweat, wet sheets, lying on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S08a_sex1_before",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, white_lace_bra, matching_white_lace_panties, small_pink_nipples, small_areolae, lying on back, spread legs, 1boy, penis, about to penetrate, nervous, blush, embarrassed, biting lip, looking away, white sheets, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, white_lace_bra, matching_white_lace_panties, small_pink_nipples, small_areolae, lying on back, spread legs, 1boy, penis, about to penetrate, nervous, blush, embarrassed, biting lip, white sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S08b_sex1_insert",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, missionary, lying on back, penetration, spread legs, surprised, open mouth, gasp, blush, gripping sheets, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, missionary, lying on back, penetration, spread legs, surprised, open mouth, gasp, blush, gripping sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S08c_sex1_pos1",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, missionary, lying on back, legs wrapped, surprised pleasure, wide eyes, blush, panting, sweat, confused expression, unexpected pleasure, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, missionary, lying on back, legs wrapped, surprised pleasure, wide eyes, blush, panting, sweat, confused expression, unexpected pleasure, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S08d_sex1_pos2",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, from behind, doggystyle, twisted torso, looking back, shocked, blush, panting, sweat, embarrassed, trying to hide moans, covering mouth, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, doggystyle, twisted torso, looking back, shocked, blush, panting, sweat, embarrassed, trying to hide moans, covering mouth, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S08e_sex1_almost",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, missionary, arched back, trembling, about to orgasm, eyes wide, can't believe the pleasure, panting, sweat, blush, gripping sheets, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, missionary, arched back, trembling, about to orgasm, eyes wide, can't believe the pleasure, panting, sweat, blush, gripping sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S08f_sex1_climax",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, orgasm, ahegao, rolling eyes, tongue out, surprised by own orgasm, cum, creampie, arched back, trembling, tears of pleasure, sweat, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sex, vaginal, orgasm, ahegao, rolling eyes, tongue out, surprised by own orgasm, cum, creampie, arched back, trembling, tears of pleasure, sweat, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S08g_sex1_after",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, lying on bed, after sex, cum overflow, cum on thighs, dazed, wide eyes, shocked expression, panting, messy hair, sweat, blush, can't believe what happened, white sheets, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, lying on bed, after sex, cum overflow, cum on thighs, dazed, wide eyes, shocked expression, panting, messy hair, sweat, blush, can't believe what happened, white sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S09_bath",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, bathing, bathtub, wet hair, wet skin, steam, relaxed, gentle smile, blush, soap bubbles, bathroom, warm water lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, bathing, bathtub, wet hair, steam, relaxed, gentle smile, blush, soap bubbles, bathroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S10a_toy_normal",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, lying on bed, vibrator, sex toy, spread legs, biting lip, embarrassed, blush, panting, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, lying on bed, vibrator, sex toy, spread legs, biting lip, embarrassed, blush, panting, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S10b_toy_orgasm",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, vibrator, orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, arched back, trembling, sweat, blush, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, vibrator, orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, arched back, trembling, sweat, blush, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S11_lactation",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, lactation, breast milk, milk dripping, large breasts, squeezing breast, embarrassed, blush, sitting on bed, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, lactation, breast milk, milk dripping, large breasts, squeezing breast, embarrassed, blush, sitting on bed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S12a_sex2_before",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, cowgirl position, girl on top, straddling, 1boy, grabbing penis, eager, wet pussy, dripping, seductive smile, licking lips, hungry eyes, blush, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, cowgirl position, girl on top, straddling, 1boy, grabbing penis, eager, wet pussy, dripping, seductive smile, licking lips, hungry eyes, blush, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S12b_sex2_insert",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, girl on top, straddling, sex, vaginal, self-insertion, slamming down, moaning, open mouth, pleasure, love juice, wet, blush, sweat, bedroom, warm lighting, from below",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, girl on top, straddling, sex, vaginal, self-insertion, slamming down, moaning, open mouth, pleasure, love juice, wet, blush, sweat, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S12c_sex2_quick_orgasm",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, girl on top, sex, vaginal, instant orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, female ejaculation, addicted, arched back, trembling, drooling, sweat, wet sheets, bedroom, warm lighting, from below",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, girl on top, sex, vaginal, instant orgasm, fucked silly, ahegao, rolling eyes, tongue out, squirting, female ejaculation, addicted, arched back, trembling, drooling, sweat, wet sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S12d_sex2_pos1",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, girl on top, bouncing, sex, vaginal, riding aggressively, large breasts, bouncing breasts, fucked silly, drooling, love juice, wet thighs, insatiable, craving, panting, sweat, bedroom, warm lighting, from below",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, girl on top, bouncing, sex, vaginal, riding aggressively, large breasts, bouncing breasts, fucked silly, drooling, love juice, wet thighs, insatiable, craving, panting, sweat, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S12e_sex2_pos2",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sitting sex, face to face, straddling lap, sex, vaginal, deep penetration, grinding, embrace, tongue out, saliva trail, kiss, sweat, love juice dripping, desperate, wanting more, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, sitting sex, face to face, straddling lap, sex, vaginal, deep penetration, grinding, embrace, tongue out, saliva trail, kiss, sweat, love juice dripping, desperate, wanting more, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S12f_sex2_almost",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, sex, vaginal, about to orgasm, fucked silly, trembling, drooling, tongue out, cross-eyed, begging, sweat, love juice, wet everywhere, gripping shoulders, desperate, bedroom, warm lighting, from below",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, sex, vaginal, about to orgasm, fucked silly, trembling, drooling, tongue out, cross-eyed, begging, sweat, love juice, wet everywhere, gripping shoulders, desperate, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S12g_sex2_climax",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, sex, vaginal, simultaneous orgasm, fucked silly, ahegao, rolling eyes, tongue out, drooling, squirting, female ejaculation, cum, creampie, cum overflow, arched back, convulsing, sweat, wet sheets, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, 1boy, cowgirl position, sex, vaginal, simultaneous orgasm, fucked silly, ahegao, rolling eyes, tongue out, drooling, squirting, female ejaculation, cum, creampie, cum overflow, arched back, convulsing, sweat, wet sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S12h_sex2_after",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, lying on bed, after sex, cum overflow, cum dripping, cum on thighs, cum on stomach, cum on breasts, love juice, wet everywhere, fucked silly, dazed, satisfied grin, tongue out, drooling, wanting more, messy hair, sweat, ruined sheets, bedroom, warm lighting",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, nude, small_pink_nipples, small_areolae, lying on bed, after sex, cum overflow, cum dripping, cum on thighs, cum on stomach, cum on breasts, love juice, wet everywhere, fucked silly, dazed, satisfied grin, tongue out, drooling, wanting more, messy hair, sweat, ruined sheets, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S13_pregnant",
+      "type": "sensitive",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, pregnant, large belly, hand on belly, white maternity dress, gentle smile, blush, standing, bedroom, window, morning light, curtains, warm tones",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, pregnant, large belly, hand on belly, white maternity dress, gentle smile, blush, standing, bedroom, window, curtains"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S14_pregnant_sex",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, 1boy, pregnant, large belly, sex, vaginal, from behind, gentle, careful, blush, panting, embarrassed, bedroom, warm lighting, soft shadows",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, 1boy, pregnant, large belly, sex, vaginal, gentle, careful, blush, panting, embarrassed, bedroom"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S15_birth",
+      "type": "explicit",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, pregnant, huge belly, lying on bed, labor, spread legs, panting, sweat, flushed, determined expression, gripping sheets, hospital bed, bright overhead light",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, pregnant, huge belly, lying on bed, labor, spread legs, panting, sweat, flushed, determined expression, gripping sheets, hospital bed, bright overhead light"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S16_future",
+      "type": "safe",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, mature, adult, casual clothes, white blouse, long skirt, gentle smile, wedding ring, holding child hand, outdoor, park, cherry blossoms, spring, sunlight, warm tones",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, mature, adult, casual clothes, white blouse, long skirt, gentle smile, wedding ring, holding child hand, outdoor, park, cherry blossoms, spring"
+      },
+      "genre": "school"
+    },
+    {
+      "id": "0219a_S99_bonus_swimsuit",
+      "type": "sensitive",
+      "content": {
+        "default": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, fair skin, slender waist, thick thighs, bikini, white bikini, large breasts, cleavage, wet skin, beach, ocean, summer, sunlight, smile, looking at viewer, wind, floating hair, sand",
+        "D_animagine": "1girl, solo, high school girl, large_breasts, D-cup, narrow_waist, wide_hips, black hair, long hair, straight hair, blue eyes, slender waist, thick thighs, bikini, white bikini, large breasts, cleavage, beach, ocean, summer, smile, wind, floating hair, sand"
+      },
+      "genre": "school"
+    }
+  ]
+}

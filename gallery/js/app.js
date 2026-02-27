@@ -218,18 +218,12 @@ document.addEventListener('alpine:init', () => {
         this._serverTotal = data.total || 0;
         this._nextCursor = data.nextCursor || null;
 
-        // Build filter options from first load if not yet built
-        if (this.availableModels.length === 0) {
-          const optData = await GalleryAPI.getExperiments({ limit: 500 });
-          const opts = optData.experiments || [];
-          const models = new Set(), genres = new Set();
-          for (const e of opts) {
-            if (e.model) models.add(e.model);
-            if (e.genre) genres.add(e.genre);
-          }
-          this.availableModels = [...models].sort();
-          this.availableGenres = [...genres].sort();
-        }
+        // Server includes filter options on unfiltered requests
+        if (data.availableModels) this.availableModels = data.availableModels;
+        if (data.availableGenres) this.availableGenres = data.availableGenres;
+
+        // Apply client-side sort
+        this._sortExperiments(this.filteredExperiments);
       } catch (e) {
         console.error('Failed to load filtered experiments:', e);
         this.filteredExperiments = [];
@@ -357,14 +351,17 @@ document.addEventListener('alpine:init', () => {
         result = result.filter(exp => this._getExpFavCount(exp) > 0);
       }
 
-      if (this.sortBy === 'date-asc') result.sort((a, b) => (a.created_at || '').localeCompare(b.created_at || ''));
-      else if (this.sortBy === 'model') result.sort((a, b) => (a.model || '').localeCompare(b.model || ''));
-      else if (this.sortBy === 'rated') result.sort((a, b) => this._getExpRatedCount(b) - this._getExpRatedCount(a));
-      else result.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
-
+      this._sortExperiments(result);
       this.filteredExperiments = result;
       this._serverTotal = result.length;
       this._nextCursor = null;
+    },
+
+    _sortExperiments(arr) {
+      if (this.sortBy === 'date-asc') arr.sort((a, b) => (a.created_at || '').localeCompare(b.created_at || ''));
+      else if (this.sortBy === 'model') arr.sort((a, b) => (a.model || '').localeCompare(b.model || ''));
+      else if (this.sortBy === 'rated') arr.sort((a, b) => this._getExpRatedCount(b) - this._getExpRatedCount(a));
+      else arr.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
     },
 
     /** Cached rated/fav counts per experiment. Rebuilt on rating changes. */
@@ -664,7 +661,8 @@ document.addEventListener('alpine:init', () => {
 
     _buildBlindMap() {
       // Restore persisted mapping if model set hasn't changed
-      const models = [...new Set(this.experiments.map(e => e.model).filter(Boolean))].sort();
+      const allExps = this.experiments.length > 0 ? this.experiments : this.filteredExperiments;
+      const models = [...new Set(allExps.map(e => e.model).filter(Boolean))].sort();
       try {
         const stored = JSON.parse(localStorage.getItem('gallery_blind_map') || 'null');
         if (stored && stored._models) {
@@ -820,7 +818,8 @@ document.addEventListener('alpine:init', () => {
     },
 
     // --- Navigation helpers ---
-    goToUnrated() {
+    async goToUnrated() {
+      await this.loadExperiments();
       const unrated = this.experiments.find(exp => this._getExpRatedCount(exp) === 0);
       if (unrated) {
         this.openExperiment(unrated.id);
