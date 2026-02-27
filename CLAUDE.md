@@ -374,6 +374,43 @@ Batchの各ワーカーはS3からプロンプトを読むので、固定seedが
 - Book viewは `0216a` でグルーピングして1冊として表示
 - テーマ名はmetadata (`_meta.book_theme`) に記載
 
+### Regen（再生成）
+
+ギャラリーのBook viewからページ単位で再生成を実行する機能。
+
+**アーキテクチャ:**
+```
+gallery UI (book.js bookTriggerRegen)
+  → API (api.js startRegeneration)
+  → Lambda (regenerate.py start_regeneration)
+  → Step Functions → Batch (generate-eval.py)
+```
+
+**Seeds の扱い:**
+- Regen は元のページの experiment metadata から seeds 配列を自動取得する（`_getBookOriginalSeeds()`）
+- オリジナルが10 seedで生成されていれば、regenも10枚生成される
+- metadata に seeds がない場合のフォールバック: `[42, 123, 456]`
+
+**世代管理:**
+- Regen結果は `{bookId}_R{n}_{scene}` の形で保存（例: `0219a_R2_S01b_library`）
+- R1 = オリジナル（明示的なプレフィックスなし）、R2 = 1回目のregen、R3 = 2回目...
+- 世代番号は S3 スキャンで自動検出（`_detect_next_generation()`）
+
+**Book IDバリデーション（⚠️ 重要）:**
+- `generate-eval.py`: `_meta.book_id` と全プロンプト `id` のプレフィックスが一致しないとエラー終了
+- `regenerate.py`: `bookId` と全 `pageId` のプレフィックスが一致しないと400エラー
+- **AIエージェントがページを追加する際、必ず既存の book_id プレフィックスを使うこと**
+  - 正: `"id": "0219a_S17_new_scene"` （book_id が `0219a` の場合）
+  - 誤: `"id": "0219b_S17_new_scene"` → 別 Book として認識される
+
+**関連ファイル:**
+| ファイル | 役割 |
+|---|---|
+| `gallery/js/book.js` | UI: フラグ収集 + seeds取得 + API呼び出し |
+| `gallery/js/api.js` | `startRegeneration(bookId, pages, models, seeds)` |
+| `lambda/gallery/routes/regenerate.py` | プロンプト構築 + Step Functions起動 |
+| `scripts/generate-eval.py` | Batch内で実際の画像生成 |
+
 ### 参照ファイル
 
 - `characters/` — キャラ定義JSON + ストーリーブロック定義
@@ -441,8 +478,14 @@ Obsidian: `/Users/rkuros/Obsidian/AWS/AWS/AI出版戦略/` に以下のファイ
 - 量産方式確立: A(テンプレート)/B(モジュラー)/C(オリジナル)
 - ストーリーブロック定義 + キャラ定義JSON（JK/人妻/エルフ）
 
-### 進行中タスク
-- UI再生成機能（エージェント実装中）— Lambda + Step Functions連携でブラウザから直接再生成
+### 完了タスク（2026-02-27）
+- Regen seeds修正: オリジナルのseed数を自動取得（固定3→metadata準拠）
+- Book ID分裂修正: 孤立した0219pp/0219z実験をS3から削除+インデックス再構築
+- Book IDバリデーション追加: generate-eval.py + regenerate.py で prefix 不一致を起動前に検出
+- experiments API: limit=0 で全件返却対応（ページネーション不要時）
+
+### 踏んだ地雷（再発防止）
+6. プロンプトidのprefixが`_meta.book_id`と不一致 → 別Bookとして生成される。バリデーション追加済み
 
 ### 完了タスク（2026-02-17早朝）
 - 3冊同時生成完了: 0216a(JK), 0216b(人妻), 0216c(ナース) × 34シーン × 7モデル = 2,142枚

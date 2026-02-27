@@ -87,6 +87,40 @@ Alpine.js SPA。13モデル × 複数プロンプトの生成画像を評価・�
 | Blind Mode | モデル名マスクでバイアス排除 |
 | AI Genre | Bedrock Haiku自動ジャンル推定 (DLSite準拠分類) |
 
+## Book と Regen（再生成）
+
+### Book
+Bookはイラストノベル1冊分の単位。prompt_id の先頭4桁+英字（例: `0219a`）でグルーピングされる。
+
+```
+prompt_id: 0219a_S01_standing
+           ^^^^^ ^^^^^^^^^^^^
+           book_id  シーン名
+```
+
+### Regen（再生成）
+ギャラリーのBook viewからページ単位で再生成できる。
+
+```
+Book view → ページのプロンプトを編集 → Flag → [Regenerate] ボタン
+  → Lambda → Step Functions → 7モデル並列Batch → 結果がBookに追加
+```
+
+- **Seeds**: 元の生成で使ったseed配列を自動取得。オリジナルが10 seedなら regenも10枚生成
+- **世代管理**: Regen結果は `{bookId}_R{n}_{scene}` で保存（R2 = 1回目regen, R3 = 2回目...）
+- **バリデーション**: prompt id のプレフィックスが `_meta.book_id` と一致しないと生成前にエラー停止
+
+### AIエージェントへの注意事項
+
+ページ追加時、`"id"` フィールドは必ず既存の book_id プレフィックスを使うこと。
+
+```
+✅ "id": "0219a_S17_new_scene"   ← book_id "0219a" と一致
+❌ "id": "0219b_S17_new_scene"   ← 別Bookとして認識される
+```
+
+バリデーションにより不一致時はエラーメッセージで修正方法が提示される。
+
 ## セットアップ
 
 ### 1. 環境変数
@@ -148,12 +182,14 @@ r18_anime/
 │       ├── model-grid.js      # Model Grid (N個モデル横並び比較)
 │       ├── knowledge-base.js  # KB (推薦/マトリクス/プロンプト)
 │       ├── compare.js         # 2パネル比較
-│       ├── api.js             # APIクライアント
+│       ├── book.js            # Book view (ページ送り/regen/seeds取得)
+│       ├── api.js             # APIクライアント (startRegeneration等)
 │       └── utils.js           # ユーティリティ
 ├── lambda/gallery/            # Lambda関数
 │   ├── lambda_function.py     # ルーター
 │   ├── routes/
-│   │   ├── experiments.py     # GET 実験一覧/詳細
+│   │   ├── experiments.py     # GET 実験一覧/詳細/Book一覧
+│   │   ├── regenerate.py      # POST regen起動 + book_idバリデーション
 │   │   ├── ratings.py         # GET/PUT 評価データ
 │   │   ├── select.py          # POST 選択/削除/学習データ保存
 │   │   ├── extract.py         # S3 Event Zip展開 + genre推定
