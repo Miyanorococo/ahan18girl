@@ -325,8 +325,10 @@ document.addEventListener('alpine:init', () => {
     },
 
     /** Client-side filtering for ratingStatus/pipeline (needs localStorage ratings). */
-    _filterExperimentsLocal() {
-      let result = this.experiments.length > 0 ? this.experiments : this.filteredExperiments;
+    async _filterExperimentsLocal() {
+      // Need full experiment list for client-side rating filters
+      await this.loadExperiments();
+      let result = [...this.experiments];
 
       const search = (this.filters.search || '').toLowerCase().trim();
       if (search) {
