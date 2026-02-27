@@ -165,6 +165,11 @@ def _delete_experiment(s3, data):
             index = [e for e in index if e.get("id") != experiment_id]
             s3.put_json(INDEX_KEY, index)
             logger.info("Removed %s from index", experiment_id)
+            try:
+                from routes.experiments import invalidate_cache
+                invalidate_cache()
+            except Exception:
+                pass
     except Exception as e:
         logger.error("Failed to update index: %s", e)
 

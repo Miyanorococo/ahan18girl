@@ -703,8 +703,20 @@ document.addEventListener('alpine:init', () => {
     },
 
     displayModelName(realName) {
-      if (!this.blindMode || !realName) return realName;
-      return this._blindMap[realName] || realName;
+      if (!realName) return realName;
+      if (this.blindMode) return this._blindMap[realName] || realName;
+      // Short display names for common models
+      return realName
+        .replace('wai-nsfw-illustrious-', 'WAI ')
+        .replace('wai-branch-rouwei', 'Rouwei')
+        .replace('illustrij-v20', 'Illustrij')
+        .replace('nova-anime-xl-il', 'Nova')
+        .replace('autismmix-sdxl', 'Autism')
+        .replace('pony-diffusion-v6-xl', 'Pony')
+        .replace('animagine-xl-4.0', 'Animagine')
+        .replace('femix-hassakuxl', 'FeMix')
+        .replace('dreamshaper-8', 'Dream8')
+        .replace('aam-anylora-anime-mix', 'AAM');
     },
 
     revealBlindMode() {
