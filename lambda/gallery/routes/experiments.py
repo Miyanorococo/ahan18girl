@@ -90,7 +90,9 @@ def list_experiments(event):
     genre = params.get("genre")
     prompt_id = params.get("prompt_id")
     search = params.get("search")
-    limit = min(_safe_int(params.get("limit"), 100), 500)
+    limit = _safe_int(params.get("limit"), 0)  # 0 = no limit (return all)
+    if limit > 0:
+        limit = min(limit, 500)
     cursor = params.get("cursor")
 
     filtered = index
@@ -117,12 +119,13 @@ def list_experiments(event):
         except Exception:
             start_idx = 0
 
-    page = filtered[start_idx:start_idx + limit]
+    page = filtered[start_idx:start_idx + limit] if limit > 0 else filtered[start_idx:]
 
     result = {"experiments": page, "total": total, "count": len(page)}
-    end_idx = start_idx + limit
-    if end_idx < total:
-        result["nextCursor"] = base64.b64encode(str(end_idx).encode()).decode()
+    if limit > 0:
+        end_idx = start_idx + limit
+        if end_idx < total:
+            result["nextCursor"] = base64.b64encode(str(end_idx).encode()).decode()
 
     # Include filter options on unfiltered requests (for dropdown population)
     if not any([book, model, genre, prompt_id, search]):

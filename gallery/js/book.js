@@ -1317,13 +1317,14 @@ function bookMixin() {
       }
 
       const bookId = this.book.currentBook?.bookId || this.book.currentBook?.id || 'unknown';
+      const originalSeeds = this._getBookOriginalSeeds();
 
       this.book.regenRunning = true;
       this.book.regenCompleted = false;
       this.book.regenStatus = 'Starting...';
 
       try {
-        const result = await GalleryAPI.startRegeneration(bookId, pages);
+        const result = await GalleryAPI.startRegeneration(bookId, pages, [], originalSeeds);
         this.book.regenArn = result.executionArn;
         this.book.regenStatus = `Running (${result.promptCount} prompts, ${result.models.length} models)`;
 
@@ -1335,6 +1336,17 @@ function bookMixin() {
         this.book.regenStatus = '';
         alert('Failed to start regeneration: ' + e.message);
       }
+    },
+
+    /** Extract original seeds from experiment metadata (first page with seeds wins) */
+    _getBookOriginalSeeds() {
+      for (const page of (this.book.pages || [])) {
+        for (const m of (page.models || [])) {
+          const seeds = m.detail?.metadata?.seeds;
+          if (Array.isArray(seeds) && seeds.length > 0) return seeds;
+        }
+      }
+      return [42, 123, 456]; // fallback
     },
 
     /** Poll regeneration status until completed */
