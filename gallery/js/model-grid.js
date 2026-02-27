@@ -62,19 +62,30 @@ function modelGridMixin() {
         if (!pid) continue;
 
         const runDate = extractRunDate(exp);
-        const pMatch = pid.match(/^([A-Z]+)(\d+)_(.+)$/);
-
         let key, themeNum, themeName, scene, sceneLabel;
 
-        if (pMatch) {
-          // Structured eval format: P01_ex, UP01_ex, TN01_ex, RG01_nude_bedroom
+        // 1. Book format: "0219a_S07_evening" or "0219a_R1_S01b_library"
+        const bookMatch = pid.match(/^(\d{4}[a-z]+)_(?:R\d+_)?(.+)$/);
+        // 2. Structured eval: "P01_ex", "UP01_ex"
+        const evalMatch = !bookMatch && pid.match(/^([A-Z]+)(\d+)_(.+)$/);
+
+        if (bookMatch) {
+          const bookId = bookMatch[1];
+          // Scene key: strip regen prefix for grouping (R1_S01b_library → S01b_library)
+          scene = bookMatch[2];
+          sceneLabel = SCENE_LABELS[scene] || scene;
+          // Group by bookId + scene (across dates/models)
+          key = bookId + '/' + scene;
+          themeNum = bookId;
+          // Theme = genre or bookId
+          themeName = exp.genre || extractThemeName(exp.prompt_summary) || bookId;
+        } else if (evalMatch) {
           key = runDate + '/' + pid;
-          themeNum = pMatch[1] + pMatch[2];
-          scene = pMatch[3];
+          themeNum = evalMatch[1] + evalMatch[2];
+          scene = evalMatch[3];
           sceneLabel = SCENE_LABELS[scene] || scene;
           themeName = extractThemeName(exp.prompt_summary);
         } else {
-          // Legacy format: group by prompt_summary or extracted theme
           const theme = exp.prompt_summary || extractLegacyTheme(pid);
           if (!theme) continue;
           key = runDate + '/legacy_' + theme;
