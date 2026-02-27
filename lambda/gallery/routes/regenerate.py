@@ -194,6 +194,16 @@ def start_regeneration(event):
     if not book_id:
         return _response(400, {"error": "bookId is required"})
 
+    # Validate: all pageIds must start with book_id + "_"
+    bad_ids = [p.get("pageId", "") for p in pages
+               if not (p.get("pageId") or "").startswith(book_id + "_")]
+    if bad_ids:
+        return _response(400, {
+            "error": f"pageId prefix mismatch: bookId is '{book_id}' but these "
+                     f"pageIds don't start with '{book_id}_': {bad_ids}. "
+                     f"Every pageId must start with '{book_id}_' (e.g. '{book_id}_S01_scene_name')."
+        })
+
     s3 = S3Client()
 
     # Auto-detect next generation number

@@ -1104,6 +1104,24 @@ def main():
     model_filter = set(args.models.split(",")) if args.models else None
     prompt_filter = set(args.prompts.split(",")) if args.prompts else None
 
+    # Validate: all prompt ids must start with _meta.book_id + "_"
+    book_id = config.get("_meta", {}).get("book_id", "")
+    if book_id:
+        bad = []
+        for p in config.get("prompts", []):
+            pid = p.get("id", "")
+            if not pid.startswith(book_id + "_"):
+                bad.append(pid)
+        if bad:
+            log.error(
+                "PROMPT ID MISMATCH: _meta.book_id is '%s' but %d prompt(s) have wrong prefix.\n"
+                "  Mismatched IDs: %s\n"
+                "  Every prompt 'id' must start with '%s_' (e.g. '%s_S01_scene_name').\n"
+                "  Fix: change the 'id' field of the listed prompts to start with '%s_'.",
+                book_id, len(bad), bad, book_id, book_id, book_id,
+            )
+            sys.exit(1)
+
     if not args.dry_run:
         if not check_status():
             log.error("ComfyUI is not reachable. Start it first.")
