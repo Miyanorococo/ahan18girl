@@ -48,6 +48,10 @@ def handler(event, context):
 
 
 def route(method, path, event):
+    # GET /api/books
+    if method == "GET" and path == "/api/books":
+        return experiments.list_books(event)
+
     # GET /api/experiments
     if method == "GET" and path == "/api/experiments":
         return experiments.list_experiments(event)

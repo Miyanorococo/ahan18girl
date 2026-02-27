@@ -5,8 +5,13 @@ const GalleryAPI = {
     return res.json();
   },
 
-  getExperiments() {
-    return this.fetchJSON('/api/experiments');
+  getExperiments(params = {}) {
+    const qs = new URLSearchParams(params).toString();
+    return this.fetchJSON(`/api/experiments${qs ? '?' + qs : ''}`);
+  },
+
+  getBooks() {
+    return this.fetchJSON('/api/books');
   },
 
   getExperiment(id) {

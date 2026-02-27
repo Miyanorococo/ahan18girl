@@ -21,6 +21,9 @@ document.addEventListener('alpine:init', () => {
     // Pagination
     page: 1,
     pageSize: 40,
+    _nextCursor: null,
+    _cursorStack: [],    // previous cursors for back navigation
+    _serverTotal: 0,     // total count from server
 
     // Auto-advance: move to next image after rating/favoriting in lightbox
     autoAdvance: true,
@@ -82,7 +85,7 @@ document.addEventListener('alpine:init', () => {
       window.addEventListener('hashchange', () => this.handleHashChange());
 
       // Load initial data
-      await this.loadExperiments();
+      await this.loadFilteredExperiments();
 
       // Rebuild blind map if blind mode was persisted (needs experiments loaded)
       if (this.blindMode) this._buildBlindMap();
@@ -179,6 +182,8 @@ document.addEventListener('alpine:init', () => {
     },
 
     // --- Data Loading ---
+
+    /** Full load for Dashboard/KB/ModelGrid. Cached in memory. */
     async loadExperiments() {
       if (this.experiments.length > 0) return;
       this.loading = true;
@@ -186,14 +191,69 @@ document.addEventListener('alpine:init', () => {
         const data = await GalleryAPI.getExperiments();
         this.experiments = Array.isArray(data) ? data : (data.experiments || []);
         this._buildFilterOptions();
-        this.filterExperiments();
       } catch (e) {
         console.error('Failed to load experiments:', e);
         this.experiments = [];
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    /** Server-side filtered load for Experiments list view. */
+    async loadFilteredExperiments(resetCursor = true) {
+      this.loading = true;
+      if (resetCursor) {
+        this._nextCursor = null;
+        this._cursorStack = [];
+      }
+      try {
+        const params = { limit: this.pageSize };
+        if (this.filters.model) params.model = this.filters.model;
+        if (this.filters.genre) params.genre = this.filters.genre;
+        if (this.filters.search) params.search = this.filters.search;
+        if (this._nextCursor && !resetCursor) params.cursor = this._nextCursor;
+
+        const data = await GalleryAPI.getExperiments(params);
+        this.filteredExperiments = data.experiments || [];
+        this._serverTotal = data.total || 0;
+        this._nextCursor = data.nextCursor || null;
+
+        // Build filter options from first load (full list) if not yet built
+        if (this.availableModels.length === 0) {
+          // Fetch unfiltered to get all unique values for dropdowns
+          const all = await GalleryAPI.getExperiments({ limit: 1 });
+          // Server returns total — but we need unique model/genre lists
+          // Use a lightweight approach: fetch without filters, large limit, just for options
+          const optData = await GalleryAPI.getExperiments({ limit: 500 });
+          const opts = optData.experiments || [];
+          const models = new Set(), genres = new Set();
+          for (const e of opts) {
+            if (e.model) models.add(e.model);
+            if (e.genre) genres.add(e.genre);
+          }
+          this.availableModels = [...models].sort();
+          this.availableGenres = [...genres].sort();
+        }
+      } catch (e) {
+        console.error('Failed to load filtered experiments:', e);
         this.filteredExperiments = [];
       } finally {
         this.loading = false;
       }
+    },
+
+    nextPage() {
+      if (!this._nextCursor) return;
+      this._cursorStack.push(this._currentCursor || null);
+      this._currentCursor = this._nextCursor;
+      this.loadFilteredExperiments(false);
+    },
+
+    prevPage() {
+      const prev = this._cursorStack.pop();
+      this._nextCursor = prev || null;
+      this._currentCursor = prev || null;
+      this.loadFilteredExperiments(false);
     },
 
     async openExperiment(id) {
@@ -258,61 +318,8 @@ document.addEventListener('alpine:init', () => {
     },
 
     filterExperiments() {
-      let result = this.experiments;
-      const search = this.filters.search.toLowerCase().trim();
-
-      if (search) {
-        result = result.filter((exp) => {
-          const text = [exp.prompt_summary, exp.id, exp.model, exp.pipeline]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase();
-          return text.includes(search);
-        });
-      }
-
-      if (this.filters.model) {
-        result = result.filter((exp) => exp.model === this.filters.model);
-      }
-
-      if (this.filters.pipeline) {
-        result = result.filter((exp) => exp.pipeline === this.filters.pipeline);
-      }
-
-      if (this.filters.genre) {
-        result = result.filter((exp) => this.getExpGenre(exp) === this.filters.genre);
-      }
-
-      // Rating status filter
-      if (this.filters.ratingStatus === 'unrated') {
-        result = result.filter((exp) => this._getExpRatedCount(exp) === 0);
-      } else if (this.filters.ratingStatus === 'partial') {
-        result = result.filter((exp) => {
-          const rated = this._getExpRatedCount(exp);
-          return rated > 0 && rated < (exp.image_count || 0);
-        });
-      } else if (this.filters.ratingStatus === 'rated') {
-        result = result.filter((exp) => {
-          const rated = this._getExpRatedCount(exp);
-          return rated > 0 && rated >= (exp.image_count || 0);
-        });
-      } else if (this.filters.ratingStatus === 'favorited') {
-        result = result.filter((exp) => this._getExpFavCount(exp) > 0);
-      }
-
-      // Sort
-      if (this.sortBy === 'date-asc') {
-        result.sort((a, b) => (a.created_at || '').localeCompare(b.created_at || ''));
-      } else if (this.sortBy === 'model') {
-        result.sort((a, b) => (a.model || '').localeCompare(b.model || ''));
-      } else if (this.sortBy === 'rated') {
-        result.sort((a, b) => this._getExpRatedCount(b) - this._getExpRatedCount(a));
-      } else {
-        result.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
-      }
-
-      this.filteredExperiments = result;
-      this.page = 1;
+      // Trigger server-side filtered load
+      this.loadFilteredExperiments(true);
     },
 
     /** Cached rated/fav counts per experiment. Rebuilt on rating changes. */
@@ -345,14 +352,13 @@ document.addEventListener('alpine:init', () => {
       return this._expCountCache[exp?.id]?.fav || 0;
     },
 
-    /** Get paginated slice of filteredExperiments */
+    /** Server-side paginated — filteredExperiments IS the current page */
     get paginatedExperiments() {
-      const start = (this.page - 1) * this.pageSize;
-      return this.filteredExperiments.slice(start, start + this.pageSize);
+      return this.filteredExperiments;
     },
 
     get totalPages() {
-      return Math.ceil(this.filteredExperiments.length / this.pageSize);
+      return Math.ceil(this._serverTotal / this.pageSize) || 1;
     },
 
     /** Get aesthetic score for an image from experiment metadata */
