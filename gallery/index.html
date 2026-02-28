@@ -926,7 +926,7 @@
                       </div>
                       <div style="display:flex;flex-wrap:wrap;gap:6px">
                         <template x-for="(cand, ci) in group.images" :key="'bec-' + gi + '-' + ci + '-' + book.currentPage">
-                          <div class="be-candidate" :class="{'be-candidate-selected': bookIsSelectedCandidate(book.pages[book.currentPage]?.id, cand.model, cand.seed)}"
+                          <div class="be-candidate" :class="{'be-candidate-selected': bookIsSelectedCandidate(book.pages[book.currentPage]?.id, cand.model, cand.seed, cand.img)}"
                                @click="bookSelectImage(book.pages[book.currentPage]?.id, cand.model, cand.seed, cand.img)"
                                draggable="true" @dragstart="bookDragStartCandidate($event, cand.model, cand.seed, cand.img)">
                             <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:80px;height:auto;display:block;border-radius:4px">
@@ -939,7 +939,7 @@
                                     x-text="bookGetGeneration(cand.img._mgExperiment?.prompt_id || bookCurrentPage()?.id)"></span>
                               <span x-show="getAestheticScore(cand.img)" :class="{'high': getAestheticScore(cand.img) >= 0.7}" x-text="((getAestheticScore(cand.img)||0)*100).toFixed(0)"></span>
                             </div>
-                            <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">&#10003;</div>
+                            <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed, cand.img)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">&#10003;</div>
                           </div>
                         </template>
                       </div>
@@ -964,7 +964,7 @@
                         <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px" x-text="displayModelName(group.model)"></div>
                         <div style="display:flex;flex-wrap:wrap;gap:6px">
                           <template x-for="(cand, ci) in group.images" :key="'cplc-' + gi + '-' + ci">
-                            <div class="be-candidate" :class="{'be-candidate-selected': bookIsSelectedCandidate(book.pages[book.currentPage]?.id, cand.model, cand.seed)}"
+                            <div class="be-candidate" :class="{'be-candidate-selected': bookIsSelectedCandidate(book.pages[book.currentPage]?.id, cand.model, cand.seed, cand.img)}"
                                  @click="bookSelectImage(book.pages[book.currentPage]?.id, cand.model, cand.seed, cand.img)"
                                  draggable="true" @dragstart="bookDragStartCandidate($event, cand.model, cand.seed, cand.img)">
                               <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:80px;height:auto;display:block;border-radius:4px">
@@ -977,7 +977,7 @@
                                       x-text="bookGetGeneration(cand.img._mgExperiment?.prompt_id || bookCurrentPage()?.id)"></span>
                                 <span x-show="getAestheticScore(cand.img)" :class="{'high': getAestheticScore(cand.img) >= 0.7}" x-text="((getAestheticScore(cand.img)||0)*100).toFixed(0)"></span>
                               </div>
-                              <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">&#10003;</div>
+                              <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed, cand.img)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">&#10003;</div>
                             </div>
                           </template>
                         </div>
@@ -1001,7 +1001,7 @@
                           <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px" x-text="displayModelName(group.model)"></div>
                           <div style="display:flex;flex-wrap:wrap;gap:6px">
                             <template x-for="(cand, ci) in group.images" :key="'cprc-' + pi + '-' + gi + '-' + ci">
-                              <div class="be-candidate" :class="{'be-candidate-selected': bookIsSelectedCandidate(book.pages[book.currentPage]?.id, cand.model, cand.seed)}"
+                              <div class="be-candidate" :class="{'be-candidate-selected': bookIsSelectedCandidate(book.pages[book.currentPage]?.id, cand.model, cand.seed, cand.img)}"
                                    @click="bookSelectImage(book.pages[book.currentPage]?.id, cand.model, cand.seed, cand.img)"
                                    draggable="true" @dragstart="bookDragStartCandidate($event, cand.model, cand.seed, cand.img)">
                                 <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:80px;height:auto;display:block;border-radius:4px">
@@ -1014,7 +1014,7 @@
                                         x-text="bookGetGeneration(cand.img._mgExperiment?.prompt_id || bookCurrentPage()?.id)"></span>
                                   <span x-show="getAestheticScore(cand.img)" :class="{'high': getAestheticScore(cand.img) >= 0.7}" x-text="((getAestheticScore(cand.img)||0)*100).toFixed(0)"></span>
                                 </div>
-                                <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">&#10003;</div>
+                                <div x-show="bookIsSelectedCandidate(bookCurrentPage()?.id, cand.model, cand.seed, cand.img)" style="position:absolute;top:2px;right:2px;color:#4caf50;font-size:1rem">&#10003;</div>
                               </div>
                             </template>
                           </div>

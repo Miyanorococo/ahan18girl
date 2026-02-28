@@ -357,11 +357,11 @@ function bookMixin() {
     bookCurrentImage() {
       const page = this.bookCurrentPage();
       if (!page) return null;
-      // If an image is selected for this page, find the actual img object matching the selection
+      // If an image is selected for this page, find the actual img object by URL (variant-safe)
       const sel = this.book.selections[page.id];
-      if (sel) {
+      if (sel && sel.full_url) {
         for (const md of page.models) {
-          const found = md.images.find(img => img.full_url === sel.full_url || (img._model === sel.model && img._seed === sel.seed));
+          const found = md.images.find(img => img.full_url === sel.full_url);
           if (found) return found;
         }
       }
@@ -469,10 +469,14 @@ function bookMixin() {
       return this.book.selections[pageId] || null;
     },
 
-    /** Check if a candidate is the currently selected one for a page */
-    bookIsSelectedCandidate(pageId, model, seed) {
+    /** Check if a candidate is the currently selected one for a page.
+     *  Uses thumb_url for exact match when available (distinguishes same model+seed across variants).
+     */
+    bookIsSelectedCandidate(pageId, model, seed, img) {
       const sel = this.book.selections[pageId];
       if (!sel) return false;
+      // If img provided, use URL for exact match (variant-safe)
+      if (img && sel.thumb_url) return sel.thumb_url === img.thumb_url;
       return sel.model === model && sel.seed === seed;
     },
 
