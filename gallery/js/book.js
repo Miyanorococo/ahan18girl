@@ -353,11 +353,22 @@ function bookMixin() {
       return this.book.pages[this.book.currentPage] || null;
     },
 
-    /** Get current image for selected model+seed */
+    /** Get current image for selected model+seed, respecting active variant */
     bookCurrentImage() {
       const page = this.bookCurrentPage();
       if (!page) return null;
-      const modelData = page.models.find(m => m.model === this.book.selectedModel);
+      // If an image is selected for this page, find the actual img object matching the selection
+      const sel = this.book.selections[page.id];
+      if (sel) {
+        for (const md of page.models) {
+          const found = md.images.find(img => img.full_url === sel.full_url || (img._model === sel.model && img._seed === sel.seed));
+          if (found) return found;
+        }
+      }
+      // Fallback: filter by active variant, then by selected model+seed
+      const variant = this.book.activeVariant || 'base';
+      const modelData = page.models.find(m => m.model === this.book.selectedModel && (m._variant || 'base') === variant)
+                     || page.models.find(m => m.model === this.book.selectedModel);
       if (!modelData) return null;
       if (this.book.selectedSeed) {
         return modelData.images.find(img => img._seed === this.book.selectedSeed) || modelData.images[0];
@@ -365,19 +376,23 @@ function bookMixin() {
       return modelData.images[0] || null;
     },
 
-    /** Get all seed images for current model on current page */
+    /** Get all seed images for current model on current page, respecting active variant */
     bookSeedImages() {
       const page = this.bookCurrentPage();
       if (!page) return [];
-      const modelData = page.models.find(m => m.model === this.book.selectedModel);
+      const variant = this.book.activeVariant || 'base';
+      const modelData = page.models.find(m => m.model === this.book.selectedModel && (m._variant || 'base') === variant)
+                     || page.models.find(m => m.model === this.book.selectedModel);
       return modelData ? modelData.images : [];
     },
 
-    /** Get experiment detail for current selection */
+    /** Get experiment detail for current selection, respecting active variant */
     bookCurrentExperiment() {
       const page = this.bookCurrentPage();
       if (!page) return null;
-      const modelData = page.models.find(m => m.model === this.book.selectedModel);
+      const variant = this.book.activeVariant || 'base';
+      const modelData = page.models.find(m => m.model === this.book.selectedModel && (m._variant || 'base') === variant)
+                     || page.models.find(m => m.model === this.book.selectedModel);
       return modelData?.detail || null;
     },
 
@@ -517,12 +532,14 @@ function bookMixin() {
       return page.models.some(m => m._generation && m._generation !== 'R0');
     },
 
-    /** Get the thumbnail for a timeline slot (selected image or first available) */
+    /** Get the thumbnail for a timeline slot (selected image or first available, variant-aware) */
     bookTimelineThumb(page) {
       const sel = this.book.selections[page.id];
       if (sel && sel.thumb_url) return sel.thumb_url;
-      // Fallback: try selected model first, then first model
-      const selModel = page.models.find(m => m.model === this.book.selectedModel);
+      // Fallback: try selected model+variant first, then selected model, then first model
+      const variant = this.book.activeVariant || 'base';
+      const selModel = page.models.find(m => m.model === this.book.selectedModel && (m._variant || 'base') === variant)
+                    || page.models.find(m => m.model === this.book.selectedModel);
       const selectedSeedImg = selModel?.images.find(i => i._seed === this.book.selectedSeed);
       if (selectedSeedImg?.thumb_url) return selectedSeedImg.thumb_url;
       if (selModel?.images[0]?.thumb_url) return selModel.images[0].thumb_url;

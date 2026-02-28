@@ -773,7 +773,7 @@
             <div class="book-pages">
               <template x-for="(page, idx) in book.pages" :key="'bp-' + idx">
                 <div class="book-page-thumb" :class="{'active': idx === book.currentPage}" @click="book.currentPage = idx">
-                  <img :src="(page.models.find(m => m.model === book.selectedModel)?.images[0]?.thumb_url) || (page.models[0]?.images[0]?.thumb_url) || ''" :alt="page.scene">
+                  <img :src="(page.models.find(m => m.model === book.selectedModel && (m._variant || 'base') === (book.activeVariant || 'base'))?.images[0]?.thumb_url) || (page.models.find(m => m.model === book.selectedModel)?.images[0]?.thumb_url) || (page.models[0]?.images[0]?.thumb_url) || ''" :alt="page.scene">
                   <span class="book-page-label" x-text="page.id"></span>
                 </div>
               </template>
@@ -848,7 +848,7 @@
                   <button class="btn-ghost" @click="bookNext()" :disabled="book.currentPage >= book.pages.length - 1" style="padding:4px 8px">&rarr;</button>
                 </div>
                 <div class="be-preview-image" @dragover.prevent="$event.dataTransfer.dropEffect='copy'" @dragenter="bookDragEnter($event)" @dragleave="bookDragLeave($event)" @drop="bookHandlePreviewDrop($event)">
-                  <img :src="(() => { const p = book.pages[book.currentPage]; if (!p) return ''; const sel = book.selections[p.id]; if (sel) return sel.full_url || sel.thumb_url; const md = p.models.find(m => m.model === book.selectedModel) || p.models[0]; if (!md) return ''; const si = md.images.find(i => i._seed === book.selectedSeed) || md.images[0]; return si?.full_url || si?.thumb_url || ''; })()" alt="Preview">
+                  <img :src="(() => { const p = book.pages[book.currentPage]; if (!p) return ''; const sel = book.selections[p.id]; if (sel) return sel.full_url || sel.thumb_url; const v = book.activeVariant || 'base'; const md = p.models.find(m => m.model === book.selectedModel && (m._variant || 'base') === v) || p.models.find(m => m.model === book.selectedModel) || p.models[0]; if (!md) return ''; const si = md.images.find(i => i._seed === book.selectedSeed) || md.images[0]; return si?.full_url || si?.thumb_url || ''; })()" alt="Preview">
                   <!-- Rating overlay on main preview -->
                   <div class="be-preview-rating"
                        x-show="getImageRating(bookEditorPreviewImage())"
