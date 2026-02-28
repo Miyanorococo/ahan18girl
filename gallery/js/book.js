@@ -3,6 +3,18 @@
  * A "Book" = experiments from the same date + prompt prefix (= one batch job).
  * Browse pages in story order with model/seed switching.
  * Includes Editor/Timeline mode for selecting best images per page and exporting.
+ *
+ * Experiment naming: {bookId}[_R{n}]_{scene}[_{variant}]
+ *   bookId:  "0219a"          — MMDD + letter
+ *   R{n}:    "R1", "R2"       — Regen generation (omitted = R0 = original)
+ *   scene:   "S01c_rain"      — S{num}{sub}_{desc}
+ *   variant: "A", "B", "C"    — Variant suffix (omitted = base), max 3 chars
+ *
+ * openBook() uses 2.5-pass detection to merge variants into base scene pages:
+ *   Pass 1:   Collect R0 scene keys as baseScenes
+ *   Pass 1.5: Reclassify R0 scenes that are base+"_"+shortSuffix as variants
+ *   Pass 2:   Classify each experiment (R0 variant / pure regen / regen variant / new page)
+ * See gallery/README.md for full specification.
  */
 function bookMixin() {
   return {

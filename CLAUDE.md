@@ -100,6 +100,16 @@ Step Functions (r18-anime-eval)
 **ドライバ**: `ECS_AL2_NVIDIA` AMI自動選択（ドライバ問題を根絶）
 **注意**: Docker再ビルド時は `onnxruntime` を追加すること（aesthetic scorer用、現在未対応）
 
+**S3レジューム（⚠️ 重要）**:
+- レジュームは**シーンID（S3パス）の画像有無**だけで判定する。プロンプト内容は見ない
+- `gallery/experiments/{date}_{model}/{scene_id}/full/` に全seed画像が揃っていればスキップ
+- **プロンプトを変えて同じシーンIDで再生成したい場合**:
+  1. S3の既存画像を削除してからジョブ実行（レジュームが効かず再生成される）
+  2. またはシーンIDを変える（`S01b_library` → `R2_S01b_library` 等）← Regen方式
+- **プロンプトファイル（eval-prompts.json）は全ジョブ共有**。サブセットで上書きすると他ジョブに影響する
+  - 一部シーンだけ生成したい場合もフル版を使い、S3レジュームに任せる
+  - またはタイムスタンプ付きキー（`eval-prompts-YYYYMMDD-HHMMSS.json`）+ `PROMPTS_S3_KEY` 環境変数で分離する
+
 **実行手順（プロンプト切り替え → 生成）**:
 ```bash
 # 1. プロンプトファイルを切り替え
@@ -391,10 +401,35 @@ gallery UI (book.js bookTriggerRegen)
 - オリジナルが10 seedで生成されていれば、regenも10枚生成される
 - metadata に seeds がない場合のフォールバック: `[42, 123, 456]`
 
-**世代管理:**
-- Regen結果は `{bookId}_R{n}_{scene}` の形で保存（例: `0219a_R2_S01b_library`）
-- R1 = オリジナル（明示的なプレフィックスなし）、R2 = 1回目のregen、R3 = 2回目...
+**世代管理 + バリアント:**
+- Regen結果は `{bookId}_R{n}_{scene}[_{variant}]` の形で保存
+- R0 = オリジナル（明示的なプレフィックスなし）、R1 = 1回目のregen、R2 = 2回目...
 - 世代番号は S3 スキャンで自動検出（`_detect_next_generation()`）
+
+**命名規則（⚠️ 重要 — 全パートの意味）:**
+```
+{bookId}_[R{n}_]{scene}[_{variant}]
+
+bookId:  0219a              ← MMDD + 連番（Book固有ID）
+R{n}:    R1, R2, R3...      ← Regen世代（省略=R0=オリジナル）
+scene:   S01c_rain          ← S{番号}{subletter}_{説明}
+variant: A, B, C            ← バリアント（省略=base）、≤3文字
+```
+
+**例:**
+| prompt_id | 世代 | シーン | バリアント |
+|---|---|---|---|
+| `0219a_S01c_rain` | R0 | S01c_rain | base |
+| `0219a_R1_S01c_rain` | R1 | S01c_rain | base（純粋regen） |
+| `0219a_R1_S01c_rain_A` | R1 | S01c_rain | A |
+| `0219a_S02b_shopping_A` | R0 | S02b_shopping | A（初期バリアント） |
+| `0219a_R2_S02b_shopping_A` | R2 | S02b_shopping | A のregen |
+
+**UIでの表示:**
+- タイムラインにはベースシーンのみ表示（バリアントは統合）
+- バリアントタブ `[Original] [A] [B] [C]` でCandidate切替
+- Compareモードで最大10パネル並列比較（各パネルに✕ボタン）
+- バリアント検出は `openBook()` 内の2.5パスで自動実行（詳細は `gallery/README.md`）
 
 **Book IDバリデーション（⚠️ 重要）:**
 - `generate-eval.py`: `_meta.book_id` と全プロンプト `id` のプレフィックスが一致しないとエラー終了

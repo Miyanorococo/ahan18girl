@@ -90,6 +90,78 @@ lambda/gallery/
     └── index_builder.py # 実験インデックス管理
 ```
 
+### Book View (`#/book`)
+
+1冊のBook（= 1つのバッチジョブ）をページ送り＋モデル/seed切替で閲覧・編集する機能。
+
+- **View モード**: ページ送り + モデルタブ + seed行 + プロンプト表示
+- **Editor モード**: Candidateグリッドからベスト画像を選択 → PDF/ZIP出力
+- **Timeline**: ページ順序のドラッグ並替え、Shelfへの退避
+- **Regen**: プロンプト編集 → Flag → Lambda → Step Functions で再生成
+- **Save**: エディタ状態（選択・ページ順・Shelf・Regenフラグ）をS3に永続化
+
+#### 実験ファイルの命名規則（プレフィックス体系）
+
+```
+{bookId}[_R{n}]_{scene}[_{variant}]
+```
+
+| パート | 説明 | 例 |
+|--------|------|-----|
+| `bookId` | `{MMDD}{a-z}` 形式のBook固有ID | `0219a` |
+| `R{n}` | Regen世代。省略=R0（オリジナル）。R1〜が再生成 | `R1`, `R2` |
+| `scene` | `S{番号}{subletter?}_{説明}` 形式のシーンID | `S01c_rain` |
+| `variant` | バリアントサフィックス（1〜3文字）。省略=ベース | `A`, `B`, `C` |
+
+**具体例:**
+```
+0219a_S01c_rain              ← R0, base（オリジナル）
+0219a_R1_S01c_rain           ← R1, base（純粋regen、同プロンプト再生成）
+0219a_R1_S01c_rain_A         ← R1, variant A（別プロンプトの再生成）
+0219a_R1_S01c_rain_B         ← R1, variant B
+0219a_S02b_shopping          ← R0, base
+0219a_S02b_shopping_A        ← R0, variant A（初期バリアント）
+0219a_R2_S02b_shopping_A     ← R2, variant A のregen
+```
+
+**S3上のディレクトリ構造:**
+```
+gallery/experiments/
+  20260227_animagine-xl-4.0/
+    0219a_S01c_rain/           ← R0 base
+      full/seed42.png
+      thumb/seed42.png
+    0219a_R1_S01c_rain_A/      ← R1 variant A
+      full/seed42.png
+      ...
+```
+
+#### バリアントUI
+
+バリアントを持つページ（`S01c_rain` に対して `_A`, `_B`, `_C` が存在）は、
+タイムラインでは1ページとして統合表示される。
+
+- **バリアントタブ**: `[Original] [A] [B] [C]` — Candidateエリア上部に表示
+- **タブ切替**: タブクリックで表示するバリアントを即座に切替
+- **Compareモード**: `⇔ Compare` → 並列パネル比較。`+ Panel` で最大10パネル追加
+- **各パネルに✕**: 個別パネルを閉じる。`✕ All` で全パネル閉じ
+- **プレビュー縮小**: Compare中はメインプレビュー画像が縮小され、パネルに幅を譲る
+- バリアントが1つ（baseのみ）のページではタブ非表示
+
+#### バリアント検出ロジック（2.5パス）
+
+`openBook()` 内でS3の実験データから自動検出:
+
+```
+Pass 1:   R0実験のsceneKeyを収集 → baseScenes
+Pass 1.5: baseScenes内で「他のbase + '_' + 短suffix(≤3文字)」にマッチするものをR0バリアントに再分類
+Pass 2:   各実験を分類:
+          - R0 & r0VariantMap にある → そのベースシーンに統合（variant=suffix）
+          - R{n} & baseに完全一致 → 純粋regen（variant="base"）
+          - R{n} & baseに前方一致 → バリアント（variant=suffix）
+          - マッチなし → 新規ページ（variant="base"）
+```
+
 ## 評価データ形式 (v2)
 
 `s3://r18-anime-assets/gallery/user-data/ratings.json`:
