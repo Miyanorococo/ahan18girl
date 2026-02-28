@@ -381,10 +381,20 @@ function bookMixin() {
       return modelData?.detail || null;
     },
 
-    bookPrev() { if (this.book.currentPage > 0) this.book.currentPage--; },
-    bookNext() { if (this.book.currentPage < this.book.pages.length - 1) this.book.currentPage++; },
+    bookPrev() { if (this.book.currentPage > 0) { this.book.currentPage--; this._resetVariantIfInvalid(); } },
+    bookNext() { if (this.book.currentPage < this.book.pages.length - 1) { this.book.currentPage++; this._resetVariantIfInvalid(); } },
     bookSelectModel(model) { this.book.selectedModel = model; },
     bookSelectSeed(seed) { this.book.selectedSeed = seed; },
+
+    /** Reset activeVariant/comparePanels if current page doesn't have the active variant */
+    _resetVariantIfInvalid() {
+      const page = this.bookCurrentPage();
+      if (!page || !page.variants || !page.variants.includes(this.book.activeVariant)) {
+        this.book.activeVariant = 'base';
+        this.book.comparePanels = [];
+        this.book.compareVariant = null;
+      }
+    },
 
     bookOpenLightbox() {
       const images = this.bookSeedImages();
@@ -619,7 +629,6 @@ function bookMixin() {
             models: p.models,
           })),
           regenFlags: this.book.regenFlags || {},
-          activeVariant: this.book.activeVariant || 'base',
         };
         const result = await GalleryAPI.saveBookState(bookId, state);
         this.book.saveStatus = 'saved';
@@ -667,11 +676,6 @@ function bookMixin() {
         // Restore regen flags
         if (state.regenFlags) {
           this.book.regenFlags = state.regenFlags;
-        }
-
-        // Restore active variant
-        if (state.activeVariant) {
-          this.book.activeVariant = state.activeVariant;
         }
 
         this.book.lastSavedAt = state.savedAt || '';
@@ -1257,6 +1261,7 @@ function bookMixin() {
         // Normal click: navigate to that page, clear multi-selection
         this.book.selectedPages = [];
         this.book.currentPage = idx;
+        this._resetVariantIfInvalid();
       }
     },
 
