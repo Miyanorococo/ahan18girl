@@ -1197,9 +1197,9 @@ function bookMixin() {
       this.book.activeVariant = variant;
     },
 
-    /** Add a compare panel (max 10) */
+    /** Add a compare panel (max 3) */
     bookAddComparePanel() {
-      if (this.book.comparePanels.length >= 10) return;
+      if (this.book.comparePanels.length >= 3) return;
       const page = this.bookCurrentPage();
       if (!page || !page.variants) return;
       // Pick first variant not already in use

@@ -901,7 +901,7 @@
                   </template>
                   <button class="be-compare-btn" x-show="book.comparePanels.length === 0"
                           @click="bookStartCompare()">&#8660; Compare</button>
-                  <button class="be-compare-btn" x-show="book.comparePanels.length > 0 && book.comparePanels.length < 10"
+                  <button class="be-compare-btn" x-show="book.comparePanels.length > 0 && book.comparePanels.length < 3"
                           @click="bookAddComparePanel()">+ Panel</button>
                   <button class="be-compare-btn" x-show="book.comparePanels.length > 0"
                           @click="bookCloseCompare()" style="border-color:#ff9800;color:#ff9800">&#10005; All</button>
@@ -962,11 +962,11 @@
                     <template x-for="(group, gi) in bookFilteredCandidatesByModel()" :key="'cpl-' + gi + '-' + book.activeVariant">
                       <div style="margin-bottom:8px">
                         <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px" x-text="displayModelName(group.model)"></div>
-                        <div style="display:flex;flex-wrap:wrap;gap:4px">
+                        <div style="display:flex;flex-wrap:wrap;gap:6px">
                           <template x-for="(cand, ci) in group.images" :key="'cplc-' + gi + '-' + ci">
                             <div class="be-candidate" style="cursor:pointer"
                                  @click="openLightbox(cand.img, cand.detail)">
-                              <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:64px;height:auto;display:block;border-radius:3px">
+                              <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:80px;height:auto;display:block;border-radius:4px">
                               <div class="be-cand-info"><span x-text="'s:' + cand.seed"></span></div>
                             </div>
                           </template>
@@ -989,11 +989,11 @@
                       <template x-for="(group, gi) in bookFilteredCandidatesByModel(pv)" :key="'cpr-' + pi + '-' + gi + '-' + pv">
                         <div style="margin-bottom:8px">
                           <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px" x-text="displayModelName(group.model)"></div>
-                          <div style="display:flex;flex-wrap:wrap;gap:4px">
+                          <div style="display:flex;flex-wrap:wrap;gap:6px">
                             <template x-for="(cand, ci) in group.images" :key="'cprc-' + pi + '-' + gi + '-' + ci">
                               <div class="be-candidate" style="cursor:pointer"
                                    @click="openLightbox(cand.img, cand.detail)">
-                                <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:64px;height:auto;display:block;border-radius:3px">
+                                <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:80px;height:auto;display:block;border-radius:4px">
                                 <div class="be-cand-info"><span x-text="'s:' + cand.seed"></span></div>
                               </div>
                             </template>
