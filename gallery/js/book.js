@@ -62,7 +62,8 @@ function bookMixin() {
 
       // Variant UI (Feature 7)
       activeVariant: 'base',    // Currently displayed variant
-      compareVariant: null,     // null=no compare, 'A'/'B'/etc=side-by-side
+      compareVariant: null,     // DEPRECATED: kept for compat, use comparePanels
+      comparePanels: [],        // Array of variant strings for multi-compare (max 10)
     },
 
     /**
@@ -298,6 +299,7 @@ function bookMixin() {
       this.book.editorMode = false;
       this.book.activeVariant = 'base';
       this.book.compareVariant = null;
+      this.book.comparePanels = [];
       this.book.loading = false;
 
       // Load saved state: try S3 first, fall back to localStorage
@@ -331,6 +333,7 @@ function bookMixin() {
       this.book.shelfOpen = false;
       this.book.activeVariant = 'base';
       this.book.compareVariant = null;
+      this.book.comparePanels = [];
     },
 
     /** Get current page object */
@@ -1182,16 +1185,45 @@ function bookMixin() {
       this.book.activeVariant = variant;
     },
 
-    /** Start compare mode: show side-by-side with the first non-active variant */
+    /** Add a compare panel (max 10) */
+    bookAddComparePanel() {
+      if (this.book.comparePanels.length >= 10) return;
+      const page = this.bookCurrentPage();
+      if (!page || !page.variants) return;
+      // Pick first variant not already in use
+      const used = new Set([this.book.activeVariant, ...this.book.comparePanels]);
+      const next = page.variants.find(v => !used.has(v)) || page.variants[0];
+      this.book.comparePanels = [...this.book.comparePanels, next];
+      this.book.compareVariant = this.book.comparePanels[0]; // compat
+    },
+
+    /** Remove a compare panel by index */
+    bookRemoveComparePanel(idx) {
+      this.book.comparePanels = this.book.comparePanels.filter((_, i) => i !== idx);
+      this.book.compareVariant = this.book.comparePanels[0] || null; // compat
+    },
+
+    /** Change variant for a specific compare panel */
+    bookSetComparePanel(idx, variant) {
+      const panels = [...this.book.comparePanels];
+      panels[idx] = variant;
+      this.book.comparePanels = panels;
+    },
+
+    /** Start compare mode: open one panel with first non-active variant */
     bookStartCompare() {
       const page = this.bookCurrentPage();
       if (!page || !page.variants || page.variants.length < 2) return;
       const other = page.variants.find(v => v !== this.book.activeVariant);
-      if (other) this.book.compareVariant = other;
+      if (other) {
+        this.book.comparePanels = [other];
+        this.book.compareVariant = other; // compat
+      }
     },
 
-    /** Close compare mode */
+    /** Close all compare panels */
     bookCloseCompare() {
+      this.book.comparePanels = [];
       this.book.compareVariant = null;
     },
 

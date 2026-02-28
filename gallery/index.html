@@ -838,7 +838,7 @@
                 <span x-text="book.exportProgress"></span>
               </div>
             </div>
-            <div class="be-main">
+            <div class="be-main" :class="{'be-comparing': book.comparePanels.length > 0}">
               <div class="be-preview">
                 <div class="be-preview-header">
                   <button class="btn-ghost" @click="bookPrev()" :disabled="book.currentPage <= 0" style="padding:4px 8px">&larr;</button>
@@ -899,14 +899,16 @@
                             @click="bookSwitchVariant(v)"
                             x-text="v === 'base' ? 'Original' : v"></button>
                   </template>
-                  <button class="be-compare-btn" x-show="!book.compareVariant"
+                  <button class="be-compare-btn" x-show="book.comparePanels.length === 0"
                           @click="bookStartCompare()">&#8660; Compare</button>
-                  <button class="be-compare-btn" x-show="book.compareVariant"
-                          @click="bookCloseCompare()" style="border-color:#ff9800;color:#ff9800">&#10005; Close</button>
+                  <button class="be-compare-btn" x-show="book.comparePanels.length > 0 && book.comparePanels.length < 10"
+                          @click="bookAddComparePanel()">+ Panel</button>
+                  <button class="be-compare-btn" x-show="book.comparePanels.length > 0"
+                          @click="bookCloseCompare()" style="border-color:#ff9800;color:#ff9800">&#10005; All</button>
                 </div>
 
                 <!-- Normal mode (single variant) -->
-                <div class="be-candidates-scroll" x-show="!book.compareVariant">
+                <div class="be-candidates-scroll" x-show="book.comparePanels.length === 0">
                   <template x-for="(group, gi) in bookFilteredCandidatesByModel()" :key="'beg-' + gi + '-' + book.currentPage + '-' + book.activeVariant">
                     <div style="margin-bottom:12px">
                       <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
@@ -945,9 +947,9 @@
                   </template>
                 </div>
 
-                <!-- Compare mode (two panels side by side) -->
-                <div class="be-candidates-compare" x-show="book.compareVariant">
-                  <!-- Left panel: activeVariant -->
+                <!-- Compare mode (N panels side by side) -->
+                <div class="be-candidates-compare" x-show="book.comparePanels.length > 0">
+                  <!-- Active variant panel (always first) -->
                   <div class="be-compare-panel">
                     <div class="be-compare-header">
                       <select style="background:var(--bg-card);color:var(--text-primary);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:2px 6px;font-size:0.75rem"
@@ -972,32 +974,34 @@
                       </div>
                     </template>
                   </div>
-                  <!-- Right panel: compareVariant -->
-                  <div class="be-compare-panel">
-                    <div class="be-compare-header">
-                      <select style="background:var(--bg-card);color:var(--text-primary);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:2px 6px;font-size:0.75rem"
-                              @change="book.compareVariant = $event.target.value">
-                        <template x-for="v in bookCurrentPage()?.variants || []" :key="'csr-' + v">
-                          <option :value="v" :selected="v === book.compareVariant" x-text="v === 'base' ? 'Original' : v"></option>
-                        </template>
-                      </select>
-                      <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.9rem;padding:0 4px" @click="bookCloseCompare()">&#10005;</button>
-                    </div>
-                    <template x-for="(group, gi) in bookFilteredCandidatesByModel(book.compareVariant)" :key="'cpr-' + gi + '-' + book.compareVariant">
-                      <div style="margin-bottom:8px">
-                        <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px" x-text="displayModelName(group.model)"></div>
-                        <div style="display:flex;flex-wrap:wrap;gap:4px">
-                          <template x-for="(cand, ci) in group.images" :key="'cprc-' + gi + '-' + ci">
-                            <div class="be-candidate" style="cursor:pointer"
-                                 @click="openLightbox(cand.img, cand.detail)">
-                              <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:64px;height:auto;display:block;border-radius:3px">
-                              <div class="be-cand-info"><span x-text="'s:' + cand.seed"></span></div>
-                            </div>
+                  <!-- Dynamic compare panels -->
+                  <template x-for="(pv, pi) in book.comparePanels" :key="'cp-' + pi + '-' + pv">
+                    <div class="be-compare-panel">
+                      <div class="be-compare-header">
+                        <select style="background:var(--bg-card);color:var(--text-primary);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:2px 6px;font-size:0.75rem"
+                                @change="bookSetComparePanel(pi, $event.target.value)">
+                          <template x-for="v in bookCurrentPage()?.variants || []" :key="'csr-' + pi + '-' + v">
+                            <option :value="v" :selected="v === pv" x-text="v === 'base' ? 'Original' : v"></option>
                           </template>
-                        </div>
+                        </select>
+                        <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.9rem;padding:0 4px" @click="bookRemoveComparePanel(pi)">&#10005;</button>
                       </div>
-                    </template>
-                  </div>
+                      <template x-for="(group, gi) in bookFilteredCandidatesByModel(pv)" :key="'cpr-' + pi + '-' + gi + '-' + pv">
+                        <div style="margin-bottom:8px">
+                          <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px" x-text="displayModelName(group.model)"></div>
+                          <div style="display:flex;flex-wrap:wrap;gap:4px">
+                            <template x-for="(cand, ci) in group.images" :key="'cprc-' + pi + '-' + gi + '-' + ci">
+                              <div class="be-candidate" style="cursor:pointer"
+                                   @click="openLightbox(cand.img, cand.detail)">
+                                <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:64px;height:auto;display:block;border-radius:3px">
+                                <div class="be-cand-info"><span x-text="'s:' + cand.seed"></span></div>
+                              </div>
+                            </template>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+                  </template>
                 </div>
               </div>
             </div>

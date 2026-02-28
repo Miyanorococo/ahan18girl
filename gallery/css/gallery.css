@@ -2240,10 +2240,16 @@ body {
 .be-compare-btn { font-size:0.65rem; padding:3px 10px; border-radius:6px; cursor:pointer;
   border:1px solid rgba(255,255,255,0.1); background:transparent; color:var(--text-muted); margin-left:auto; transition:all 0.15s; }
 .be-compare-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--text-secondary); }
-.be-candidates-compare { display:flex; gap:8px; height:calc(100% - 60px); }
-.be-compare-panel { flex:1; min-width:0; overflow-y:auto; padding-right:4px; }
+.be-candidates-compare { display:flex; gap:8px; height:calc(100% - 60px); overflow-x:auto; }
+.be-compare-panel { flex:1; min-width:120px; overflow-y:auto; padding-right:4px; border-left:1px solid rgba(255,255,255,0.06); padding-left:8px; }
+.be-compare-panel:first-child { border-left:none; padding-left:0; }
 .be-compare-header { font-weight:600; font-size:0.8rem; padding:4px 0 8px;
   display:flex; justify-content:space-between; align-items:center; }
+/* Shrink preview and expand candidates when comparing */
+.be-comparing .be-preview { flex: 0 0 200px; max-width: 200px; }
+.be-comparing .be-preview-image { min-height: 150px; }
+.be-comparing .be-preview-image img { max-height: 30vh; }
+.be-comparing .be-candidates { flex: 1; max-height: none; }
 .be-timeline { display: flex; gap: 6px; overflow-x: auto; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 12px; }
 .be-timeline-slot { position: relative; flex: 0 0 auto; cursor: grab; border: 2px solid transparent; border-radius: 6px; padding: 2px; text-align: center; opacity: 0.5; transition: opacity 0.15s, border-color 0.15s; }
 .be-timeline-slot:active { cursor: grabbing; }
