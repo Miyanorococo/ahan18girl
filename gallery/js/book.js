@@ -45,9 +45,12 @@ function bookMixin() {
       regenArn: '',
       regenPollTimer: null,
 
+      // Save state
+      saveStatus: '',         // '' | 'saving' | 'saved' | 'error'
+      lastSavedAt: '',        // ISO timestamp of last save
+
       // Generation versioning (Feature 5)
       generations: [],        // ['R0', 'R2', 'R3'] - detected from loaded pages
-      selectedGen: 'all',     // 'all' | 'R0' | 'R1' | 'R2' etc.
 
       // Undo/Redo
       _undoStack: [],         // Array of state snapshots
@@ -56,6 +59,10 @@ function bookMixin() {
       // Shelf (Feature 6)
       shelf: [],              // Array of page objects removed from timeline
       shelfOpen: false,
+
+      // Variant UI (Feature 7)
+      activeVariant: 'base',    // Currently displayed variant
+      compareVariant: null,     // null=no compare, 'A'/'B'/etc=side-by-side
     },
 
     /**
@@ -136,30 +143,96 @@ function bookMixin() {
         return;
       }
 
-      // Group by scene (merge regen into original page)
-      // e.g., 0216a_S08f_climax and 0216a_R1_S08f_climax → same scene "S08f_climax"
+      // 2-pass variant detection: merge regen + variant suffixes into base scenes
+      // Pass 1: collect base scene keys from R0 experiments
+      const allR0Scenes = new Set();
+      for (const exp of bookExps) {
+        const pid = exp.prompt_id || '';
+        const gen = this.bookGetGeneration(pid);
+        if (gen === 'R0') {
+          allR0Scenes.add(this.bookGetSceneId(pid));
+        }
+      }
+
+      // Pass 1.5: among R0 scenes, detect variant suffixes
+      // e.g. if both S02b_shopping and S02b_shopping_A exist as R0,
+      // then S02b_shopping_A is a variant of S02b_shopping
+      const baseScenes = new Set();
+      const r0VariantMap = {}; // sceneKey → { baseSceneKey, variant }
+      const r0Sorted = [...allR0Scenes].sort((a, b) => a.length - b.length); // shorter first
+      for (const sk of r0Sorted) {
+        let isVariant = false;
+        for (const bs of baseScenes) {
+          if (sk.startsWith(bs + '_') && sk !== bs) {
+            const suffix = sk.slice(bs.length + 1);
+            // Only treat as variant if suffix is short (A, B, C, etc.)
+            if (suffix.length <= 3) {
+              r0VariantMap[sk] = { baseSceneKey: bs, variant: suffix };
+              isVariant = true;
+              break;
+            }
+          }
+        }
+        if (!isVariant) baseScenes.add(sk);
+      }
+
+      // Pass 2: classify each experiment
       const sceneMap = {};
       const modelSet = new Set();
       const seedSet = new Set();
 
       for (const exp of bookExps) {
         const pid = exp.prompt_id || '';
-        // Get the scene key: strip bookId and Rn_ prefix
-        const sceneKey = this.bookGetSceneId(pid);
-        if (!sceneMap[sceneKey]) sceneMap[sceneKey] = { models: {}, originalPid: pid };
-        // Keep the original (non-regen) pid as the primary
         const gen = this.bookGetGeneration(pid);
-        if (gen === 'R0') sceneMap[sceneKey].originalPid = pid;
-        // Use model+gen as key to avoid overwriting original with regen
-        const modelGenKey = `${exp.model}__${gen}`;
-        sceneMap[sceneKey].models[modelGenKey] = { ...exp, _generation: gen };
+        const rawSceneKey = this.bookGetSceneId(pid);
+        let baseSceneKey = rawSceneKey;
+        let variant = 'base';
+
+        if (gen === 'R0' && r0VariantMap[rawSceneKey]) {
+          // R0 experiment that was classified as a variant in Pass 1.5
+          baseSceneKey = r0VariantMap[rawSceneKey].baseSceneKey;
+          variant = r0VariantMap[rawSceneKey].variant;
+        } else if (gen !== 'R0') {
+          if (baseScenes.has(rawSceneKey)) {
+            // Exact match with a base scene → pure regen, variant="base"
+            variant = 'base';
+          } else {
+            // Try to find a base scene that is a prefix: baseScene + '_' + suffix
+            let matched = false;
+            for (const bs of baseScenes) {
+              if (rawSceneKey.startsWith(bs + '_')) {
+                baseSceneKey = bs;
+                variant = rawSceneKey.slice(bs.length + 1);
+                matched = true;
+                break;
+              }
+            }
+            if (!matched) {
+              // No matching base scene → treat as new page (variant="base")
+              baseSceneKey = rawSceneKey;
+              variant = 'base';
+            }
+          }
+        }
+
+        if (!sceneMap[baseSceneKey]) sceneMap[baseSceneKey] = { models: {}, originalPid: pid };
+        // Keep the original (non-regen, non-variant) pid as the primary
+        if (gen === 'R0' && variant === 'base') sceneMap[baseSceneKey].originalPid = pid;
+        // modelGenKey includes variant to keep separate slots
+        const modelGenKey = `${exp.model}__${gen}__${variant}`;
+        sceneMap[baseSceneKey].models[modelGenKey] = { ...exp, _generation: gen, _variant: variant };
         modelSet.add(exp.model);
       }
 
       const sortedScenes = Object.keys(sceneMap).sort((a, b) => {
-        const na = a.replace(/[^0-9a-z]/gi, '');
-        const nb = b.replace(/[^0-9a-z]/gi, '');
-        return na.localeCompare(nb);
+        // Parse S{number}{subletter?}_{description} structurally
+        const pa = a.match(/^S(\d+)([a-z]?)(?:_(.*))?$/i);
+        const pb = b.match(/^S(\d+)([a-z]?)(?:_(.*))?$/i);
+        if (!pa || !pb) return a.localeCompare(b);
+        const numA = parseInt(pa[1]), numB = parseInt(pb[1]);
+        if (numA !== numB) return numA - numB;
+        if ((pa[2] || '') !== (pb[2] || '')) return (pa[2] || '').localeCompare(pb[2] || '');
+        return (pa[3] || '').localeCompare(pb[3] || '');
       });
 
       // Load all experiment details in parallel (fast)
@@ -177,7 +250,7 @@ function bookMixin() {
         })
       );
 
-      // Build pages from loaded results (regen merged into original pages)
+      // Build pages from loaded results (regen + variant merged into original pages)
       const pageMap = {};
       for (const result of loadResults) {
         if (result.status !== 'fulfilled' || !result.value.detail) continue;
@@ -191,7 +264,7 @@ function bookMixin() {
           if (img._seed) seedSet.add(img._seed);
         }
         if (!pageMap[sceneKey]) pageMap[sceneKey] = [];
-        pageMap[sceneKey].push({ model, experiment: exp, detail, images, _generation: exp._generation || 'R0' });
+        pageMap[sceneKey].push({ model, experiment: exp, detail, images, _generation: exp._generation || 'R0', _variant: exp._variant || 'base' });
       }
 
       const pages = [];
@@ -200,10 +273,18 @@ function bookMixin() {
         if (pageModels.length > 0) {
           pageModels.sort((a, b) => a.model.localeCompare(b.model));
           const originalPid = sceneMap[sceneKey].originalPid;
+          // Collect unique variants for this page, sorted with 'base' first
+          const variantSet = new Set(pageModels.map(m => m._variant || 'base'));
+          const variants = [...variantSet].sort((a, b) => {
+            if (a === 'base') return -1;
+            if (b === 'base') return 1;
+            return a.localeCompare(b);
+          });
           pages.push({
             id: originalPid, prompt_id: originalPid, scene: sceneKey,
             summary: pageModels[0].experiment.prompt_summary || sceneKey,
             models: pageModels,
+            variants,
           });
         }
       }
@@ -215,12 +296,17 @@ function bookMixin() {
       this.book.selectedSeed = this.book.allSeeds[0] || '';
       this.book.currentPage = 0;
       this.book.editorMode = false;
+      this.book.activeVariant = 'base';
+      this.book.compareVariant = null;
       this.book.loading = false;
 
-      // Load saved selections, regen flags, and shelf for this book
-      this.bookLoadSelections();
-      this._loadRegenFlags();
-      this.bookLoadShelf();
+      // Load saved state: try S3 first, fall back to localStorage
+      const loadedFromS3 = await this.bookLoadState();
+      if (!loadedFromS3) {
+        this.bookLoadSelections();
+        this._loadRegenFlags();
+        this.bookLoadShelf();
+      }
 
       // Detect generations from loaded pages
       this.bookDetectGenerations();
@@ -241,9 +327,10 @@ function bookMixin() {
       this.book.regenStatus = '';
       this.book.regenArn = '';
       this.book.generations = [];
-      this.book.selectedGen = 'all';
       this.book.shelf = [];
       this.book.shelfOpen = false;
+      this.book.activeVariant = 'base';
+      this.book.compareVariant = null;
     },
 
     /** Get current page object */
@@ -496,6 +583,89 @@ function bookMixin() {
         }
       } catch (e) {
         console.error('Failed to save book selections:', e);
+      }
+    },
+
+    // ==========================================
+    // Persistent Save / Load (S3 via API)
+    // ==========================================
+
+    /** Save full editor state to S3 */
+    async bookSaveState() {
+      const bookId = this.book.currentBook?.id;
+      if (!bookId) return;
+      this.book.saveStatus = 'saving';
+      try {
+        const state = {
+          selections: this.book.selections,
+          pageOrder: this.book.pages.map(p => p.id),
+          shelf: (this.book.shelf || []).map(p => ({
+            id: p.id, prompt_id: p.prompt_id, scene: p.scene, summary: p.summary,
+            models: p.models,
+          })),
+          regenFlags: this.book.regenFlags || {},
+          activeVariant: this.book.activeVariant || 'base',
+        };
+        const result = await GalleryAPI.saveBookState(bookId, state);
+        this.book.saveStatus = 'saved';
+        this.book.lastSavedAt = result.savedAt || '';
+        // Auto-clear status after 3 seconds
+        setTimeout(() => { if (this.book.saveStatus === 'saved') this.book.saveStatus = ''; }, 3000);
+      } catch (e) {
+        console.error('Failed to save book state:', e);
+        this.book.saveStatus = 'error';
+        setTimeout(() => { if (this.book.saveStatus === 'error') this.book.saveStatus = ''; }, 5000);
+      }
+    },
+
+    /** Load editor state from S3 (called during openBook) */
+    async bookLoadState() {
+      const bookId = this.book.currentBook?.id;
+      if (!bookId) return false;
+      try {
+        const state = await GalleryAPI.loadBookState(bookId);
+        if (!state || !state.bookId) return false;
+
+        // Restore selections
+        if (state.selections) {
+          this.book.selections = state.selections;
+        }
+
+        // Restore page order
+        if (state.pageOrder && state.pageOrder.length > 0) {
+          const pageMap = {};
+          for (const p of this.book.pages) pageMap[p.id] = p;
+          const orderedPages = state.pageOrder.map(id => pageMap[id]).filter(Boolean);
+          // Pages loaded from server but not in saved order go to the end
+          const orderedSet = new Set(state.pageOrder);
+          for (const p of this.book.pages) {
+            if (!orderedSet.has(p.id)) orderedPages.push(p);
+          }
+          this.book.pages = orderedPages;
+        }
+
+        // Restore shelf
+        if (state.shelf && state.shelf.length > 0) {
+          this.book.shelf = state.shelf;
+        }
+
+        // Restore regen flags
+        if (state.regenFlags) {
+          this.book.regenFlags = state.regenFlags;
+        }
+
+        // Restore active variant
+        if (state.activeVariant) {
+          this.book.activeVariant = state.activeVariant;
+        }
+
+        this.book.lastSavedAt = state.savedAt || '';
+        console.log('Loaded book state from S3 for', bookId);
+        return true;
+      } catch (e) {
+        // 404 = no saved state, not an error
+        console.log('No saved state on S3 for', bookId);
+        return false;
       }
     },
 
@@ -776,6 +946,17 @@ function bookMixin() {
       this.bookSaveShelf();
     },
 
+    /** Handle drop on the Shelf area (move page from timeline to shelf) */
+    bookHandleShelfDrop(event) {
+      event.preventDefault();
+      event.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+      let data;
+      try { data = JSON.parse(event.dataTransfer.getData('text/plain')); } catch { return; }
+      if (data.type === 'timeline') {
+        this.bookRemovePage(data.fromIdx);
+      }
+    },
+
     /** Save shelf to localStorage */
     bookSaveShelf() {
       try {
@@ -860,20 +1041,24 @@ function bookMixin() {
         return na - nb;
       });
       this.book.generations = gens;
-      this.book.selectedGen = 'all';
     },
 
-    /** Get candidates filtered by the selected generation.
-     *  When selectedGen is 'all', returns all candidates with generation info.
-     *  When selectedGen is specific, filters to only that generation's candidates.
+    /** Get candidates filtered by variant and generation.
+     *  @param {string} [variantOverride] - override active variant (for compare panel)
+     *  Filters by variant first, then groups by model with per-model gen tabs.
      */
-    bookFilteredCandidatesByModel() {
+    bookFilteredCandidatesByModel(variantOverride) {
       const page = this.bookCurrentPage();
       if (!page) return [];
 
+      const variant = variantOverride || this.book.activeVariant || 'base';
+
+      // Filter models to the selected variant
+      const filtered = page.models.filter(m => (m._variant || 'base') === variant);
+
       // Group by model name, each model has generations as sub-groups
       const modelMap = {};
-      for (const modelData of page.models) {
+      for (const modelData of filtered) {
         const name = modelData.model;
         const gen = modelData._generation || 'R0';
         if (!modelMap[name]) {
@@ -886,14 +1071,11 @@ function bookMixin() {
       if (!this.book._modelGenPrefs) this.book._modelGenPrefs = {};
       for (const [name, group] of Object.entries(modelMap)) {
         const gens = Object.keys(group.generations).sort((a, b) => {
-          // Sort R1 → R2 → R3 numerically
           const na = parseInt(a.replace('R', '')) || 0;
           const nb = parseInt(b.replace('R', '')) || 0;
           return na - nb;
         });
         const pref = this.book._modelGenPrefs[name];
-        // Default to latest regen, or original if no regen
-        // Default to latest (highest R number)
         const latest = gens[gens.length - 1] || 'R0';
         group.activeGen = (pref && gens.includes(pref)) ? pref : latest;
         group.availableGens = gens;
@@ -989,6 +1171,28 @@ function bookMixin() {
     bookSwitchModelGen(model, gen) {
       if (!this.book._modelGenPrefs) this.book._modelGenPrefs = {};
       this.book._modelGenPrefs = { ...this.book._modelGenPrefs, [model]: gen };
+    },
+
+    // ==========================================
+    // Variant UI (Feature 7)
+    // ==========================================
+
+    /** Switch the active variant tab */
+    bookSwitchVariant(variant) {
+      this.book.activeVariant = variant;
+    },
+
+    /** Start compare mode: show side-by-side with the first non-active variant */
+    bookStartCompare() {
+      const page = this.bookCurrentPage();
+      if (!page || !page.variants || page.variants.length < 2) return;
+      const other = page.variants.find(v => v !== this.book.activeVariant);
+      if (other) this.book.compareVariant = other;
+    },
+
+    /** Close compare mode */
+    bookCloseCompare() {
+      this.book.compareVariant = null;
     },
 
     // ==========================================

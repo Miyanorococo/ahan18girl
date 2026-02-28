@@ -2229,6 +2229,21 @@ body {
 .be-candidate:active { cursor: grabbing; }
 .be-candidate:hover { border-color: rgba(255,255,255,0.2); }
 .be-candidate-selected { border-color: #4caf50 !important; }
+
+/* Variant UI */
+.be-variant-tabs { display:flex; gap:4px; padding:4px 0 8px; flex-wrap:wrap; align-items:center; }
+.be-variant-btn { font-size:0.75rem; padding:4px 14px; border-radius:6px; cursor:pointer;
+  border:1px solid rgba(255,255,255,0.15); background:transparent; color:var(--text-muted); transition:all 0.15s; }
+.be-variant-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--text-secondary); }
+.be-variant-btn.active { background:var(--accent); color:white; border-color:var(--accent); }
+.be-variant-btn.comparing { border-color:#ff9800; color:#ff9800; }
+.be-compare-btn { font-size:0.65rem; padding:3px 10px; border-radius:6px; cursor:pointer;
+  border:1px solid rgba(255,255,255,0.1); background:transparent; color:var(--text-muted); margin-left:auto; transition:all 0.15s; }
+.be-compare-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--text-secondary); }
+.be-candidates-compare { display:flex; gap:8px; height:calc(100% - 60px); }
+.be-compare-panel { flex:1; min-width:0; overflow-y:auto; padding-right:4px; }
+.be-compare-header { font-weight:600; font-size:0.8rem; padding:4px 0 8px;
+  display:flex; justify-content:space-between; align-items:center; }
 .be-timeline { display: flex; gap: 6px; overflow-x: auto; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 12px; }
 .be-timeline-slot { position: relative; flex: 0 0 auto; cursor: grab; border: 2px solid transparent; border-radius: 6px; padding: 2px; text-align: center; opacity: 0.5; transition: opacity 0.15s, border-color 0.15s; }
 .be-timeline-slot:active { cursor: grabbing; }
@@ -2306,16 +2321,6 @@ body {
 }
 
 /* === Book Editor: Generation Versioning (Feature 5) === */
-.be-gen-tabs {
-  display: flex;
-  gap: 4px;
-  padding: 4px 0;
-  flex-wrap: wrap;
-}
-.be-gen-tabs .filter-btn {
-  font-size: 0.75rem;
-  padding: 4px 12px;
-}
 
 .be-cand-gen {
   font-size: 0.55rem;

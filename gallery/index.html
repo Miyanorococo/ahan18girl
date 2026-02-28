@@ -795,6 +795,13 @@
                 <button class="btn-ghost" @click="bookExportCurrentImage()">DL Current</button>
                 <button class="btn-ghost" @click="bookExportZip()" :disabled="book.exporting || bookSelectionCount() === 0">ZIP</button>
                 <button class="btn-primary" @click="bookExportPDF()" :disabled="book.exporting || bookSelectionCount() === 0">PDF</button>
+                <button class="btn-primary" style="background:#2196f3" @click="bookSaveState()"
+                        :disabled="book.saveStatus === 'saving'">
+                  <span x-show="book.saveStatus !== 'saving' && book.saveStatus !== 'saved' && book.saveStatus !== 'error'">Save</span>
+                  <span x-show="book.saveStatus === 'saving'">Saving...</span>
+                  <span x-show="book.saveStatus === 'saved'" style="color:#a5d6a7">Saved &#10003;</span>
+                  <span x-show="book.saveStatus === 'error'" style="color:#ef9a9a">Error</span>
+                </button>
                 <!-- Regen: trigger regeneration or export list -->
                 <button class="btn-primary" style="background:#ff9800"
                         x-show="bookRegenFlagCount() > 0 && !book.regenRunning && !book.regenCompleted"
@@ -816,17 +823,6 @@
                 <button class="btn-ghost" x-show="book.regenCompleted || (!book.regenRunning && book.regenStatus && book.regenStatus !== '')"
                         @click="bookResetRegenState()" style="font-size:0.75rem">Dismiss</button>
               </div>
-            </div>
-
-            <!-- Generation filter tabs (Feature 5) -->
-            <div class="be-gen-tabs" x-show="book.generations.length > 1" x-cloak>
-              <button class="filter-btn" :class="{'active': book.selectedGen === 'all'}"
-                      @click="book.selectedGen = 'all'">All</button>
-              <template x-for="gen in book.generations" :key="'gen-' + gen">
-                <button class="filter-btn" :class="{'active': book.selectedGen === gen}"
-                        @click="book.selectedGen = gen"
-                        x-text="gen === 'original' ? 'Original' : gen"></button>
-              </template>
             </div>
 
             <!-- Smart Suggest bar (Feature 2) -->
@@ -894,17 +890,32 @@
                 </div>
               </div>
               <div class="be-candidates">
-                <div style="font-weight:600;font-size:0.85rem;margin-bottom:8px">Candidates</div>
-                <div class="be-candidates-scroll">
-                  <template x-for="(group, gi) in bookFilteredCandidatesByModel()" :key="'beg-' + gi + '-' + book.currentPage">
+                <div style="font-weight:600;font-size:0.85rem;margin-bottom:4px">Candidates</div>
+                <!-- Variant tabs: shown only when page has multiple variants -->
+                <div class="be-variant-tabs" x-show="(bookCurrentPage()?.variants?.length || 0) > 1">
+                  <template x-for="v in bookCurrentPage()?.variants || []" :key="'vt-' + v">
+                    <button class="be-variant-btn"
+                            :class="{'active': book.activeVariant === v, 'comparing': book.compareVariant === v}"
+                            @click="bookSwitchVariant(v)"
+                            x-text="v === 'base' ? 'Original' : v"></button>
+                  </template>
+                  <button class="be-compare-btn" x-show="!book.compareVariant"
+                          @click="bookStartCompare()">&#8660; Compare</button>
+                  <button class="be-compare-btn" x-show="book.compareVariant"
+                          @click="bookCloseCompare()" style="border-color:#ff9800;color:#ff9800">&#10005; Close</button>
+                </div>
+
+                <!-- Normal mode (single variant) -->
+                <div class="be-candidates-scroll" x-show="!book.compareVariant">
+                  <template x-for="(group, gi) in bookFilteredCandidatesByModel()" :key="'beg-' + gi + '-' + book.currentPage + '-' + book.activeVariant">
                     <div style="margin-bottom:12px">
                       <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
                         <span style="font-size:0.75rem;color:var(--text-muted)" x-text="displayModelName(group.model)"></span>
                         <template x-if="group.availableGens && group.availableGens.length > 1">
                           <div style="display:flex;gap:2px">
                             <template x-for="gen in group.availableGens" :key="'gt-' + group.model + '-' + gen">
-                              <button style="font-size:0.55rem;padding:1px 5px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--text-muted);transition:all 0.1s"
-                                      :style="gen === group.activeGen ? 'background:#9c27b0;color:white;border-color:#9c27b0' : ''"
+                              <button style="font-size:0.65rem;padding:2px 8px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.2);background:transparent;color:var(--text-muted);transition:all 0.15s"
+                                      :style="gen === group.activeGen ? 'background:#9c27b0;color:white;border-color:#9c27b0;font-weight:600' : ''"
                                       @click="bookSwitchModelGen(group.model, gen)"
                                       x-text="gen"></button>
                             </template>
@@ -922,7 +933,7 @@
                                  x-text="getImageRating(cand.img) >= 5 ? '★' : getImageRating(cand.img) >= 2 ? '♥' : '👎'"></div>
                             <div class="be-cand-info">
                               <span x-text="'s:' + cand.seed"></span>
-                              <span class="be-cand-gen" x-show="book.generations.length > 1 && book.selectedGen === 'all'"
+                              <span class="be-cand-gen" x-show="book.generations.length > 1"
                                     x-text="bookGetGeneration(cand.img._mgExperiment?.prompt_id || bookCurrentPage()?.id)"></span>
                               <span x-show="getAestheticScore(cand.img)" :class="{'high': getAestheticScore(cand.img) >= 0.7}" x-text="((getAestheticScore(cand.img)||0)*100).toFixed(0)"></span>
                             </div>
@@ -932,6 +943,61 @@
                       </div>
                     </div>
                   </template>
+                </div>
+
+                <!-- Compare mode (two panels side by side) -->
+                <div class="be-candidates-compare" x-show="book.compareVariant">
+                  <!-- Left panel: activeVariant -->
+                  <div class="be-compare-panel">
+                    <div class="be-compare-header">
+                      <select style="background:var(--bg-card);color:var(--text-primary);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:2px 6px;font-size:0.75rem"
+                              @change="bookSwitchVariant($event.target.value)">
+                        <template x-for="v in bookCurrentPage()?.variants || []" :key="'csl-' + v">
+                          <option :value="v" :selected="v === book.activeVariant" x-text="v === 'base' ? 'Original' : v"></option>
+                        </template>
+                      </select>
+                    </div>
+                    <template x-for="(group, gi) in bookFilteredCandidatesByModel()" :key="'cpl-' + gi + '-' + book.activeVariant">
+                      <div style="margin-bottom:8px">
+                        <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px" x-text="displayModelName(group.model)"></div>
+                        <div style="display:flex;flex-wrap:wrap;gap:4px">
+                          <template x-for="(cand, ci) in group.images" :key="'cplc-' + gi + '-' + ci">
+                            <div class="be-candidate" style="cursor:pointer"
+                                 @click="openLightbox(cand.img, cand.detail)">
+                              <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:64px;height:auto;display:block;border-radius:3px">
+                              <div class="be-cand-info"><span x-text="'s:' + cand.seed"></span></div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                  <!-- Right panel: compareVariant -->
+                  <div class="be-compare-panel">
+                    <div class="be-compare-header">
+                      <select style="background:var(--bg-card);color:var(--text-primary);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:2px 6px;font-size:0.75rem"
+                              @change="book.compareVariant = $event.target.value">
+                        <template x-for="v in bookCurrentPage()?.variants || []" :key="'csr-' + v">
+                          <option :value="v" :selected="v === book.compareVariant" x-text="v === 'base' ? 'Original' : v"></option>
+                        </template>
+                      </select>
+                      <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.9rem;padding:0 4px" @click="bookCloseCompare()">&#10005;</button>
+                    </div>
+                    <template x-for="(group, gi) in bookFilteredCandidatesByModel(book.compareVariant)" :key="'cpr-' + gi + '-' + book.compareVariant">
+                      <div style="margin-bottom:8px">
+                        <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px" x-text="displayModelName(group.model)"></div>
+                        <div style="display:flex;flex-wrap:wrap;gap:4px">
+                          <template x-for="(cand, ci) in group.images" :key="'cprc-' + gi + '-' + ci">
+                            <div class="be-candidate" style="cursor:pointer"
+                                 @click="openLightbox(cand.img, cand.detail)">
+                              <img :src="cand.img.thumb_url" :alt="cand.seed" loading="lazy" style="width:64px;height:auto;display:block;border-radius:3px">
+                              <div class="be-cand-info"><span x-text="'s:' + cand.seed"></span></div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1001,7 +1067,7 @@
               <div class="be-shelf-items" style="min-height:60px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px dashed rgba(255,255,255,0.1);padding:8px"
                    @dragover.prevent="$event.dataTransfer.dropEffect='copy'; $event.currentTarget.style.borderColor='#4caf50'"
                    @dragleave="$event.currentTarget.style.borderColor='rgba(255,255,255,0.1)'"
-                   @drop="$event.currentTarget.style.borderColor='rgba(255,255,255,0.1)'">
+                   @drop="bookHandleShelfDrop($event)">
                 <template x-for="(item, idx) in book.shelf" :key="'bsh-' + item.id">
                   <div class="be-shelf-item" draggable="true" @dragstart="bookDragStartShelf($event, idx)">
                     <img :src="bookShelfThumb(item)" :alt="item.id" loading="lazy">
